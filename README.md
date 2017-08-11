@@ -13,6 +13,15 @@ Features
 - VLAN (802.1q, 802.1ad)
 - UDP, RTP, RTP_FEC with automatic detection
 
+Building
+===
+Built using Qt 5.9 and Visual Studio 2017 compiler.
+Installer requires NSIS 3 or later and prerequisites are inside the folder "installer/Prerequisites", not provided in this repo.
+- Microsoft Visual C++ 2017 Redistributable (x64) - 14.10.25017
+- WinPcap 4.1.3 installer
+
+For pcap-ng support https://sourceforge.net/projects/winpcap413-176/ is used, install on local machine for development and distribute with program for releases. Comes in 64-bit flavor under installer/dependencies64 catalog
+
 Modules
 ===
 Modules are the parts that form a chain from Source to Output.  
