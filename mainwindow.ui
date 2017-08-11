@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>771</width>
+    <height>471</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>IPTVUtils</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>751</width>
+      <height>421</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="recordTab">
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <attribute name="title">
+      <string>Record</string>
+     </attribute>
+     <widget class="RecordWidget" name="recordWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>120</width>
+        <height>80</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="playbackTab">
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <attribute name="title">
+      <string>Playback</string>
+     </attribute>
+     <widget class="PlaybackWidget" name="playbackWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>120</width>
+        <height>80</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="convertTab">
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <attribute name="title">
+      <string>Convert</string>
+     </attribute>
+     <widget class="ConvertWidget" name="convertWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>120</width>
+        <height>80</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>771</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>PlaybackWidget</class>
+   <extends>QWidget</extends>
+   <header>playbackwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RecordWidget</class>
+   <extends>QWidget</extends>
+   <header>recordwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConvertWidget</class>
+   <extends>QWidget</extends>
+   <header>convertwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

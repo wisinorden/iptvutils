@@ -12,6 +12,9 @@
 
 # Qt-es
 
+object_script.*.Release
+object_script.*.Debug
+*_plugin_import.cpp
 /.qmake.cache
 /.qmake.stash
 *.pro.user
@@ -26,6 +29,11 @@ ui_*.h
 Makefile*
 *build-*
 
+
+# Qt unit tests
+target_wrapper.*
+
+
 # QtCreator
 
 *.autosave
@@ -36,4 +44,11 @@ Makefile*
 
 # QtCtreator CMake
 CMakeLists.txt.user*
+info.md
+*.pcap
+*.ts
+*.exe
 
+#installer builds and artefacts
+installer/build-win64
+installer/artefacts-win64
