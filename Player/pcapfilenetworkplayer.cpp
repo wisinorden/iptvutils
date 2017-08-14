@@ -91,7 +91,7 @@ void PcapFileNetworkPlayer::moduleFinished() {
         return;
 
     // newline to clean up log
-    qInfo("");
+    qInfo();
     emit finished();
 }
 

@@ -37,7 +37,7 @@ void PcapBufferedProducer::init(QThread *thread) {
 }
 
 void PcapBufferedProducer::bufferFromFile() {
-    qInfo("Buffering pcap from file, buffer size: %i", buffer.max_size());
+    qInfo("Buffering pcap from file, buffer size: %lu", buffer.max_size());
     char errbuf[PCAP_ERRBUF_SIZE];
 
     // Filter

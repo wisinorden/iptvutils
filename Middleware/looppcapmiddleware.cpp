@@ -57,9 +57,6 @@ void LoopPcapMiddleware::bufferProducts() {
     QMap<quint16, bool> pcrPidDiscontinuousSet;
     TsParser tsparser;
 
-    // Used to keep track of things we only do the first loop
-    bool looped = false;
-
     while (!stopping) {
         PcapProduct input = prevProvider->getProduct();
         if (input.type == PcapProduct::LOOP) {
@@ -88,7 +85,6 @@ void LoopPcapMiddleware::bufferProducts() {
                 qInfo("timeOffset: %llu ms", timeOffset/1000);
                 //qInfo("newStart: %lu", usecToTimeval(startTime+timeOffset).tv_sec);
             }
-            looped = true;
         }
         else if (input.type == PcapProduct::NORMAL) {
             packetNumber++;
