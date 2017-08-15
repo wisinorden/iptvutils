@@ -26,6 +26,7 @@ public:
 
 private:
     Ui::RecordWidget *ui;
+    bool started;
 
 private slots:
     void recordingStarted();
@@ -35,10 +36,10 @@ private slots:
 
     bool startPcapRecord(WorkerConfiguration::WorkerMode mode = WorkerConfiguration::NORMAL_MODE);
     bool startTsRecord(WorkerConfiguration::WorkerMode mode = WorkerConfiguration::NORMAL_MODE);
+    void on_recordExpandPCAPFilterButton_toggled(bool);
+    void on_recordFileFormatPCAP_toggled(bool);
     void on_recordOpenFileDialog_clicked();
-    void on_startPcapRecordBtn_clicked();
-    void on_startTsRecordBtn_clicked();
-    void on_recordCancelBtn_clicked();
+    void on_recordStartStopBtn_clicked();
 
 public slots:
     void recordStatusChanged(FinalStatus status);

@@ -13,9 +13,17 @@ TsNetworkFileRecorder* RecordWidget::tsNetworkFileRecorder;
 
 RecordWidget::RecordWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::RecordWidget)
+    ui(new Ui::RecordWidget),
+    started(false)
 {
     ui->setupUi(this);
+
+    // Advanced PCAP filter
+    ui->recordPcapFilterContainer->hide();
+    connect(ui->recordExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_recordExpandPCAPFilterButton_toggled(bool)));
+
+    // File format
+    connect(ui->recordFileFormatPCAP, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatPCAP_toggled(bool)));
 
     connect(ui->recordHost, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordPort, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
@@ -41,8 +49,8 @@ void RecordWidget::loadSettings() {
 
     settings.beginGroup("record");
     ui->recordInterfaceSelect->setCurrentIndex(settings.value("interface", 0).toInt());
-    ui->recordHost->setText(settings.value("host", "238.123.123.100").toString());
-    ui->recordPort->setText(settings.value("port", "1234").toString());
+    ui->recordHost->setText(settings.value("host", "").toString());
+    ui->recordPort->setText(settings.value("port", "").toString());
     ui->recordRtpFecCheckBox->setChecked(settings.value("rtp-fec", false).toBool());
     ui->recordFilename->setText(settings.value("filename", "").toString());
     settings.endGroup();
@@ -61,7 +69,9 @@ void RecordWidget::saveSettings() {
 }
 
 void RecordWidget::recordingStarted() {
-    ui->recordCancelBtn->setEnabled(true);
+    started = true;
+    ui->recordStartStopBtn->setText(tr("Stop recording"));
+    ui->recordStartStopBtn->setEnabled(true);
 }
 
 void RecordWidget::recordStatusChanged(FinalStatus status) {
@@ -73,11 +83,11 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 }
 
 void RecordWidget::recordingFinished() {
-    ui->startPcapRecordBtn->setEnabled(true);
-    ui->startTsRecordBtn->setEnabled(true);
-    ui->recordCancelBtn->setEnabled(false);
+    ui->recordStartStopBtn->setText(tr("Start recording"));
+    ui->recordStartStopBtn->setEnabled(true);
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
+    started = false;
 }
 
 bool RecordWidget::validateRecordInputs() {
@@ -115,9 +125,7 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
-    ui->startPcapRecordBtn->setEnabled(false);
-    ui->startTsRecordBtn->setEnabled(false);
-    ui->recordCancelBtn->setEnabled(false);
+    ui->recordStartStopBtn->setEnabled(false);
 
     networkPcapFileRecorder->start();
     return true;
@@ -142,12 +150,31 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, this, &RecordWidget::recordStatusChanged);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
-    ui->startPcapRecordBtn->setEnabled(false);
-    ui->startTsRecordBtn->setEnabled(false);
-    ui->recordCancelBtn->setEnabled(false);
+    ui->recordStartStopBtn->setEnabled(false);
 
     tsNetworkFileRecorder->start();
     return true;
+}
+
+void RecordWidget::on_recordExpandPCAPFilterButton_toggled(bool checked)
+{
+    if (checked) {
+        ui->recordExpandPCAPFilterButton->setArrowType(Qt::ArrowType::DownArrow);
+        ui->recordPcapFilterContainer->show();
+    }
+    else {
+        ui->recordExpandPCAPFilterButton->setArrowType(Qt::ArrowType::RightArrow);
+        ui->recordPcapFilterContainer->hide();
+    }
+}
+
+void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)
+{
+    QString newExtension = checked ? "pcap" : "ts";
+
+    if (ui->recordFilename->text().length() > 0) {
+        ui->recordFilename->setText(QString("%1.%2").arg(ui->recordFilename->text().left(ui->recordFilename->text().lastIndexOf("."))).arg(newExtension));
+    }
 }
 
 void RecordWidget::on_recordOpenFileDialog_clicked()
@@ -156,52 +183,46 @@ void RecordWidget::on_recordOpenFileDialog_clicked()
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
+    QString fileFilter = ui->recordFileFormatPCAP->isChecked() ? tr("Capture file (*.pcap)") : tr("MPEG-TS (*.ts)");
+
     QString filename = QFileDialog::getSaveFileName(this,
-        tr("Select save location"), path, tr("Pcap & ts files (*.pcap *.ts)"));
+        tr("Select save location"), path, fileFilter);
     if (filename != "")
         ui->recordFilename->setText(filename);
 }
 
-void RecordWidget::on_startPcapRecordBtn_clicked()
+void RecordWidget::on_recordStartStopBtn_clicked()
 {
-    if (ui->recordInterfaceSelect->currentIndex() == -1) {
-        return;
-    }
-    if (ui->recordFilename->text().length() == 0) {
-        return;
-    }
-    if (!validateRecordInputs()) {
-        return;
-    }
+    if (!started) {
+        if (ui->recordInterfaceSelect->currentIndex() == -1) {
+            return;
+        }
+        if (ui->recordFilename->text().length() == 0) {
+            return;
+        }
+        if (!validateRecordInputs()) {
+            return;
+        }
 
-    startPcapRecord();
-    //startPcapRecord(WorkerConfiguration::ANALYSIS_MODE_LIVE);
-}
-
-void RecordWidget::on_startTsRecordBtn_clicked()
-{
-    if (ui->recordInterfaceSelect->currentIndex() == -1) {
-        return;
+        if (ui->recordFileFormatPCAP->isChecked()) {
+            startPcapRecord();
+            //startPcapRecord(WorkerConfiguration::ANALYSIS_MODE_LIVE);
+        }
+        else {
+            startTsRecord();
+            //startTsRecord(WorkerConfiguration::ANALYSIS_MODE_LIVE);
+        }
     }
-    if (ui->recordFilename->text().length() == 0) {
-        return;
-    }
-    if (!validateRecordInputs()) {
-        return;
-    }
-
-    startTsRecord();
-    //startTsRecord(WorkerConfiguration::ANALYSIS_MODE_LIVE);
-}
-
-void RecordWidget::on_recordCancelBtn_clicked()
-{
-    if (networkPcapFileRecorder != Q_NULLPTR) {
-        qInfo("atempting to stop pcapRecorder");
-        networkPcapFileRecorder->stop();
-    }
-    if (tsNetworkFileRecorder != NULL) {
-        qInfo("atempting to stop tsRecorder");
-        tsNetworkFileRecorder->stop();
+    else {
+        if (networkPcapFileRecorder != Q_NULLPTR) {
+            qInfo("atempting to stop pcapRecorder");
+            ui->recordStartStopBtn->setEnabled(false);
+            networkPcapFileRecorder->stop();
+        }
+        if (tsNetworkFileRecorder != NULL) {
+            qInfo("atempting to stop tsRecorder");
+            ui->recordStartStopBtn->setEnabled(false);
+            tsNetworkFileRecorder->stop();
+        }
     }
 }

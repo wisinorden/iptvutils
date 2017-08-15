@@ -14,76 +14,57 @@
    <string>IPTVUtils</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTabWidget" name="tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>751</width>
-      <height>421</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="recordTab">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <attribute name="title">
-      <string>Record</string>
-     </attribute>
-     <widget class="RecordWidget" name="recordWidget" native="true">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>120</width>
-        <height>80</height>
-       </rect>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="autoFillBackground">
+       <bool>true</bool>
       </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="playbackTab">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <attribute name="title">
-      <string>Playback</string>
-     </attribute>
-     <widget class="PlaybackWidget" name="playbackWidget" native="true">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>120</width>
-        <height>80</height>
-       </rect>
+      <property name="currentIndex">
+       <number>0</number>
       </property>
+      <widget class="QWidget" name="recordTab">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <attribute name="title">
+        <string>Record</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="RecordWidget" name="recordWidget" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="playbackTab">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <attribute name="title">
+        <string>Playback</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="PlaybackWidget" name="playbackWidget" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="convertTab">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <attribute name="title">
+        <string>Convert</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="ConvertWidget" name="convertWidget" native="true"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
-    </widget>
-    <widget class="QWidget" name="convertTab">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <attribute name="title">
-      <string>Convert</string>
-     </attribute>
-     <widget class="ConvertWidget" name="convertWidget" native="true">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>120</width>
-        <height>80</height>
-       </rect>
-      </property>
-     </widget>
-    </widget>
-   </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -91,7 +72,7 @@
      <x>0</x>
      <y>0</y>
      <width>771</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
   </widget>
