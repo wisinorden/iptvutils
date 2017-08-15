@@ -11,6 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = iptvutils
 TEMPLATE = app
 
+win32:VERSION = 0.6.0.1 # major.minor.patch.build
+else:VERSION = 0.6.0    # major.minor.patch
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -126,3 +129,6 @@ win32 {
 
 RESOURCES += \
     img.qrc
+
+# Define the preprocessor macro to get the application version in our application.
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"

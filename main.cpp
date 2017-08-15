@@ -44,9 +44,10 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setOrganizationName("WISI Norden");
+    QCoreApplication::setApplicationVersion(APP_VERSION);
+    QCoreApplication::setOrganizationName("WISI Norden AB");
     QCoreApplication::setOrganizationDomain("wisi.se");
-    QCoreApplication::setApplicationName("IPTVUtils");
+    QCoreApplication::setApplicationName("IPTV Utilities");
 
     qRegisterMetaType<Status>();
     qRegisterMetaType<WorkerStatus>();
