@@ -141,7 +141,7 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
                 ui->recordHost->text(),
                 ui->recordPort->text().toShort(),
                 ui->recordFilter->text());
-    FileOutputConfiguration outputConfig(ui->recordFilename->text()+".ts", FileConfiguration::TS);
+    FileOutputConfiguration outputConfig(ui->recordFilename->text(), FileConfiguration::TS);
     WorkerConfiguration config(inputConfig, outputConfig, mode);
 
     tsNetworkFileRecorder = new TsNetworkFileRecorder(config, this);
