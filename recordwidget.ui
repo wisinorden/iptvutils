@@ -50,7 +50,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="recordFilteringHLayout" stretch="2,1,1">
+       <layout class="QHBoxLayout" name="recordFilteringHLayout" stretch="2,1,0,0">
         <item>
          <layout class="QVBoxLayout" name="AddressVLayout">
           <property name="spacing">
@@ -59,7 +59,7 @@
           <item>
            <widget class="QLabel" name="recordHostLbl">
             <property name="text">
-             <string>Destination IP</string>
+             <string>Multicast address</string>
             </property>
            </widget>
           </item>
@@ -84,6 +84,13 @@
            <widget class="QLineEdit" name="recordPort"/>
           </item>
          </layout>
+        </item>
+        <item alignment="Qt::AlignBottom">
+         <widget class="QCheckBox" name="recordUnicastCheckBox">
+          <property name="text">
+           <string>Unicast</string>
+          </property>
+         </widget>
         </item>
         <item alignment="Qt::AlignBottom">
          <widget class="QCheckBox" name="recordRtpFecCheckBox">

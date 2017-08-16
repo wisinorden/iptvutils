@@ -28,6 +28,7 @@ RecordWidget::RecordWidget(QWidget *parent) :
     connect(ui->recordHost, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordPort, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordRtpFecCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
+    connect(ui->recordUnicastCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
 
     for (int i = 0; i < MainWindow::interfaces.length(); i++) {
         ui->recordInterfaceSelect->addItem(MainWindow::interfaces.at(i).getName());
@@ -52,6 +53,7 @@ void RecordWidget::loadSettings() {
     ui->recordHost->setText(settings.value("host", "").toString());
     ui->recordPort->setText(settings.value("port", "").toString());
     ui->recordRtpFecCheckBox->setChecked(settings.value("rtp-fec", false).toBool());
+    ui->recordUnicastCheckBox->setChecked(settings.value("unicast", false).toBool());
     ui->recordFilename->setText(settings.value("filename", "").toString());
     settings.endGroup();
 }
@@ -64,6 +66,7 @@ void RecordWidget::saveSettings() {
     settings.setValue("host", ui->recordHost->text());
     settings.setValue("port", ui->recordPort->text());
     settings.setValue("rtp-fec", ui->recordRtpFecCheckBox->isChecked());
+    settings.setValue("unicast", ui->recordUnicastCheckBox->isChecked());
     settings.setValue("filename", ui->recordFilename->text());
     settings.endGroup();
 }
@@ -101,8 +104,19 @@ bool RecordWidget::validateRecordInputs() {
 }
 
 void RecordWidget::recordFilterShouldUpdate() {
+    QHostAddress address;
+
     if (validateRecordInputs()) {
-        ui->recordFilter->setText(PcapFilter::generateFilter(ui->recordHost->text(), ui->recordPort->text().toShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
+        if (ui->recordUnicastCheckBox->checkState() == Qt::Checked) {
+            // Use address of selected interface if unicast.
+            address = MainWindow::interfaces.at(ui->recordInterfaceSelect->currentIndex()).getAddress();
+            ui->recordFilter->setText(PcapFilter::generateFilter(address.toString(), ui->recordPort->text().toShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
+            ui->recordHost->setEnabled(false);
+        }
+        else {
+            ui->recordFilter->setText(PcapFilter::generateFilter(ui->recordHost->text(), ui->recordPort->text().toShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
+            ui->recordHost->setEnabled(true);
+        }
         ui->recordFilter->setToolTip(ui->recordFilter->text());
     }
 }
