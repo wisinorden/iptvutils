@@ -24,15 +24,17 @@ public:
 
 private:
     Ui::PlaybackWidget *ui;
+    bool started;
+
     bool validatePlaybackInputs();
     bool startPcapPlayback(WorkerConfiguration::WorkerMode mode = WorkerConfiguration::NORMAL_MODE);
 
 private slots:
     void playbackInputChanged();
+    void on_playbackExpandPCAPFilterButton_toggled(bool);
     void on_playbackOpenFileDialog_clicked();
     void on_playbackLoopCheckbox_clicked();
-    void on_playbackStartBtn_clicked();
-    void on_playbackStopBtn_clicked();
+    void on_playbackStartStopBtn_clicked();
 
     void on_treeWidget_itemSelectionChanged();
 

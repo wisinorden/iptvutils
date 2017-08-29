@@ -18,9 +18,14 @@ StreamId selectedStreamId;
 
 PlaybackWidget::PlaybackWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::PlaybackWidget)
+    ui(new Ui::PlaybackWidget),
+    started(false)
 {
     ui->setupUi(this);
+
+    // Advanced PCAP filter
+    ui->playbackPcapFilterContainer->hide();
+    connect(ui->playbackExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_playbackExpandPCAPFilterButton_toggled(bool)));
 
     connect(ui->playbackHost, &QLineEdit::textChanged, this, &PlaybackWidget::playbackInputChanged);
     connect(ui->playbackPort, &QLineEdit::textChanged, this, &PlaybackWidget::playbackInputChanged);
@@ -53,8 +58,8 @@ void PlaybackWidget::loadSettings() {
 
     settings.beginGroup("playback");
     ui->playbackInterfaceSelect->setCurrentIndex(settings.value("interface", 0).toInt());
-    ui->playbackHost->setText(settings.value("host", "238.123.123.123").toString());
-    ui->playbackPort->setText(settings.value("port", "1234").toString());
+    ui->playbackHost->setText(settings.value("host", "").toString());
+    ui->playbackPort->setText(settings.value("port", "").toString());
     ui->playbackFilename->setText(settings.value("filename", "").toString());
     ui->playbackLoopCheckbox->setChecked(settings.value("loopChecked", false).toBool());
     ui->playbackLoopCombo->setCurrentIndex(settings.value("loopType", 0).toInt());
@@ -78,7 +83,9 @@ void PlaybackWidget::saveSettings() {
 }
 
 void PlaybackWidget::playbackStarted() {
-    ui->playbackStopBtn->setEnabled(true);
+    started = true;
+    ui->playbackStartStopBtn->setText(tr("Stop"));
+    ui->playbackStartStopBtn->setEnabled(true);
 }
 
 void PlaybackWidget::playbackStatusChanged(FinalStatus status) {
@@ -93,9 +100,10 @@ void PlaybackWidget::playbackWorkerStatusChanged(WorkerStatus status) {
 }
 
 void PlaybackWidget::playbackFinished() {
-    ui->playbackStartBtn->setEnabled(true);
-    ui->playbackStopBtn->setEnabled(false);
+    ui->playbackStartStopBtn->setText(tr("Start"));
+    ui->playbackStartStopBtn->setEnabled(true);
     pcapFileNetworkPlayer = NULL;
+    started = false;
 }
 
 bool PlaybackWidget::validatePlaybackInputs() {
@@ -151,11 +159,22 @@ bool PlaybackWidget::startPcapPlayback(WorkerConfiguration::WorkerMode mode) {
     connect(pcapFileNetworkPlayer, &PcapFileNetworkPlayer::status, this, &PlaybackWidget::playbackStatusChanged);
     connect(pcapFileNetworkPlayer, &PcapFileNetworkPlayer::workerStatus, this, &PlaybackWidget::playbackWorkerStatusChanged);
 
-    ui->playbackStartBtn->setEnabled(false);
-    ui->playbackStopBtn->setEnabled(false);
+    ui->playbackStartStopBtn->setEnabled(false);
 
     pcapFileNetworkPlayer->start();
     return true;
+}
+
+void PlaybackWidget::on_playbackExpandPCAPFilterButton_toggled(bool checked)
+{
+    if (checked) {
+        ui->playbackExpandPCAPFilterButton->setArrowType(Qt::ArrowType::DownArrow);
+        ui->playbackPcapFilterContainer->show();
+    }
+    else {
+        ui->playbackExpandPCAPFilterButton->setArrowType(Qt::ArrowType::RightArrow);
+        ui->playbackPcapFilterContainer->hide();
+    }
 }
 
 void PlaybackWidget::on_playbackOpenFileDialog_clicked() {
@@ -164,7 +183,7 @@ void PlaybackWidget::on_playbackOpenFileDialog_clicked() {
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString filename = QFileDialog::getOpenFileName(this,
-        tr("Open recorded trafic"), path, tr("Pcap files (*.pcap *pcapng)"));
+        tr("Open recorded traffic"), path, tr("Pcap files (*.pcap *pcapng)"));
     if (filename != "")
         ui->playbackFilename->setText(filename);
 
@@ -175,22 +194,23 @@ void PlaybackWidget::on_playbackLoopCheckbox_clicked() {
     ui->playbackLoopCombo->setEnabled(ui->playbackLoopCheckbox->isChecked());
 }
 
-void PlaybackWidget::on_playbackStartBtn_clicked() {
-    if (ui->playbackInterfaceSelect->currentIndex() == -1) {
-        return;
+void PlaybackWidget::on_playbackStartStopBtn_clicked() {
+    if (!started) {
+        if (ui->playbackInterfaceSelect->currentIndex() == -1) {
+            return;
+        }
+        if (ui->playbackFilename->text().length() == 0) {
+            return;
+        }
+        if (!validatePlaybackInputs()) {
+            return;
+        }
+        startPcapPlayback();
     }
-    if (ui->playbackFilename->text().length() == 0) {
-        return;
-    }
-    if (!validatePlaybackInputs()) {
-        return;
-    }
-    startPcapPlayback();
-}
-
-void PlaybackWidget::on_playbackStopBtn_clicked() {
-    if (pcapFileNetworkPlayer != NULL) {
-        pcapFileNetworkPlayer->stop();
+    else {
+        if (pcapFileNetworkPlayer != NULL) {
+            pcapFileNetworkPlayer->stop();
+        }
     }
 }
 
