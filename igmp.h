@@ -11,8 +11,8 @@ private:
 public:
     IGMP() = delete;
     static void init();
-    static bool joinMulticastGroup(QString host);
-    static bool leaveMulticastGroup(QString host);
+    static bool joinMulticastGroup(const QString &host, const QNetworkInterface &iface);
+    static bool leaveMulticastGroup(const QString &host, const QNetworkInterface &iface);
 };
 
 #endif // IGMP_H

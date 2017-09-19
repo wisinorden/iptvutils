@@ -11,9 +11,9 @@ void PcapBufferedProducer::run() {
         bufferFromFile();
     }
     else if (config.getInputType() == WorkerConfiguration::NETWORK) {
-        IGMP::joinMulticastGroup(config.getNetworkInput().getHost());
+        IGMP::joinMulticastGroup(config.getNetworkInput().getHost(), config.getNetworkInput().getDevice().getQInterface());
         bufferFromNetwork();
-        IGMP::leaveMulticastGroup(config.getNetworkInput().getHost());
+        IGMP::leaveMulticastGroup(config.getNetworkInput().getHost(), config.getNetworkInput().getDevice().getQInterface());
     }
     else {
         qCritical("PcapBufferedProducer: Unknown input type");
