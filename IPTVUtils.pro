@@ -122,6 +122,25 @@ unix {
     LIBS += -lpcap
 }
 
+unix:!mac {
+    #VARIABLES
+    isEmpty(PREFIX) {
+        PREFIX = /usr
+    }
+    BINDIR = $$PREFIX/bin
+    DATADIR =$$PREFIX/share
+
+    INSTALLS += target desktop icon32
+
+    target.path =$$BINDIR
+
+    desktop.path = $$DATADIR/applications/$${TARGET}
+    desktop.files += $${TARGET}.desktop
+
+    icon32.path = $$DATADIR/icons/hicolor/32x32/apps
+    icon32.files += icons/iptvutils.png
+}
+
 win32 {
     INCLUDEPATH += $$PWD/WpdPack_4_1_2\WpdPack\Include
     LIBS += -L"$$PWD/WpdPack_4_1_2\WpdPack\Lib\x64" -lwpcap -lws2_32

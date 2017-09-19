@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=IPTV Utilities
+Comment=IPTV utilities for recording, playing and converting MPEG TS over IP
+TryExec=iptvutils
+Exec=iptvutils
+Icon=iptvutils
+Categories=Network;Monitor;Qt;
