@@ -118,17 +118,23 @@ FORMS += \
 
 
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+unix {
     LIBS += -lpcap
 }
 
 win32 {
     INCLUDEPATH += $$PWD/WpdPack_4_1_2\WpdPack\Include
     LIBS += -L"$$PWD/WpdPack_4_1_2\WpdPack\Lib\x64" -lwpcap -lws2_32
+    RC_ICONS += icons/iptvutils.ico
+}
+
+mac {
+    ICON = icons/iptvutils.icns
 }
 
 RESOURCES += \
-    img.qrc
+    img.qrc \
+    icons.qrc
 
 # Define the preprocessor macro to get the application version in our application.
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"

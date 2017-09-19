@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="pngicon">icons/iptvutils.png</file>
+        <file alias="svgicon">icons/iptvutils.svg</file>
+    </qresource>
+</RCC>
