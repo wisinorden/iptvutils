@@ -6,213 +6,161 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>730</width>
-    <height>402</height>
+    <width>644</width>
+    <height>435</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>730</width>
-    <height>402</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Convert</string>
   </property>
-  <widget class="QFrame" name="convertGroup">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>461</width>
-     <height>401</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>461</width>
-     <height>401</height>
-    </size>
-   </property>
-   <property name="autoFillBackground">
-    <bool>false</bool>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-   <widget class="QLineEdit" name="convertFromFilename">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>441</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="convertToFilename">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>200</y>
-      <width>441</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_11">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>20</y>
-      <width>231</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Input Pcap path</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_13">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>180</y>
-      <width>231</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Output TS path</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="OpenConvertInputDialog">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>70</y>
-      <width>71</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Open File</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="OpenConvertOutputDialog">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>230</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Select save location</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="convertStartBtn">
-    <property name="geometry">
-     <rect>
-      <x>330</x>
-      <y>270</y>
-      <width>111</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Convert</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_14">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>310</y>
-      <width>271</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Status</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="convertStatus">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>330</y>
-      <width>431</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Idle</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>120</y>
-      <width>61</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="text">
-     <string>Pcap Filter</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="convertFilter">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>140</y>
-      <width>441</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QTreeWidget" name="treeWidget">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>10</y>
-     <width>251</width>
-     <height>371</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QTreeView::branch:has-siblings:!adjoins-item {
+  <layout class="QHBoxLayout" name="convertMainHLayout" stretch="6,4">
+   <item>
+    <widget class="QGroupBox" name="convertSettingsGroup">
+     <property name="title">
+      <string>Settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="convertSettingsVLayout">
+      <item>
+       <layout class="QVBoxLayout" name="convertFromFilenameVLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="convertFromFilenameLbl">
+          <property name="text">
+           <string>Input PCAP file</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="convertFromFilenameHLayout">
+          <item>
+           <widget class="QLineEdit" name="convertFromFilename"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="convertFromFileDialog">
+            <property name="text">
+             <string>Browse...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="convertToFilenameVLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="convertToFilenameLbl">
+          <property name="text">
+           <string>Output TS file</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="convertToFilenameHLayout">
+          <item>
+           <widget class="QLineEdit" name="convertToFilename"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="convertToFileDialog">
+            <property name="text">
+             <string>Browse...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QToolButton" name="convertExpandPCAPFilterButton">
+        <property name="styleSheet">
+         <string notr="true">border: none</string>
+        </property>
+        <property name="text">
+         <string>Advanced</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="arrowType">
+         <enum>Qt::RightArrow</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="convertPcapFilterContainer" native="true">
+        <layout class="QVBoxLayout" name="convertPcapFilterVLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="convertFilterLbl">
+           <property name="text">
+            <string>PCAP filter</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="convertFilter"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="convertStartBtn">
+        <property name="text">
+         <string>Convert</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="convertStatusVLayout">
+     <item>
+      <widget class="QGroupBox" name="convertStreamInfoGroup">
+       <property name="title">
+        <string>Stream info</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QTreeWidget" name="treeWidget">
+          <property name="styleSheet">
+           <string notr="true">QTreeView::branch:has-siblings:!adjoins-item {
     border-image: url(:/img/res/stylesheet-vline.png) 0;
 }
 
@@ -235,14 +183,35 @@ QTreeView::branch:open:has-children:has-siblings  {
         border-image: none;
         image: url(:/img/res/stylesheet-branch-open.png);
 }</string>
-   </property>
-   <column>
-    <property name="text">
-     <string>Streams (Selected is filtered for conversion)</string>
-    </property>
-   </column>
-  </widget>
+          </property>
+          <column>
+           <property name="text">
+            <string>Streams (Selected is filtered for conversion)</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="convertStatusGroup">
+       <property name="title">
+        <string>Status</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="convertStatus">
+          <property name="text">
+           <string>Idle</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
- <resources/>
- <connections/>
 </ui>

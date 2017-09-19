@@ -16,6 +16,10 @@ ConvertWidget::ConvertWidget(QWidget *parent) :
     ui(new Ui::ConvertWidget)
 {
     ui->setupUi(this);
+
+    // Advanced PCAP filter
+    ui->convertPcapFilterContainer->hide();
+    connect(ui->convertExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_convertExpandPCAPFilterButton_toggled(bool)));
 }
 
 ConvertWidget::~ConvertWidget()
@@ -76,26 +80,38 @@ void ConvertWidget::startConvert(WorkerConfiguration::WorkerMode mode) {
     ui->convertStartBtn->setEnabled(false);
 }
 
-void ConvertWidget::on_OpenConvertInputDialog_clicked() {
+void ConvertWidget::on_convertExpandPCAPFilterButton_toggled(bool checked)
+{
+    if (checked) {
+        ui->convertExpandPCAPFilterButton->setArrowType(Qt::ArrowType::DownArrow);
+        ui->convertPcapFilterContainer->show();
+    }
+    else {
+        ui->convertExpandPCAPFilterButton->setArrowType(Qt::ArrowType::RightArrow);
+        ui->convertPcapFilterContainer->hide();
+    }
+}
+
+void ConvertWidget::on_convertFromFileDialog_clicked() {
     QString path = ui->convertFromFilename->text();
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString filename = QFileDialog::getOpenFileName(this,
-        tr("Open recorded trafic"), path, tr("Pcap files (*.pcap *pcapng)"));
+        tr("Open recording"), path, tr("Pcap files (*.pcap *.pcapng)"));
     if (filename != "")
         ui->convertFromFilename->setText(filename);
 
     startConvert(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
 }
 
-void ConvertWidget::on_OpenConvertOutputDialog_clicked() {
+void ConvertWidget::on_convertToFileDialog_clicked() {
     QString path = ui->convertToFilename->text();
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString filename = QFileDialog::getSaveFileName(this,
-        tr("Select save location"), path, tr("ts files (*.ts)"));
+        tr("Select save location"), path, tr("MPEG-TS (*.ts)"));
     if (filename != "")
         ui->convertToFilename->setText(filename);
 }

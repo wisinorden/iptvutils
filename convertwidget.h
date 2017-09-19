@@ -31,9 +31,10 @@ private:
 private slots:
     void convertFinished();
 
+    void on_convertExpandPCAPFilterButton_toggled(bool);
     void on_convertStartBtn_clicked();
-    void on_OpenConvertInputDialog_clicked();
-    void on_OpenConvertOutputDialog_clicked();
+    void on_convertFromFileDialog_clicked();
+    void on_convertToFileDialog_clicked();
     void on_treeWidget_itemSelectionChanged();
 
 public slots:
