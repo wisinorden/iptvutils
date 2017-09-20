@@ -14,7 +14,6 @@ class PacketProducer : public QObject
 protected:
     WorkerConfiguration config;
     bool stopping = false;
-    virtual void run() = 0;
     QHash<quint64, StreamInfo> streams;
 
 public:
