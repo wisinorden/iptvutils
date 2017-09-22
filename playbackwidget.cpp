@@ -57,7 +57,13 @@ void PlaybackWidget::loadSettings() {
     QSettings settings;
 
     settings.beginGroup("playback");
-    ui->playbackInterfaceSelect->setCurrentIndex(settings.value("interface", 0).toInt());
+    QString ifId = settings.value("interface").toString();
+    for (int i = 0; i < MainWindow::interfaces.length(); i++) {
+        if (ifId == MainWindow::interfaces.at(i).getId()) {
+            ui->playbackInterfaceSelect->setCurrentIndex(i);
+            break;
+        }
+    }
     ui->playbackHost->setText(settings.value("host", "").toString());
     ui->playbackPort->setText(settings.value("port", "").toString());
     ui->playbackFilename->setText(settings.value("filename", "").toString());
@@ -73,7 +79,7 @@ void PlaybackWidget::saveSettings() {
     QSettings settings;
 
     settings.beginGroup("playback");
-    settings.setValue("interface", ui->playbackInterfaceSelect->currentIndex());
+    settings.setValue("interface", MainWindow::interfaces.at(ui->playbackInterfaceSelect->currentIndex()).getId());
     settings.setValue("host", ui->playbackHost->text());
     settings.setValue("port", ui->playbackPort->text());
     settings.setValue("filename", ui->playbackFilename->text());

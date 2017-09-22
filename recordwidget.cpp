@@ -49,7 +49,13 @@ void RecordWidget::loadSettings() {
     QSettings settings;
 
     settings.beginGroup("record");
-    ui->recordInterfaceSelect->setCurrentIndex(settings.value("interface", 0).toInt());
+    QString ifId = settings.value("interface").toString();
+    for (int i = 0; i < MainWindow::interfaces.length(); i++) {
+        if (ifId == MainWindow::interfaces.at(i).getId()) {
+            ui->recordInterfaceSelect->setCurrentIndex(i);
+            break;
+        }
+    }
     ui->recordHost->setText(settings.value("host", "").toString());
     ui->recordPort->setText(settings.value("port", "").toString());
     ui->recordRtpFecCheckBox->setChecked(settings.value("rtp-fec", false).toBool());
@@ -62,7 +68,7 @@ void RecordWidget::saveSettings() {
     QSettings settings;
 
     settings.beginGroup("record");
-    settings.setValue("interface", ui->recordInterfaceSelect->currentIndex());
+    settings.setValue("interface", MainWindow::interfaces.at(ui->recordInterfaceSelect->currentIndex()).getId());
     settings.setValue("host", ui->recordHost->text());
     settings.setValue("port", ui->recordPort->text());
     settings.setValue("rtp-fec", ui->recordRtpFecCheckBox->isChecked());
