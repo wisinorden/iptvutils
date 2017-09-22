@@ -67,8 +67,8 @@ bool Interface::getInterfaces(QList<Interface>* interfaces)
 
                         QString macString = qInterfaces.at(i).hardwareAddress();
                         if (macString.length() != 17) {
-                            qFatal("MAC ADDRESS FAILED TO RESOLVE");
-                            return false;
+                            qWarning("MAC ADDRESS FAILED TO RESOLVE");
+                            continue;
                         }
 
                         QStringList splittedMac = macString.split(':');
