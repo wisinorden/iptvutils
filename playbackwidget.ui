@@ -78,7 +78,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="playbackFilteringHLayout" stretch="2,1">
+       <layout class="QHBoxLayout" name="playbackAddressHLayout" stretch="2,1">
         <item>
          <layout class="QVBoxLayout" name="AddressVLayout">
           <property name="spacing">
