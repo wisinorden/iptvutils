@@ -33,9 +33,10 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::loadSettings() {
-    QSettings settings;
+    //QSettings settings;
 
-    ui->tabWidget->setCurrentIndex(settings.value("ui/selectedTab", 0).toInt());
+    //ui->tabWidget->setCurrentIndex(settings.value("ui/selectedTab", 0).toInt());
+    ui->tabWidget->setCurrentIndex(0);
 
     ui->playbackWidget->loadSettings();
     ui->recordWidget->loadSettings();
@@ -44,9 +45,9 @@ void MainWindow::loadSettings() {
 }
 
 void MainWindow::saveSettings() {
-    QSettings settings;
+    //QSettings settings;
 
-    settings.setValue("ui/selectedTab", ui->tabWidget->currentIndex());
+    //settings.setValue("ui/selectedTab", ui->tabWidget->currentIndex());
 
     ui->playbackWidget->saveSettings();
     ui->recordWidget->saveSettings();
