@@ -75,7 +75,7 @@ void RecordWidget::saveSettings() {
     settings.setValue("port", ui->recordPort->text());
     settings.setValue("rtp-fec", ui->recordRtpFecCheckBox->isChecked());
     settings.setValue("unicast", ui->recordUnicastCheckBox->isChecked());
-    settings.setValue("filename", ui->recordFilename->text());
+    settings.setValue("filename", currentFile);
     settings.setValue("directory", currentDirectory);
     settings.endGroup();
 }
@@ -140,7 +140,7 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
                 ui->recordHost->text(),
                 ui->recordPort->text().toShort(),
                 ui->recordFilter->text());
-    FileOutputConfiguration outputConfig(ui->recordFilename->text(), FileConfiguration::PCAP);
+    FileOutputConfiguration outputConfig(currentFile, FileConfiguration::PCAP);
     WorkerConfiguration config(inputConfig, outputConfig, mode);
     networkPcapFileRecorder = new NetworkPcapFileRecorder(config, this);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::started, this, &RecordWidget::recordingStarted);
@@ -164,7 +164,7 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
                 ui->recordHost->text(),
                 ui->recordPort->text().toShort(),
                 ui->recordFilter->text());
-    FileOutputConfiguration outputConfig(ui->recordFilename->text(), FileConfiguration::TS);
+    FileOutputConfiguration outputConfig(currentFile, FileConfiguration::TS);
     WorkerConfiguration config(inputConfig, outputConfig, mode);
 
     tsNetworkFileRecorder = new TsNetworkFileRecorder(config, this);
@@ -195,8 +195,8 @@ void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)
 {
     QString newExtension = checked ? "pcap" : "ts";
 
-    if (ui->recordFilename->text().length() > 0) {
-        ui->recordFilename->setText(QString("%1.%2").arg(ui->recordFilename->text().left(ui->recordFilename->text().lastIndexOf("."))).arg(newExtension));
+    if (currentFile.length() > 0) {
+        ui->recordFilename->setText(QString("%1.%2").arg(currentFile.left(currentFile.lastIndexOf("."))).arg(newExtension));
     }
 }
 
@@ -211,6 +211,7 @@ void RecordWidget::on_recordOpenFileDialog_clicked()
         tr("Select save location"), path, fileFilter);
     if (filename != "") {
         ui->recordFilename->setText(filename);
+        currentFile = filename;
         currentDirectory = QFileInfo(filename).absolutePath();
     }
 }
@@ -221,7 +222,7 @@ void RecordWidget::on_recordStartStopBtn_clicked()
         if (ui->recordInterfaceSelect->currentIndex() == -1) {
             return;
         }
-        if (ui->recordFilename->text().length() == 0) {
+        if (currentFile.length() == 0) {
             return;
         }
         if (!validateRecordInputs()) {
