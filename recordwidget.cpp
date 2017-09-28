@@ -62,7 +62,7 @@ void RecordWidget::loadSettings() {
     ui->recordRtpFecCheckBox->setChecked(settings.value("rtp-fec", false).toBool());
     ui->recordUnicastCheckBox->setChecked(settings.value("unicast", false).toBool());
     //ui->recordFilename->setText(settings.value("filename", "").toString());
-    current_directory = settings.value("directory", "").toString();
+    currentDirectory = settings.value("directory", "").toString();
     settings.endGroup();
 }
 
@@ -76,7 +76,7 @@ void RecordWidget::saveSettings() {
     settings.setValue("rtp-fec", ui->recordRtpFecCheckBox->isChecked());
     settings.setValue("unicast", ui->recordUnicastCheckBox->isChecked());
     settings.setValue("filename", ui->recordFilename->text());
-    settings.setValue("directory", current_directory);
+    settings.setValue("directory", currentDirectory);
     settings.endGroup();
 }
 
@@ -202,23 +202,17 @@ void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)
 
 void RecordWidget::on_recordOpenFileDialog_clicked()
 {
-    QString path = current_directory;
+    QString path = currentDirectory;
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString fileFilter = ui->recordFileFormatPCAP->isChecked() ? tr("Capture file (*.pcap)") : tr("MPEG-TS (*.ts)");
-
-    //QDir::setCurrent("/home/hakan.gudmundsson");
     QString filename = QFileDialog::getSaveFileName(this,
         tr("Select save location"), path, fileFilter);
-    std::cout << "\n" << QFileInfo(filename).absolutePath().toStdString() << "\n";
-    std::cout << "\n" << filename.toStdString() << "\n";
-    //std::cout << "\n" << QDir::currentPath().toStdString() << "\n";
     if (filename != "") {
         ui->recordFilename->setText(filename);
-        current_directory = QFileInfo(filename).absolutePath();
+        currentDirectory = QFileInfo(filename).absolutePath();
     }
-    //std::cout << "\n" << QFileDialog::getExistingDirectory(this).toStdString() << "\n";
 }
 
 void RecordWidget::on_recordStartStopBtn_clicked()
