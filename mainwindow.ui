@@ -22,7 +22,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="recordTab">
        <property name="autoFillBackground">
@@ -42,7 +42,7 @@
         <bool>true</bool>
        </property>
        <attribute name="title">
-        <string>Playback</string>
+        <string>Stream from file</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -73,7 +73,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>30</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
