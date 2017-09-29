@@ -31,8 +31,11 @@ void ConvertWidget::loadSettings() {
     QSettings settings;
 
     settings.beginGroup("convert");
-    //ui->convertFromFilename->setText(settings.value("fromFilename", "").toString());
-    ui->convertToFilename->setText(settings.value("toFilename", "").toString());
+    ui->convertFromFilename->setText(settings.value("fromFilename", "").toString());
+    //ui->convertToFilename->setText(settings.value("toFilename", "").toString());
+    currentFromFilename = settings.value("fromFilename", "").toString();
+    currentToFilename = settings.value("toFilename", "").toString();
+    currentToDirectory = settings.value("toDirectory", "").toString();
     settings.endGroup();
 }
 
@@ -40,8 +43,9 @@ void ConvertWidget::saveSettings() {
     QSettings settings;
 
     settings.beginGroup("convert");
-    //settings.setValue("fromFilename", ui->convertFromFilename->text());
-    settings.setValue("toFilename", ui->convertToFilename->text());
+    settings.setValue("fromFilename", currentFromFilename);
+    settings.setValue("toFilename", currentToFilename);
+    settings.setValue("toDirectory", currentToDirectory);
     settings.endGroup();
 }
 
@@ -61,13 +65,13 @@ void ConvertWidget::convertWorkerStatusChanged(WorkerStatus status) {
 
 void ConvertWidget::startConvert(WorkerConfiguration::WorkerMode mode) {
     FileInputConfiguration inputConfig(
-                ui->convertFromFilename->text(),
+                currentFromFilename,
                 FileConfiguration::PCAP,
                 mode == WorkerConfiguration::WorkerMode::ANALYSIS_MODE_OFFLINE ?
                     "":
                     ui->convertFilter->text());
     FileOutputConfiguration outputConfig(
-                ui->convertToFilename->text(),
+                currentToFilename,
                 FileConfiguration::TS);
     WorkerConfiguration config(inputConfig, outputConfig, mode);
 
@@ -93,34 +97,39 @@ void ConvertWidget::on_convertExpandPCAPFilterButton_toggled(bool checked)
 }
 
 void ConvertWidget::on_convertFromFileDialog_clicked() {
-    QString path = ui->convertFromFilename->text();
+    QString path = currentFromFilename;
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Open recording"), path, tr("Pcap files (*.pcap *.pcapng)"));
-    if (filename != "")
+    if (filename != "") {
         ui->convertFromFilename->setText(filename);
+        currentFromFilename = filename;
+    }
 
     startConvert(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
 }
 
 void ConvertWidget::on_convertToFileDialog_clicked() {
-    QString path = ui->convertToFilename->text();
+    QString path = currentToDirectory;
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString filename = QFileDialog::getSaveFileName(this,
         tr("Select save location"), path, tr("MPEG-TS (*.ts)"));
-    if (filename != "")
+    if (filename != "") {
         ui->convertToFilename->setText(filename);
+        currentToFilename = filename;
+        currentToDirectory = QFileInfo(filename).absolutePath();
+    }
 }
 
 void ConvertWidget::on_convertStartBtn_clicked() {
-    if (ui->convertFromFilename->text().length() == 0) {
+    if (currentFromFilename.length() == 0) {
         return;
     }
-    if (ui->convertToFilename->text().length() == 0) {
+    if (currentToFilename.length() == 0) {
         return;
     }
     startConvert();

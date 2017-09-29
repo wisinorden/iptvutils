@@ -27,6 +27,9 @@ private:
     Ui::ConvertWidget *ui;
     QHash<quint64, StreamInfo> streams;
     StreamId selectedStreamId;
+    QString currentFromFilename;
+    QString currentToFilename;
+    QString currentToDirectory;
 
 private slots:
     void convertFinished();
