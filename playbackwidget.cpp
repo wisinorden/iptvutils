@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QMessageBox>
 
 PcapFileNetworkPlayer* PlaybackWidget::pcapFileNetworkPlayer;
 
@@ -135,6 +136,7 @@ bool PlaybackWidget::startPcapPlayback(WorkerConfiguration::WorkerMode mode) {
         qWarning("Atempt to start PcapPlayback while pointer not released");
         return false;
     }
+
     int rewriteFlags = 0;
     QString host = ui->playbackHost->text();
     if (host.length() > 0)
@@ -206,12 +208,24 @@ void PlaybackWidget::on_playbackLoopCheckbox_clicked() {
 void PlaybackWidget::on_playbackStartStopBtn_clicked() {
     if (!started) {
         if (ui->playbackInterfaceSelect->currentIndex() == -1) {
+            QMessageBox::information(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("No network interface selected!"));
             return;
         }
         if (currentFile.length() == 0) {
+            QMessageBox::information(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("You must choose a file to play!"));
             return;
         }
         if (!validatePlaybackInputs()) {
+            QMessageBox::information(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("The multicast address or port you have entered is invalid!"));
             return;
         }
         startPcapPlayback();
