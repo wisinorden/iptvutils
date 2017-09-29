@@ -70,6 +70,7 @@ void PlaybackWidget::loadSettings() {
     ui->playbackLoopCheckbox->setChecked(settings.value("loopChecked", false).toBool());
     ui->playbackLoopCombo->setCurrentIndex(settings.value("loopType", 0).toInt());
     ui->playbackLoopCombo->setEnabled(ui->playbackLoopCheckbox->isChecked());
+    currentFile = settings.value("filename", "").toString();
     settings.endGroup();
 
     startPcapPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
@@ -82,7 +83,7 @@ void PlaybackWidget::saveSettings() {
     settings.setValue("interface", MainWindow::interfaces.at(ui->playbackInterfaceSelect->currentIndex()).getId());
     settings.setValue("host", ui->playbackHost->text());
     settings.setValue("port", ui->playbackPort->text());
-    settings.setValue("filename", ui->playbackFilename->text());
+    settings.setValue("filename", currentFile);
     settings.setValue("loopChecked", ui->playbackLoopCheckbox->isChecked());
     settings.setValue("loopType", ui->playbackLoopCombo->currentIndex());
     settings.endGroup();
@@ -184,14 +185,16 @@ void PlaybackWidget::on_playbackExpandPCAPFilterButton_toggled(bool checked)
 }
 
 void PlaybackWidget::on_playbackOpenFileDialog_clicked() {
-    QString path = ui->playbackFilename->text();
+    QString path = currentFile;
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Open recorded traffic"), path, tr("Pcap files (*.pcap *.pcapng)"));
-    if (filename != "")
+    if (filename != "") {
         ui->playbackFilename->setText(filename);
+        currentFile = filename;
+    }
 
     startPcapPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
 }
@@ -205,7 +208,7 @@ void PlaybackWidget::on_playbackStartStopBtn_clicked() {
         if (ui->playbackInterfaceSelect->currentIndex() == -1) {
             return;
         }
-        if (ui->playbackFilename->text().length() == 0) {
+        if (currentFile.length() == 0) {
             return;
         }
         if (!validatePlaybackInputs()) {
