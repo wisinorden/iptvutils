@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QMessageBox>
 
 PcapTsConverter* ConvertWidget::pcapTsConverter;
 
@@ -34,7 +35,7 @@ void ConvertWidget::loadSettings() {
     ui->convertFromFilename->setText(settings.value("fromFilename", "").toString());
     //ui->convertToFilename->setText(settings.value("toFilename", "").toString());
     currentFromFilename = settings.value("fromFilename", "").toString();
-    currentToFilename = settings.value("toFilename", "").toString();
+    //currentToFilename = settings.value("toFilename", "").toString();
     currentToDirectory = settings.value("toDirectory", "").toString();
     settings.endGroup();
 }
@@ -125,11 +126,20 @@ void ConvertWidget::on_convertToFileDialog_clicked() {
     }
 }
 
+// TODO: add error handling (pop up)
 void ConvertWidget::on_convertStartBtn_clicked() {
     if (currentFromFilename.length() == 0) {
+        QMessageBox::information(
+                    this,
+                    tr("IPTV Utilities"),
+                    tr("You must choose an input PCAP file!"));
         return;
     }
     if (currentToFilename.length() == 0) {
+        QMessageBox::information(
+                    this,
+                    tr("IPTV Utilities"),
+                    tr("You must choose an output TS file!"));
         return;
     }
     startConvert();
