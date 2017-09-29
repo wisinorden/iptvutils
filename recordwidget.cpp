@@ -7,7 +7,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QStandardPaths>
-#include <iostream> // for debugging
+#include <QMessageBox>
 
 NetworkPcapFileRecorder* RecordWidget::networkPcapFileRecorder;
 TsNetworkFileRecorder* RecordWidget::tsNetworkFileRecorder;
@@ -220,12 +220,24 @@ void RecordWidget::on_recordStartStopBtn_clicked()
 {
     if (!started) {
         if (ui->recordInterfaceSelect->currentIndex() == -1) {
+            QMessageBox::information(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("No network interface selected!"));
             return;
         }
         if (currentFilename.length() == 0) {
+            QMessageBox::information(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("You must choose an output file!"));
             return;
         }
         if (!validateRecordInputs()) {
+            QMessageBox::information(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("The multicast address or port you have entered is invalid!"));
             return;
         }
 
