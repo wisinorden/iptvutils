@@ -255,7 +255,8 @@ void RecordWidget::on_recordStartStopBtn_clicked()
             return;
         }
 
-        if (fileExists(ui->recordFilename->text())) {
+        if (QFileInfo(ui->recordFilename->text()).exists() &&
+                QFileInfo(ui->recordFilename->text()).isFile()) {
             QMessageBox::StandardButton reply;
             reply = QMessageBox::question(this, tr("Overwrite file?"), tr("The file ") + currentFilename +
                                           tr(" already exists. Do you want to overwrite it?"),
@@ -285,10 +286,4 @@ void RecordWidget::on_recordStartStopBtn_clicked()
             tsNetworkFileRecorder->stop();
         }
     }
-}
-
-bool RecordWidget::fileExists(QString path)
-{
-    QFileInfo check_file(path);
-    return check_file.exists() && check_file.isFile();
 }
