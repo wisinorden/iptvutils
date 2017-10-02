@@ -42,6 +42,7 @@ private slots:
     void on_recordFileFormatPCAP_toggled(bool);
     void on_recordOpenFileDialog_clicked();
     void on_recordStartStopBtn_clicked();
+    bool fileExists(QString);
 
 public slots:
     void recordStatusChanged(FinalStatus status);

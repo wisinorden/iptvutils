@@ -203,13 +203,25 @@ void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)
 void RecordWidget::on_recordOpenFileDialog_clicked()
 {
     QString path = currentDirectory;
+    QFileDialog fileDialog;
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog.setOption(QFileDialog::DontConfirmOverwrite);
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
-    QString fileFilter = ui->recordFileFormatPCAP->isChecked() ? tr("Capture file (*.pcap)") : tr("MPEG-TS (*.ts)");
-    QString filename = QFileDialog::getSaveFileName(this,
-        tr("Select save location"), path, fileFilter);
-    if (filename != "") {
+    if (ui->recordFileFormatPCAP->isChecked()) {
+        fileDialog.setNameFilter(tr("Capture file (*.pcap)"));
+        fileDialog.setDefaultSuffix("pcap");
+        fileDialog.exec();
+    }
+    else {
+        fileDialog.setNameFilter(tr("MPEG-TS (*.ts)"));
+        fileDialog.setDefaultSuffix("ts");
+        fileDialog.exec();
+    }
+
+    QString filename = fileDialog.selectedFiles().first();
+    if (filename != "" && !QFileInfo(filename).isDir()) {
         ui->recordFilename->setText(filename);
         currentFilename = filename;
         currentDirectory = QFileInfo(filename).absolutePath();
@@ -226,6 +238,7 @@ void RecordWidget::on_recordStartStopBtn_clicked()
                         tr("No network interface selected!"));
             return;
         }
+
         if (currentFilename.length() == 0) {
             QMessageBox::information(
                         this,
@@ -233,12 +246,22 @@ void RecordWidget::on_recordStartStopBtn_clicked()
                         tr("You must choose an output file!"));
             return;
         }
+
         if (!validateRecordInputs()) {
             QMessageBox::information(
                         this,
                         tr("IPTV Utilities"),
                         tr("The multicast address or port you have entered is invalid!"));
             return;
+        }
+
+        if (fileExists(ui->recordFilename->text())) {
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, tr("Overwrite file?"), tr("The file ") + currentFilename +
+                                          tr(" already exists. Do you want to overwrite it?"),
+                                          QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::No)
+                return;
         }
 
         if (ui->recordFileFormatPCAP->isChecked()) {
@@ -262,4 +285,10 @@ void RecordWidget::on_recordStartStopBtn_clicked()
             tsNetworkFileRecorder->stop();
         }
     }
+}
+
+bool RecordWidget::fileExists(QString path)
+{
+    QFileInfo check_file(path);
+    return check_file.exists() && check_file.isFile();
 }
