@@ -114,12 +114,17 @@ void ConvertWidget::on_convertFromFileDialog_clicked() {
 
 void ConvertWidget::on_convertToFileDialog_clicked() {
     QString path = currentToDirectory;
+    QFileDialog fileDialog;
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog.setOption(QFileDialog::DontConfirmOverwrite);
+    fileDialog.setNameFilter(tr("MPEG-TS (*.ts)"));
+    fileDialog.setDefaultSuffix("ts");
+    fileDialog.exec();
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
-    QString filename = QFileDialog::getSaveFileName(this,
-        tr("Select save location"), path, tr("MPEG-TS (*.ts)"));
-    if (filename != "") {
+    QString filename = fileDialog.selectedFiles().first();
+    if (filename != "" && !QFileInfo(filename).isDir()) {
         ui->convertToFilename->setText(filename);
         currentToFilename = filename;
         currentToDirectory = QFileInfo(filename).absolutePath();
@@ -135,12 +140,23 @@ void ConvertWidget::on_convertStartBtn_clicked() {
                     tr("You must choose an input PCAP file!"));
         return;
     }
+
     if (currentToFilename.length() == 0) {
         QMessageBox::information(
                     this,
                     tr("IPTV Utilities"),
                     tr("You must choose an output TS file!"));
         return;
+    }
+
+    if (QFileInfo(ui->convertToFilename->text()).exists() &&
+            QFileInfo(ui->convertToFilename->text()).isFile()) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, tr("Overwrite file?"), tr("The file ") + currentToFilename +
+                                      tr(" already exists. Do you want to overwrite it?"),
+                                      QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::No)
+            return;
     }
     startConvert();
 }
