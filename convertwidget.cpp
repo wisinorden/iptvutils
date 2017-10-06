@@ -129,10 +129,9 @@ void ConvertWidget::on_convertToFileDialog_clicked() {
     }
 }
 
-// TODO: add error handling (pop up)
 void ConvertWidget::on_convertStartBtn_clicked() {
     if (currentFromFilename.length() == 0) {
-        QMessageBox::information(
+        QMessageBox::warning(
                     this,
                     tr("IPTV Utilities"),
                     tr("You must choose an input PCAP file!"));
@@ -140,7 +139,7 @@ void ConvertWidget::on_convertStartBtn_clicked() {
     }
 
     if (currentToFilename.length() == 0) {
-        QMessageBox::information(
+        QMessageBox::warning(
                     this,
                     tr("IPTV Utilities"),
                     tr("You must choose an output TS file!"));
