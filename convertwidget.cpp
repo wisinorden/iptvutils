@@ -33,9 +33,7 @@ void ConvertWidget::loadSettings() {
 
     settings.beginGroup("convert");
     ui->convertFromFilename->setText(settings.value("fromFilename", "").toString());
-    //ui->convertToFilename->setText(settings.value("toFilename", "").toString());
     currentFromFilename = settings.value("fromFilename", "").toString();
-    //currentToFilename = settings.value("toFilename", "").toString();
     currentToDirectory = settings.value("toDirectory", "").toString();
     settings.endGroup();
 }
@@ -149,6 +147,22 @@ void ConvertWidget::on_convertStartBtn_clicked() {
         return;
     }
 
+    if (QFileInfo(ui->convertFromFilename->text()).suffix() != "pcap") {
+        QMessageBox::warning(
+                    this,
+                    tr("IPTV Utilities"),
+                    tr("The input file does not have the correct suffix!"));
+        return;
+    }
+
+    if (QFileInfo(ui->convertToFilename->text()).suffix() != "ts") {
+        QMessageBox::warning(
+                    this,
+                    tr("IPTV Utilities"),
+                    tr("The output file does not have the correct suffix!"));
+        return;
+    }
+
     if (QFileInfo(ui->convertToFilename->text()).exists() &&
             QFileInfo(ui->convertToFilename->text()).isFile()) {
         QMessageBox::StandardButton reply;
@@ -158,6 +172,7 @@ void ConvertWidget::on_convertStartBtn_clicked() {
         if (reply == QMessageBox::No)
             return;
     }
+
     startConvert();
 }
 
