@@ -61,7 +61,6 @@ void RecordWidget::loadSettings() {
     ui->recordPort->setText(settings.value("port", "").toString());
     ui->recordRtpFecCheckBox->setChecked(settings.value("rtp-fec", false).toBool());
     ui->recordUnicastCheckBox->setChecked(settings.value("unicast", false).toBool());
-    //ui->recordFilename->setText(settings.value("filename", "").toString());
     currentDirectory = settings.value("directory", "").toString();
     settings.endGroup();
 }
@@ -195,8 +194,8 @@ void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)
 {
     QString newExtension = checked ? "pcap" : "ts";
 
-    if (currentFilename.length() > 0) {
-        ui->recordFilename->setText(QString("%1.%2").arg(currentFilename.left(currentFilename.lastIndexOf("."))).arg(newExtension));
+    if (ui->recordFilename->text().length() > 0) {
+        ui->recordFilename->setText(QString("%1.%2").arg(ui->recordFilename->text().left(ui->recordFilename->text().lastIndexOf("."))).arg(newExtension));
     }
 }
 
@@ -232,23 +231,34 @@ void RecordWidget::on_recordStartStopBtn_clicked()
 {
     if (!started) {
         if (ui->recordInterfaceSelect->currentIndex() == -1) {
-            QMessageBox::information(
+            QMessageBox::warning(
                         this,
                         tr("IPTV Utilities"),
                         tr("No network interface selected!"));
             return;
         }
 
-        if (currentFilename.length() == 0) {
-            QMessageBox::information(
+        if (ui->recordFilename->text().length() == 0) {
+            QMessageBox::warning(
                         this,
                         tr("IPTV Utilities"),
                         tr("You must choose an output file!"));
             return;
         }
 
+        if (ui->recordFilename->text() > 0) {
+            QString suffix = ui->recordFileFormatPCAP->isChecked() ? "pcap" : "ts";
+            if (QFileInfo(ui->recordFilename->text()).suffix() != suffix) {
+                QMessageBox::warning(
+                            this,
+                            tr("IPTV Utilities"),
+                            tr("The output file does not have the correct suffix!"));
+                return;
+            }
+        }
+
         if (!validateRecordInputs()) {
-            QMessageBox::information(
+            QMessageBox::warning(
                         this,
                         tr("IPTV Utilities"),
                         tr("The multicast address or port you have entered is invalid!"));
@@ -267,11 +277,9 @@ void RecordWidget::on_recordStartStopBtn_clicked()
 
         if (ui->recordFileFormatPCAP->isChecked()) {
             startPcapRecord();
-            //startPcapRecord(WorkerConfiguration::ANALYSIS_MODE_LIVE);
         }
         else {
             startTsRecord();
-            //startTsRecord(WorkerConfiguration::ANALYSIS_MODE_LIVE);
         }
     }
     else {
