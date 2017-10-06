@@ -47,7 +47,6 @@ PlaybackWidget::PlaybackWidget(QWidget *parent) :
     ui->playbackLoopCombo->addItem(loopOptions.key(FileInputConfiguration::LOOP_DISCONTINUITY_FLAG));
     ui->playbackLoopCombo->setItemData(1,
             "Offsets CC at loop and sets discontinuity flag on first PCR after loop.", Qt::ToolTipRole);
-    //ui->playbackLoopCombo->addItem(loopOptions.key(FileInputConfiguration::LOOP_PCR_REWRITE));
 }
 
 PlaybackWidget::~PlaybackWidget() {
