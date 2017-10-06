@@ -214,6 +214,7 @@ void PlaybackWidget::on_playbackStartStopBtn_clicked() {
                         tr("No network interface selected!"));
             return;
         }
+
         if (currentFile.length() == 0) {
             QMessageBox::warning(
                         this,
@@ -221,6 +222,7 @@ void PlaybackWidget::on_playbackStartStopBtn_clicked() {
                         tr("You must choose a file to play!"));
             return;
         }
+
         if (!validatePlaybackInputs()) {
             QMessageBox::warning(
                         this,
@@ -228,6 +230,15 @@ void PlaybackWidget::on_playbackStartStopBtn_clicked() {
                         tr("The multicast address or port you have entered is invalid!"));
             return;
         }
+
+        if (QFileInfo(ui->playbackFilename->text()).suffix() != "pcap") {
+            QMessageBox::warning(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("The input file does not have the correct suffix!"));
+            return;
+        }
+
         startPcapPlayback();
     }
     else {
