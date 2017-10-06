@@ -208,21 +208,21 @@ void PlaybackWidget::on_playbackLoopCheckbox_clicked() {
 void PlaybackWidget::on_playbackStartStopBtn_clicked() {
     if (!started) {
         if (ui->playbackInterfaceSelect->currentIndex() == -1) {
-            QMessageBox::information(
+            QMessageBox::warning(
                         this,
                         tr("IPTV Utilities"),
                         tr("No network interface selected!"));
             return;
         }
         if (currentFile.length() == 0) {
-            QMessageBox::information(
+            QMessageBox::warning(
                         this,
                         tr("IPTV Utilities"),
                         tr("You must choose a file to play!"));
             return;
         }
         if (!validatePlaybackInputs()) {
-            QMessageBox::information(
+            QMessageBox::warning(
                         this,
                         tr("IPTV Utilities"),
                         tr("The multicast address or port you have entered is invalid!"));
