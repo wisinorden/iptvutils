@@ -27,6 +27,8 @@ public:
 private:
     Ui::RecordWidget *ui;
     bool started;
+    QString currentDirectory;
+    QString currentFilename;
 
 private slots:
     void recordingStarted();

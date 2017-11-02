@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QMessageBox>
 
 NetworkPcapFileRecorder* RecordWidget::networkPcapFileRecorder;
 TsNetworkFileRecorder* RecordWidget::tsNetworkFileRecorder;
@@ -60,7 +61,7 @@ void RecordWidget::loadSettings() {
     ui->recordPort->setText(settings.value("port", "").toString());
     ui->recordRtpFecCheckBox->setChecked(settings.value("rtp-fec", false).toBool());
     ui->recordUnicastCheckBox->setChecked(settings.value("unicast", false).toBool());
-    ui->recordFilename->setText(settings.value("filename", "").toString());
+    currentDirectory = settings.value("directory", "").toString();
     settings.endGroup();
 }
 
@@ -73,7 +74,8 @@ void RecordWidget::saveSettings() {
     settings.setValue("port", ui->recordPort->text());
     settings.setValue("rtp-fec", ui->recordRtpFecCheckBox->isChecked());
     settings.setValue("unicast", ui->recordUnicastCheckBox->isChecked());
-    settings.setValue("filename", ui->recordFilename->text());
+    settings.setValue("filename", currentFilename);
+    settings.setValue("directory", currentDirectory);
     settings.endGroup();
 }
 
@@ -137,7 +139,7 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
                 ui->recordHost->text(),
                 ui->recordPort->text().toShort(),
                 ui->recordFilter->text());
-    FileOutputConfiguration outputConfig(ui->recordFilename->text(), FileConfiguration::PCAP);
+    FileOutputConfiguration outputConfig(currentFilename, FileConfiguration::PCAP);
     WorkerConfiguration config(inputConfig, outputConfig, mode);
     networkPcapFileRecorder = new NetworkPcapFileRecorder(config, this);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::started, this, &RecordWidget::recordingStarted);
@@ -161,7 +163,7 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
                 ui->recordHost->text(),
                 ui->recordPort->text().toShort(),
                 ui->recordFilter->text());
-    FileOutputConfiguration outputConfig(ui->recordFilename->text(), FileConfiguration::TS);
+    FileOutputConfiguration outputConfig(currentFilename, FileConfiguration::TS);
     WorkerConfiguration config(inputConfig, outputConfig, mode);
 
     tsNetworkFileRecorder = new TsNetworkFileRecorder(config, this);
@@ -199,38 +201,85 @@ void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)
 
 void RecordWidget::on_recordOpenFileDialog_clicked()
 {
-    QString path = ui->recordFilename->text();
+    QString path = currentDirectory;
+    QFileDialog fileDialog;
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog.setOption(QFileDialog::DontConfirmOverwrite);
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
-    QString fileFilter = ui->recordFileFormatPCAP->isChecked() ? tr("Capture file (*.pcap)") : tr("MPEG-TS (*.ts)");
+    if (ui->recordFileFormatPCAP->isChecked()) {
+        fileDialog.setNameFilter(tr("Capture file (*.pcap)"));
+        fileDialog.setDefaultSuffix("pcap");
+        fileDialog.exec();
+    }
+    else {
+        fileDialog.setNameFilter(tr("MPEG-TS (*.ts)"));
+        fileDialog.setDefaultSuffix("ts");
+        fileDialog.exec();
+    }
 
-    QString filename = QFileDialog::getSaveFileName(this,
-        tr("Select save location"), path, fileFilter);
-    if (filename != "")
+    QString filename = fileDialog.selectedFiles().first();
+    if (filename != "" && !QFileInfo(filename).isDir()) {
         ui->recordFilename->setText(filename);
+        currentFilename = filename;
+        currentDirectory = QFileInfo(filename).absolutePath();
+    }
 }
 
 void RecordWidget::on_recordStartStopBtn_clicked()
 {
     if (!started) {
         if (ui->recordInterfaceSelect->currentIndex() == -1) {
+            QMessageBox::warning(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("No network interface selected!"));
             return;
         }
+
         if (ui->recordFilename->text().length() == 0) {
+            QMessageBox::warning(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("You must choose an output file!"));
             return;
         }
+
+        if (ui->recordFilename->text() > 0) {
+            QString suffix = ui->recordFileFormatPCAP->isChecked() ? "pcap" : "ts";
+            if (QFileInfo(ui->recordFilename->text()).suffix() != suffix) {
+                QMessageBox::warning(
+                            this,
+                            tr("IPTV Utilities"),
+                            tr("The output file does not have the correct suffix!"));
+                return;
+            }
+        }
+
         if (!validateRecordInputs()) {
+            QMessageBox::warning(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("The multicast address or port you have entered is invalid!"));
             return;
+        }
+
+        if (QFileInfo(ui->recordFilename->text()).exists() &&
+                QFileInfo(ui->recordFilename->text()).isFile()) {
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, tr("Overwrite file?"), tr("The file ") + currentFilename +
+                                          tr(" already exists. Do you want to overwrite it?"),
+                                          QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::No)
+                return;
         }
 
         if (ui->recordFileFormatPCAP->isChecked()) {
             startPcapRecord();
-            //startPcapRecord(WorkerConfiguration::ANALYSIS_MODE_LIVE);
         }
         else {
             startTsRecord();
-            //startTsRecord(WorkerConfiguration::ANALYSIS_MODE_LIVE);
         }
     }
     else {

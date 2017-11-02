@@ -52,3 +52,6 @@ info.md
 #installer builds and artefacts
 installer/build-win64
 installer/artefacts-win64
+
+installer-framework
+beta-installer

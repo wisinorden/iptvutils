@@ -25,9 +25,9 @@ public:
 private:
     Ui::PlaybackWidget *ui;
     bool started;
-
     bool validatePlaybackInputs();
     bool startPcapPlayback(WorkerConfiguration::WorkerMode mode = WorkerConfiguration::NORMAL_MODE);
+    QString currentFile;
 
 private slots:
     void playbackInputChanged();

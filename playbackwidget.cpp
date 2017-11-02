@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QMessageBox>
 
 PcapFileNetworkPlayer* PlaybackWidget::pcapFileNetworkPlayer;
 
@@ -46,7 +47,6 @@ PlaybackWidget::PlaybackWidget(QWidget *parent) :
     ui->playbackLoopCombo->addItem(loopOptions.key(FileInputConfiguration::LOOP_DISCONTINUITY_FLAG));
     ui->playbackLoopCombo->setItemData(1,
             "Offsets CC at loop and sets discontinuity flag on first PCR after loop.", Qt::ToolTipRole);
-    //ui->playbackLoopCombo->addItem(loopOptions.key(FileInputConfiguration::LOOP_PCR_REWRITE));
 }
 
 PlaybackWidget::~PlaybackWidget() {
@@ -70,6 +70,7 @@ void PlaybackWidget::loadSettings() {
     ui->playbackLoopCheckbox->setChecked(settings.value("loopChecked", false).toBool());
     ui->playbackLoopCombo->setCurrentIndex(settings.value("loopType", 0).toInt());
     ui->playbackLoopCombo->setEnabled(ui->playbackLoopCheckbox->isChecked());
+    currentFile = settings.value("filename", "").toString();
     settings.endGroup();
 
     startPcapPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
@@ -82,7 +83,7 @@ void PlaybackWidget::saveSettings() {
     settings.setValue("interface", MainWindow::interfaces.at(ui->playbackInterfaceSelect->currentIndex()).getId());
     settings.setValue("host", ui->playbackHost->text());
     settings.setValue("port", ui->playbackPort->text());
-    settings.setValue("filename", ui->playbackFilename->text());
+    settings.setValue("filename", currentFile);
     settings.setValue("loopChecked", ui->playbackLoopCheckbox->isChecked());
     settings.setValue("loopType", ui->playbackLoopCombo->currentIndex());
     settings.endGroup();
@@ -134,6 +135,7 @@ bool PlaybackWidget::startPcapPlayback(WorkerConfiguration::WorkerMode mode) {
         qWarning("Atempt to start PcapPlayback while pointer not released");
         return false;
     }
+
     int rewriteFlags = 0;
     QString host = ui->playbackHost->text();
     if (host.length() > 0)
@@ -184,14 +186,16 @@ void PlaybackWidget::on_playbackExpandPCAPFilterButton_toggled(bool checked)
 }
 
 void PlaybackWidget::on_playbackOpenFileDialog_clicked() {
-    QString path = ui->playbackFilename->text();
+    QString path = currentFile;
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Open recorded traffic"), path, tr("Pcap files (*.pcap *.pcapng)"));
-    if (filename != "")
+    if (filename != "") {
         ui->playbackFilename->setText(filename);
+        currentFile = filename;
+    }
 
     startPcapPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
 }
@@ -203,14 +207,37 @@ void PlaybackWidget::on_playbackLoopCheckbox_clicked() {
 void PlaybackWidget::on_playbackStartStopBtn_clicked() {
     if (!started) {
         if (ui->playbackInterfaceSelect->currentIndex() == -1) {
+            QMessageBox::warning(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("No network interface selected!"));
             return;
         }
-        if (ui->playbackFilename->text().length() == 0) {
+
+        if (currentFile.length() == 0) {
+            QMessageBox::warning(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("You must choose a file to play!"));
             return;
         }
+
         if (!validatePlaybackInputs()) {
+            QMessageBox::warning(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("The multicast address or port you have entered is invalid!"));
             return;
         }
+
+        if (QFileInfo(ui->playbackFilename->text()).suffix() != "pcap") {
+            QMessageBox::warning(
+                        this,
+                        tr("IPTV Utilities"),
+                        tr("The input file does not have the correct suffix!"));
+            return;
+        }
+
         startPcapPlayback();
     }
     else {
