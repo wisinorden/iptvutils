@@ -8,7 +8,7 @@
 ; The name of the installer
 Name "IPTVUtils"
 Caption "IPTVUtils"
-Icon "icons\logo.ico"
+Icon "icons\iptvutils.ico"
 
 ; The file to write
 OutFile "IPTVUtilsInstaller.x64.exe"
@@ -50,8 +50,11 @@ Section "IPTVUtils (required)"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   
-  File "Prerequisites\WinPcap.exe"
-  File "Prerequisites\vc_redist-2017.x64.exe"  
+  ; Get these files
+  ; https://www.winpcap.org/
+  ; https://www.microsoft.com/en-us/download/details.aspx?id=48145
+  File "prerequisites\WinPcap_4_1_3.exe"
+  File "prerequisites\VC_redist.x64.exe"  
   
   ; Check if MSVC Redist is installed and version is not super old, request to install
   ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{E512788E-C50B-3858-A4B9-73AD5F3F9E93}" "VersionMajor"
@@ -60,7 +63,7 @@ Section "IPTVUtils (required)"
     ${IF} $1 != "10"
       MessageBox MB_OKCANCEL "Microsoft Visual C++ Runtime 2017 is required to use IPTVUtils. Press Ok to install Microsoft Visual C++ Runtime 2017 or Cancel to exit installation." IDYES install_msvcr IDCANCEL quit_msvcr
       install_msvcr:
-        ExecWait "$INSTDIR\vc_redist-2017.x64.exe /install /norestart"
+        ExecWait "$INSTDIR\VC_redist.x64.exe /install /norestart"
         Goto msvcr_installed
       quit_msvcr:
         Quit
@@ -74,19 +77,19 @@ Section "IPTVUtils (required)"
   ${IF} $0 != "4"
     MessageBox MB_OKCANCEL "WinPcap is required to use IPTVUtils. Press Ok to install WinPcap or Cancel to exit installation." IDYES install IDCANCEL quit
     install:
-      ExecWait "$INSTDIR\WinPcap.exe"
+      ExecWait "$INSTDIR\WinPcap_4_1_3.exe"
       Goto pcap_installed
     quit:
       Quit
   ${ENDIF}
   pcap_installed:
   
-  Delete "$INSTDIR\WinPcap.exe"
-  Delete "$INSTDIR\vc_redist-2017.x64.exe"
+  Delete "$INSTDIR\WinPcap_4_1_3.exe"
+  Delete "$INSTDIR\VC_redist.x64.exe"
   
   ; Put file there
   File /r "artefacts-win64\*"
-  File "icons\logo.ico"
+  File "icons\iptvutils.ico"
   
   ; Write the installation path into the registry
   WriteRegStr HKLM "Software\IPTVUtils" "Install_Dir" "$INSTDIR"
