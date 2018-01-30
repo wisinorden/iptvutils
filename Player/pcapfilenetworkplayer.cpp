@@ -100,6 +100,7 @@ void PcapFileNetworkPlayer::stop() {
     analyzerMiddleware.stop();
     loopMiddleware.stop();
     producer.stop();
+    emit finished();
 }
 
 void PcapFileNetworkPlayer::stopAndWait() {
@@ -109,4 +110,5 @@ void PcapFileNetworkPlayer::stopAndWait() {
     analyzerMiddleware.thread()->wait();
     loopMiddleware.thread()->wait();
     consumerThread.wait();
+    // TODO: Set status and emit?
 }
