@@ -222,6 +222,7 @@ int PcapBufferedProducer::bufferFromNetworkSetup() {
         qInfo("networkHandle not opened");
         QString error = QString(tr("Failed to open network adapter."));
         emit status(Status(error));
+        emit status(Status(pcap_errbuf));
         emit finished();
         return -1;
     }

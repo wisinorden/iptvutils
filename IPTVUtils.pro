@@ -14,6 +14,8 @@ TEMPLATE = app
 win32:VERSION = 0.6.0.1 # major.minor.patch.build
 else:VERSION = 0.6.0    # major.minor.patch
 
+CONFIG += c++14
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -145,6 +147,7 @@ win32 {
     INCLUDEPATH += $$PWD/WpdPack_4_1_2\WpdPack\Include
     LIBS += -L"$$PWD/WpdPack_4_1_2\WpdPack\Lib\x64" -lwpcap -lws2_32
     RC_ICONS += icons/iptvutils.ico
+    DEFINES += NOMINMAX
 }
 
 mac {

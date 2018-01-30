@@ -14,7 +14,6 @@ class PcapNetworkConsumer : public PacketConsumer, public PcapProductProvider
 {
 private:
     void analysisMode();
-    void playFromQNetwork();
     void playFromPcapNetwork();
 
 public:
