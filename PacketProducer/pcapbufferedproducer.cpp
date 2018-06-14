@@ -4,6 +4,9 @@
 #include <QElapsedTimer>
 #include <QSocketNotifier>
 
+#include <fstream>
+#include <iostream>
+
 void PcapBufferedProducer::init(QThread *thread) {
     this->moveToThread(thread);
     connect(thread, SIGNAL(started()),  this, SLOT(setup()));
@@ -114,6 +117,36 @@ void PcapBufferedProducer::bufferFromFileRun()
     int ret;
 
     while (!stopping ) {
+        FILE *f;
+        f = fopen(config.getFileInput().getFilename().toLocal8Bit().constData(), "rb");
+        int i = 0;
+        quint32 file_buffer;
+        quint8 *q = new quint8[4];
+        int read;
+        do {
+            file_buffer = 0;
+
+            /* Builds a 32 bits int from 8 bits at a time
+             *
+             * for (int i = 0; i < 4; ++i) {
+                o = fread(&buffer2, 1, 1, f);
+                if (o != 1)
+                    break;
+                res = res | buffer2 << (24 - (8 * i));
+            }*/
+
+            for (int i = 0; i < 4; ++i) {
+                read = fread(&file_buffer, 1, 1, f);
+                if (read != 1)
+                    break;
+
+                q[i] = file_buffer;
+                printf("q[]: %x\n", q[i]);
+            }
+
+            i++;
+        } while (i < 100);
+
         pcapHandle = pcap_open_offline(
                     config.getFileInput().getFilename().toLocal8Bit().constData(),
                     pcap_errbuf);
