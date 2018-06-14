@@ -191,7 +191,7 @@ void PlaybackWidget::on_playbackOpenFileDialog_clicked() {
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString filename = QFileDialog::getOpenFileName(this,
-        tr("Open recorded traffic"), path, tr("Pcap files (*.pcap *.pcapng)"));
+        tr("Open recorded traffic"), path, tr("Pcap files (*.pcap *.pcapng *.ts)"));
     if (filename != "") {
         ui->playbackFilename->setText(filename);
         currentFile = filename;
