@@ -230,14 +230,6 @@ void PlaybackWidget::on_playbackStartStopBtn_clicked() {
             return;
         }
 
-        if (QFileInfo(ui->playbackFilename->text()).suffix() != "pcap") {
-            QMessageBox::warning(
-                        this,
-                        tr("IPTV Utilities"),
-                        tr("The input file does not have the correct suffix!"));
-            return;
-        }
-
         startPcapPlayback();
     }
     else {
