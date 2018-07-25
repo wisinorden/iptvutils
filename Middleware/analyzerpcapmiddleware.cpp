@@ -51,7 +51,7 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
     bool hasLooped = false;
 
-    PcapProduct input;
+    Product input;
 
     while (!stopping) {
         input = prevProvider->getProduct();
@@ -87,7 +87,6 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                     proto = AnalyzerStatus::RTP;
                 else
                     proto = AnalyzerStatus::UDP;
-
 
                 quint64 streamId = StreamId::calcId(parser.ih->daddr, parser.dport);
                 StreamInfo &stream = streams[streamId];
@@ -150,11 +149,10 @@ void AnalyzerPcapMiddleware::bufferProducts() {
     if (input.type == PcapProduct::END &&
             (config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_LIVE ||
              config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_OFFLINE)) {
-
         emit workerStatus(WorkerStatus(WorkerStatus::STATUS_ANALYZED_ENTIRE, streams));
     }
 }
 
-PcapProduct AnalyzerPcapMiddleware::getProduct() {
+Product AnalyzerPcapMiddleware::getProduct() {
     return buffer.pop();
 }

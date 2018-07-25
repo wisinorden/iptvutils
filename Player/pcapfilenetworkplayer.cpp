@@ -2,7 +2,9 @@
 
 void PcapFileNetworkPlayer::start() {
     finalStatus.setAnalysisMode(config.getWorkerMode());
-    producer.addNext(&analyzerMiddleware)->addNext(&loopMiddleware)->addNext(&consumer);
+    //producer.addNext(&analyzerMiddleware)->addNext(&loopMiddleware)->addNext(&consumer);
+    producer.addNext(&analyzerMiddleware)->addNext(&consumer);
+    //producer.addNext(&consumer);
     producer.init(&producerThread);
 
     connect(&consumer, &PcapNetworkConsumer::finished, &producer, &PcapBufferedProducer::stop);
@@ -23,10 +25,11 @@ void PcapFileNetworkPlayer::start() {
     connect(&consumer, &PcapNetworkConsumer::status, this, &PcapFileNetworkPlayer::gotConsumerStatus);
     //connect(&producer, &PcapBufferedProducer::workerStatus, this, &PcapFileNetworkPlayer::gotProducerWorkerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &PcapFileNetworkPlayer::workerStatus);
+    // î sätter statusfältet
 
     producerThread.start();
     analyzerMiddleware.start();
-    loopMiddleware.start();
+    //loopMiddleware.start();
     consumer.start(&consumerThread);
 
     emit started();
@@ -81,14 +84,10 @@ void PcapFileNetworkPlayer::gotProducerWorkerStatus(WorkerStatus worker) {
 
 // Only emit finished when all modules are finished
 void PcapFileNetworkPlayer::moduleFinished() {
-    if (producerThread.isRunning())
-        return;
-    if(analyzerMiddleware.thread()->isRunning())
-        return;
-    if(loopMiddleware.thread()->isRunning())
-        return;
-    if(consumerThread.isRunning())
-        return;
+    if (producerThread.isRunning()) return;
+    if(analyzerMiddleware.thread()->isRunning()) return;
+    if(loopMiddleware.thread()->isRunning()) return;
+    if(consumerThread.isRunning()) return;
 
     // newline to clean up log
     qInfo();

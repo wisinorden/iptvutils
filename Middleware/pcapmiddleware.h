@@ -2,13 +2,13 @@
 #define PCAPMIDDLEWARE_H
 
 #include <QThread>
-#include "PacketProducer/pcapproductprovider.h"
+#include "PacketProducer/productprovider.h"
 #include "Configuration/workerconfiguration.h"
 #include "Status/workerstatus.h"
 
 #define MIDDLEWARE_BUFFER_SIZE 16
 
-class PcapMiddleware : public QObject, public PcapProductProvider
+class PcapMiddleware : public QObject, public ProductProvider
 {
     Q_OBJECT
 protected:

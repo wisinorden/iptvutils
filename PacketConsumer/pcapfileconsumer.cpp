@@ -34,13 +34,14 @@ void PcapFileConsumer::run() {
 
 void PcapFileConsumer::analysisMode() {
     qInfo("Running PcapFileConsumer in AnalysisMode");
-    PcapProduct packet = prevProvider->getProduct();
+    Product packet = prevProvider->getProduct();
     while (!stopping && packet.size > 0) {
         packet = prevProvider->getProduct();
     }
 }
 
 void PcapFileConsumer::saveToFile() {
+    printf("pcap save to file\n");
     pcap_dumper_t *dumpfile;
     pcap_t *deadHandle = pcap_open_dead(DLT_EN10MB, 65536);
 
@@ -53,7 +54,7 @@ void PcapFileConsumer::saveToFile() {
         return;
     }
 
-    PcapProduct packet;
+    Product packet;
     QElapsedTimer timer;
     timer.start();
     QElapsedTimer statusTimer;

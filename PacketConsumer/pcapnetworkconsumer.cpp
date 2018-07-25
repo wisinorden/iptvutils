@@ -23,7 +23,8 @@ void PcapNetworkConsumer::stop() {
 void PcapNetworkConsumer::run() {
     emit started();
     qInfo("Running PcapNetworkconsumer in thread: %p", QThread::currentThread());
-    if (config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_OFFLINE || config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_LIVE) {
+    if (config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_OFFLINE ||
+            config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_LIVE) {
         qInfo("Running PcapNetworkconsumer in Analysis mode");
         analysisMode();
     }
@@ -44,7 +45,7 @@ void PcapNetworkConsumer::run() {
 }
 
 void PcapNetworkConsumer::analysisMode() {
-    PcapProduct packet = prevProvider->getProduct();
+    Product packet = prevProvider->getProduct();
     while (!stopping && (packet.type != PcapProduct::END && packet.type != PcapProduct::STOP)) {
         packet = prevProvider->getProduct();
     }
@@ -52,6 +53,7 @@ void PcapNetworkConsumer::analysisMode() {
 
 void PcapNetworkConsumer::playFromQNetwork() {
     QHostAddress address = QHostAddress(config.getNetworkOutput().getHost());
+    QString qs = address.toString();
     QUdpSocket* socket = new QUdpSocket(this);
     qInfo() << socket->state();
 //    connect(
@@ -86,7 +88,7 @@ void PcapNetworkConsumer::playFromQNetwork() {
     const u_char *pkt_data;
     struct pcap_pkthdr *header;
 
-    PcapProduct packet = prevProvider->getProduct();
+    Product packet = prevProvider->getProduct();
     pkt_data = (const u_char*)packet.data.data();
     header = (pcap_pkthdr*)packet.header.data();
 
@@ -131,6 +133,7 @@ void PcapNetworkConsumer::playFromQNetwork() {
         if (bytes < 1000) {
             qWarning("Qnet: Error writing: wrote %lli bytes, error %i: %s", bytes, socket->error(), qPrintable(socket->errorString()));
         }
+
         sentBytes += bytes;
         statusSend += sendTimer.nsecsElapsed();
         //sentBytes += parser.data_len;
@@ -193,7 +196,7 @@ void PcapNetworkConsumer::playFromPcapNetwork() {
     timer.start();
     QElapsedTimer statusTimer;
 
-    PcapProduct packet = prevProvider->getProduct();
+    Product packet = prevProvider->getProduct();
     pkt_data = (const u_char*)packet.data.data();
     header = (pcap_pkthdr*)packet.header.data();
 

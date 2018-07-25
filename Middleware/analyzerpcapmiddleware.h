@@ -16,7 +16,7 @@ class AnalyzerPcapMiddleware : public PcapMiddleware
 {
     Q_OBJECT
 private:
-    ConcurrentQueue<PcapProduct> buffer;
+    ConcurrentQueue<Product> buffer;
     TsParser tsParser;
     TsAnalyzer tsAnalyzer;
     QMap<int, PIDInfo> pidMap;
@@ -37,7 +37,7 @@ public:
     }
 
     void init();
-    PcapProduct getProduct();
+    Product getProduct();
 
 signals:
     void status(AnalyzerStatus status);

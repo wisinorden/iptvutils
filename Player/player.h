@@ -19,6 +19,7 @@ protected:
 
 public:
     Player(WorkerConfiguration config, QObject *parent = 0) : QObject(parent), config(config) {}
+    ~Player() {}
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void stopAndWait() = 0;

@@ -8,7 +8,7 @@ class LoopPcapMiddleware : public PcapMiddleware
 {
     Q_OBJECT
 private:
-    ConcurrentQueue<PcapProduct> buffer;
+    ConcurrentQueue<Product> buffer;
     void bufferProducts();
     quint64 timevalToUsec(timeval time);
     timeval usecToTimeval(quint64 time);
@@ -20,7 +20,7 @@ public:
     }
 
     void init();
-    PcapProduct getProduct();
+    Product getProduct();
 
 protected slots:
     void run();

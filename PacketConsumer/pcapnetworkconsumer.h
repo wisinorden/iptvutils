@@ -10,7 +10,7 @@ extern "C" {
     #include <pcap.h>
 }
 
-class PcapNetworkConsumer : public PacketConsumer, public PcapProductProvider
+class PcapNetworkConsumer : public PacketConsumer, public ProductProvider
 {
 private:
     void analysisMode();

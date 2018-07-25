@@ -2,11 +2,13 @@
 #define PCAPFILEBUFFEREDPRODUCER_H
 
 #include "packetproducer.h"
-#include "pcapproductprovider.h"
+#include "productprovider.h"
 #include "pcapproduct.h"
 #include "concurrentqueue.h"
 #include "Configuration/workerconfiguration.h"
+#include "Middleware/tsparser.h"
 #include <QElapsedTimer>
+#include <QFile>
 #include <QSocketNotifier>
 #include <QThread>
 #include <QTimer>
@@ -15,7 +17,7 @@ extern "C" {
     #include <pcap.h>
 }
 
-class PcapBufferedProducer : public PacketProducer, public PcapProductProvider
+class PcapBufferedProducer : public PacketProducer, public ProductProvider
 {
     Q_OBJECT
     Q_INTERFACES(PacketProducer)
@@ -30,7 +32,7 @@ public:
     {}
     ~PcapBufferedProducer() {}
     void init(QThread *thread);
-    PcapProduct getProduct();
+    Product getProduct();
 
 public slots:
     void stop();
@@ -59,7 +61,7 @@ private:
     void bufferFromNetworkTeardown();
     void networkSocketReadout();
 
-    ConcurrentQueue<PcapProduct> buffer;
+    ConcurrentQueue<Product> buffer;
 
     pcap_t *pcapHandle;
 

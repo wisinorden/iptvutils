@@ -14,7 +14,7 @@ void PcapBufferedProducer::init(QThread *thread) {
     connect(this, SIGNAL(_internalStopSignal()), this, SLOT(_internalStop()));
 }
 
-PcapProduct PcapBufferedProducer::getProduct() {
+Product PcapBufferedProducer::getProduct() {
     return buffer.pop();
 }
 
@@ -115,37 +115,9 @@ void PcapBufferedProducer::bufferFromFileRun()
     struct pcap_pkthdr *header;
     PacketParser parser;
     int ret;
-
     while (!stopping ) {
-        FILE *f;
-        f = fopen(config.getFileInput().getFilename().toLocal8Bit().constData(), "rb");
-        int i = 0;
-        quint32 file_buffer;
-        quint8 *q = new quint8[4];
-        int read;
-        do {
-            file_buffer = 0;
 
-            /* Builds a 32 bits int from 8 bits at a time
-             *
-             * for (int i = 0; i < 4; ++i) {
-                o = fread(&buffer2, 1, 1, f);
-                if (o != 1)
-                    break;
-                res = res | buffer2 << (24 - (8 * i));
-            }*/
 
-            for (int i = 0; i < 4; ++i) {
-                read = fread(&file_buffer, 1, 1, f);
-                if (read != 1)
-                    break;
-
-                q[i] = file_buffer;
-                printf("q[]: %x\n", q[i]);
-            }
-
-            i++;
-        } while (i < 100);
 
         pcapHandle = pcap_open_offline(
                     config.getFileInput().getFilename().toLocal8Bit().constData(),
@@ -199,7 +171,7 @@ void PcapBufferedProducer::bufferFromFileRun()
                 // EOF; We should loop (e.g. restart from beginning of file)
                 pcap_close(pcapHandle);
                 pcapHandle = NULL;
-                buffer.push(PcapProduct(PcapProduct::LOOP));
+                buffer.push(Product(Product::LOOP));
                 continue;
             }
         }
@@ -218,7 +190,7 @@ void PcapBufferedProducer::bufferFromFileRun()
         pcapHandle = NULL;
     }
 
-    buffer.push(PcapProduct(PcapProduct::END));
+    buffer.push(Product(Product::END));
 
     emit workerStatus(WorkerStatus(WorkerStatus::STATUS_FINISHED, streams));
 

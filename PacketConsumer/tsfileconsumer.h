@@ -2,12 +2,12 @@
 #define TSFILEPACKETCONSUMER_H
 
 #include "packetconsumer.h"
-#include "PacketProducer/pcapproductprovider.h"
+#include "PacketProducer/productprovider.h"
 #include "Configuration/workerconfiguration.h"
 #include "PacketProducer/pcapbufferedproducer.h"
 #include <QThread>
 
-class TsFileConsumer : public PacketConsumer, public PcapProductProvider
+class TsFileConsumer : public PacketConsumer, public ProductProvider
 {
 private:
     void analysisMode();
