@@ -3,6 +3,7 @@
 
 #include "Configuration/workerconfiguration.h"
 #include "Player/pcapfilenetworkplayer.h"
+#include "Player/tsfilenetworkplayer.h"
 #include <QWidget>
 
 namespace Ui {
@@ -20,13 +21,20 @@ public:
     void loadSettings();
     void saveSettings();
 
+    static Player *fileNetworkPlayer;
     static PcapFileNetworkPlayer *pcapFileNetworkPlayer;
+    static TsFileNetworkPlayer *tsFileNetworkPlayer;
 
 private:
     Ui::PlaybackWidget *ui;
     bool started;
     bool validatePlaybackInputs();
-    bool startPcapPlayback(WorkerConfiguration::WorkerMode mode = WorkerConfiguration::NORMAL_MODE);
+    bool startPlayback(WorkerConfiguration::WorkerMode mode =
+            WorkerConfiguration::NORMAL_MODE);
+    bool startPcapPlayback(WorkerConfiguration::WorkerMode mode =
+            WorkerConfiguration::NORMAL_MODE);
+    bool startTsPlayback(WorkerConfiguration::WorkerMode mode =
+            WorkerConfiguration::NORMAL_MODE);
     QString currentFile;
 
 private slots:

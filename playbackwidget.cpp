@@ -10,10 +10,10 @@
 #include <QStandardPaths>
 #include <QMessageBox>
 
-PcapFileNetworkPlayer* PlaybackWidget::pcapFileNetworkPlayer;
-
+Player* PlaybackWidget::fileNetworkPlayer;
+//PcapFileNetworkPlayer* PlaybackWidget::pcapFileNetworkPlayer;
+//TsFileNetworkPlayer* PlaybackWidget::tsFileNetworkPlayer;
 static QMap<QString, FileInputConfiguration::LoopType> loopOptions;
-
 QHash<quint64, StreamInfo> streams;
 StreamId selectedStreamId;
 
@@ -73,7 +73,22 @@ void PlaybackWidget::loadSettings() {
     currentFile = settings.value("filename", "").toString();
     settings.endGroup();
 
-    startPcapPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
+    //startTsPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
+    //startPcapPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
+    startPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
+}
+
+bool PlaybackWidget::startPlayback(WorkerConfiguration::WorkerMode mode) {
+    if (currentFile.endsWith(".ts")) {
+        qInfo("startTsPlayback analysis mode offline");
+        return startTsPlayback(mode);
+    }
+    else if (currentFile.endsWith(".pcap") || currentFile.endsWith(".pcapng")) {
+        qInfo("startPcapPlayBack analysis mode offline");
+        return startPcapPlayback(mode);
+    }
+
+    return false;
 }
 
 void PlaybackWidget::saveSettings() {
@@ -109,7 +124,7 @@ void PlaybackWidget::playbackWorkerStatusChanged(WorkerStatus status) {
 void PlaybackWidget::playbackFinished() {
     ui->playbackStartStopBtn->setText(tr("Start"));
     ui->playbackStartStopBtn->setEnabled(true);
-    pcapFileNetworkPlayer = NULL;
+    fileNetworkPlayer = NULL;
     started = false;
 }
 
@@ -127,11 +142,59 @@ void PlaybackWidget::playbackInputChanged() {
     validatePlaybackInputs();
 }
 
-bool PlaybackWidget::startPcapPlayback(WorkerConfiguration::WorkerMode mode) {
+bool PlaybackWidget::startTsPlayback(WorkerConfiguration::WorkerMode mode) {
+    qInfo("startTsPlayback()");
     if (ui->playbackFilename->text().length() == 0)
         return false;
 
-    if (pcapFileNetworkPlayer != NULL) {
+    if (fileNetworkPlayer != NULL) {
+        qWarning("Atempt to start TsPlayback while pointer not released");
+        return false;
+    }
+
+    int rewriteFlags = 0;
+    QString host = ui->playbackHost->text();
+    if (host.length() > 0)
+        rewriteFlags |= NetworkOutputConfiguration::REWRITE_DST_HOST;
+
+    quint16 port = ui->playbackPort->text().toUShort();
+    if (ui->playbackPort->text().length() > 0)
+        rewriteFlags |= NetworkOutputConfiguration::REWRITE_DST_PORT;
+
+    FileInputConfiguration inputConfig(
+                ui->playbackFilename->text(),
+                FileConfiguration::TS,
+                mode == WorkerConfiguration::WorkerMode::ANALYSIS_MODE_OFFLINE ?
+                    "":
+                    ui->playbackFilter->text(),
+                ui->playbackLoopCheckbox->isChecked() ?
+                    loopOptions.value(ui->playbackLoopCombo->currentText()) :
+                    FileInputConfiguration::LOOP_NONE);
+    NetworkOutputConfiguration outputConfig(
+                MainWindow::interfaces.at(ui->playbackInterfaceSelect->currentIndex()),
+                rewriteFlags,
+                host,
+                port);
+    WorkerConfiguration config(inputConfig, outputConfig, mode);
+
+    fileNetworkPlayer = new TsFileNetworkPlayer(config, this);
+    connect(fileNetworkPlayer, &TsFileNetworkPlayer::started, this, &PlaybackWidget::playbackStarted);
+    connect(fileNetworkPlayer, &TsFileNetworkPlayer::finished, this, &PlaybackWidget::playbackFinished);
+    connect(fileNetworkPlayer, &TsFileNetworkPlayer::status, this, &PlaybackWidget::playbackStatusChanged);
+    connect(fileNetworkPlayer, &TsFileNetworkPlayer::workerStatus, this, &PlaybackWidget::playbackWorkerStatusChanged);
+
+    ui->playbackStartStopBtn->setEnabled(false);
+
+    fileNetworkPlayer->start();
+    return true;
+}
+
+bool PlaybackWidget::startPcapPlayback(WorkerConfiguration::WorkerMode mode) {
+    qInfo("startPcapPlayback()");
+    if (ui->playbackFilename->text().length() == 0)
+        return false;
+
+    if (fileNetworkPlayer != NULL) {
         qWarning("Atempt to start PcapPlayback while pointer not released");
         return false;
     }
@@ -161,15 +224,16 @@ bool PlaybackWidget::startPcapPlayback(WorkerConfiguration::WorkerMode mode) {
                 port);
     WorkerConfiguration config(inputConfig, outputConfig, mode);
 
-    pcapFileNetworkPlayer = new PcapFileNetworkPlayer(config, this);
-    connect(pcapFileNetworkPlayer, &PcapFileNetworkPlayer::started, this, &PlaybackWidget::playbackStarted);
-    connect(pcapFileNetworkPlayer, &PcapFileNetworkPlayer::finished, this, &PlaybackWidget::playbackFinished);
-    connect(pcapFileNetworkPlayer, &PcapFileNetworkPlayer::status, this, &PlaybackWidget::playbackStatusChanged);
-    connect(pcapFileNetworkPlayer, &PcapFileNetworkPlayer::workerStatus, this, &PlaybackWidget::playbackWorkerStatusChanged);
+
+    fileNetworkPlayer = new PcapFileNetworkPlayer(config, this);
+    connect(fileNetworkPlayer, &PcapFileNetworkPlayer::started, this, &PlaybackWidget::playbackStarted);
+    connect(fileNetworkPlayer, &PcapFileNetworkPlayer::finished, this, &PlaybackWidget::playbackFinished);
+    connect(fileNetworkPlayer, &PcapFileNetworkPlayer::status, this, &PlaybackWidget::playbackStatusChanged);
+    connect(fileNetworkPlayer, &PcapFileNetworkPlayer::workerStatus, this, &PlaybackWidget::playbackWorkerStatusChanged);
 
     ui->playbackStartStopBtn->setEnabled(false);
 
-    pcapFileNetworkPlayer->start();
+    fileNetworkPlayer->start();
     return true;
 }
 
@@ -197,7 +261,7 @@ void PlaybackWidget::on_playbackOpenFileDialog_clicked() {
         currentFile = filename;
     }
 
-    startPcapPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
+    startPlayback(WorkerConfiguration::ANALYSIS_MODE_OFFLINE);
 }
 
 void PlaybackWidget::on_playbackLoopCheckbox_clicked() {
@@ -230,11 +294,12 @@ void PlaybackWidget::on_playbackStartStopBtn_clicked() {
             return;
         }
 
-        startPcapPlayback();
+        startPlayback();
     }
     else {
-        if (pcapFileNetworkPlayer != NULL) {
-            pcapFileNetworkPlayer->stop();
+        if (fileNetworkPlayer != NULL) {
+            qInfo("stopping fileNetworkPlayer");
+            fileNetworkPlayer->stop();
         }
     }
 }
