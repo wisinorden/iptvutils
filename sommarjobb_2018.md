@@ -5,7 +5,7 @@ Funktionalitet för "middleware" måste inplementeras för att fungera som för 
 * För ts-filer med fler än ett program: göra det valbart i GUI:t vilket program man vill läsa PCR ifrån. 
 (funktionalitet finns förberett i tsnetworkconsumer.cpp (`playFromQNetwork()`)).
 * Avgöra om det är VBR eller CBR och välja rätt funktion (i tsnetworkconsumer.cpp (`run()`)). 
-För tillfället är det `playVBRFromQNetwork` ,för VBR, och `playFromQNetwork` ,för CBR, som gäller. 
+För tillfället är det `playVBRFromQNetwork()` ,för VBR, och `playFromQNetwork()` ,för CBR, som gäller. 
 
 # DONE
 * Implementerat funktionalitet för uppspelning av ts-filer med CBR och VBR.
