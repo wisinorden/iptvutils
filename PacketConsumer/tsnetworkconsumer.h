@@ -17,6 +17,7 @@ private:
     qint64 getPcr(QByteArray t_ts_pt);
     void analysisMode();
     void playFromQNetwork();
+    void playVBRFromQNetwork();
     void playFromTsNetwork();
 
 public:
