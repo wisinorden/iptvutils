@@ -26,7 +26,6 @@ void AnalyzerPcapMiddleware::run() {
     emit started();
     qInfo("starting AnalyzerPcapMiddleware");
     bufferProducts();
-    qInfo("AnalyzerPcapMiddleware finished");
     emit finished();
     this->thread()->quit();
 }
@@ -90,7 +89,6 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
                 quint64 streamId = StreamId::calcId(parser.ih->daddr, parser.dport);
                 StreamInfo &stream = streams[streamId];
-
                 // For now, assume the only existing protocols are RTP, UDP
                 if (parser.rp_len > 0)
                     stream.protocol = StreamInfo::NetworkProtocol::RTP;
@@ -106,7 +104,6 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                 stream.bytes += parser.data_len;
                 stream.tsPerIp = tsPerIp;
                 stream.currentTime = duration;
-
                 tsAnalyzer.setStream(&stream.tsErrors, &stream.pidMap);
 
                 // Analyze every TsPacket
@@ -130,8 +127,8 @@ void AnalyzerPcapMiddleware::bufferProducts() {
         else if (input.type == PcapProduct::LOOP) {
             hasLooped = true;
         }
-        buffer.push(input);
 
+        buffer.push(input);
         if (statusTimer.elapsed() >= 200) {
             emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
             emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));

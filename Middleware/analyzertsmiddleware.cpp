@@ -1,5 +1,5 @@
 #include "analyzertsmiddleware.h"
-
+#include <QElapsedTimer>
 unsigned const MP2T_SIZE = 188;
 unsigned const MP2T_PCR_CLOCK = 27000000;
 

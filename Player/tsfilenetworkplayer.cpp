@@ -9,7 +9,7 @@ void TsFileNetworkPlayer::start() {
     connect(&consumer, &TsNetworkConsumer::finished, &producer, &TsBufferedProducer::stop);
     connect(&producerThread, &QThread::finished, this, &TsFileNetworkPlayer::moduleFinished);
     connect(analyzerMiddleware.thread(), &QThread::finished, this, &TsFileNetworkPlayer::moduleFinished);
-    connect(loopMiddleware.thread(), &QThread::finished, this, &TsFileNetworkPlayer::moduleFinished);
+    //connect(loopMiddleware.thread(), &QThread::finished, this, &TsFileNetworkPlayer::moduleFinished);
     connect(&consumerThread, &QThread::finished, this, &TsFileNetworkPlayer::moduleFinished);
     connect(&producer, &TsBufferedProducer::status, this, &TsFileNetworkPlayer::gotProducerStatus);
     //connect(&analyzerMiddleware, &AnalyzerTsMiddleware::status, this, &TsFileNetworkPlayer::gotAnalyzerStatus);
@@ -76,8 +76,9 @@ void TsFileNetworkPlayer::moduleFinished() {
 }
 
 void TsFileNetworkPlayer::stop() {
+    qInfo("tsfilenetworkplayer stop");
     consumer.stop();
-    analyzerMiddleware.stop();
+    //analyzerMiddleware.stop();
     //loopMiddleware.stop();
     producer.stop();
 }
@@ -88,7 +89,7 @@ void TsFileNetworkPlayer::stopAndWait() {
     qInfo("tsfilenetworkplayer stopandwait stop() done");
     producerThread.wait();
     qInfo("tsfilenetworkplayer producerthread.wait() done");
-    analyzerMiddleware.thread()->wait();
+    //analyzerMiddleware.thread()->wait();
     //loopMiddleware.thread()->wait();
     consumerThread.wait();
 }

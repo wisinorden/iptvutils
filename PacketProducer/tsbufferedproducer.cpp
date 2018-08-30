@@ -56,7 +56,7 @@ int TsBufferedProducer::bufferFromFileSetup() {
 void TsBufferedProducer::bufferFromFileRun()
 {
     qInfo("bufferfromfilerun ts");
-    QFile file("/home/hakan.gudmundsson/vivapolska_PEShdr_w_adaptation_field.ts");
+    QFile file(config.getFileInput().getFilename().toLocal8Bit().constData());
     if (!file.open(QIODevice::ReadOnly)) {
         qInfo("can't open file");
         return;
@@ -64,7 +64,6 @@ void TsBufferedProducer::bufferFromFileRun()
 
     QByteArray ts_pkt = 0;
     while ((ts_pkt = file.read(188)) > 0) {
-        //qInfo("ts_pkt: %x", ts_pkt.data()[11]);
         buffer.push(TsProduct(ts_pkt));
         streams[StreamId::calcId(
                     config.getNetworkOutput().getDevice().getAddress().toString(),
