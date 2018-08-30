@@ -13,4 +13,4 @@ För tillfället är det `playVBRFromQNetwork` ,för VBR, och `playFromQNetwork`
 
 I och med att allt som har med pcap i programmet använder sig av biblioteket `pcap.h` så har det inte gått att använda sig 
 av samma klasser som för pcap-filer när vi vill arbeta med ts-filer. Jag har därför försökt göra abstraktioner och introducera
-ts-klasser som beter sig på liknande sätt som respektive pcap-klass. 
+ts-klasser som beter sig på liknande sätt som respektive pcap-klasser. 
