@@ -61,7 +61,13 @@ SOURCES += \
     Analyzer/tsanalyzer.cpp \
     playbackwidget.cpp \
     recordwidget.cpp \
-    convertwidget.cpp
+    convertwidget.cpp \
+    PacketConsumer/tsnetworkconsumer.cpp \
+    PacketProducer/tsproduct.cpp \
+    Player/tsfilenetworkplayer.cpp \
+    PacketProducer/tsbufferedproducer.cpp \
+    Middleware/analyzertsmiddleware.cpp \
+    Middleware/tsmiddleware.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -93,7 +99,6 @@ HEADERS += \
     PacketConsumer/tsfileconsumer.h \
     Status/status.h \
     Recorder/pcaptsconverter.h \
-    PacketProducer/pcapproductprovider.h \
     Middleware/pcapmiddleware.h \
     Middleware/looppcapmiddleware.h \
     Middleware/tsparser.h \
@@ -110,7 +115,14 @@ HEADERS += \
     recordwidget.h \
     convertwidget.h \
     Status/streamid.h \
-    Status/workerstatus.h
+    Status/workerstatus.h \
+    PacketConsumer/tsnetworkconsumer.h \
+    PacketProducer/tsproduct.h \
+    PacketProducer/productprovider.h \
+    Player/tsfilenetworkplayer.h \
+    PacketProducer/tsbufferedproducer.h \
+    Middleware/analyzertsmiddleware.h \
+    Middleware/tsmiddleware.h
 
 FORMS += \
         mainwindow.ui \

@@ -1,28 +1,30 @@
 #ifndef PCAPPRODUCT_H
 #define PCAPPRODUCT_H
 
-#include <QByteArray>
+#include "product.h"
 
 extern "C" {
     #include <pcap.h>
 }
 
-class PcapProduct
+class PcapProduct : public Product
 {
 public:
-    enum ProductType { NORMAL, END, STOP, LOOP };
-    QByteArray data;
-    QByteArray header;
-    int size;
+    //enum ProductType { NORMAL, END, STOP, LOOP };
+    //QByteArray data;
+    //QByteArray header;
+    //int size;
     ProductType type = NORMAL;
 
-    PcapProduct() : size(0), type(STOP) {}
-    PcapProduct(ProductType type) : type(type) {}
+    PcapProduct() : Product() {}
+    PcapProduct(ProductType type) : Product(type) {}
     ~PcapProduct() {
         //qInfo("PcapProduct descructor ~~");
     }
-    PcapProduct(const u_char *data, const char *header, int size) :
-        data((const char*)data, size), header(header, sizeof(pcap_pkthdr)), size(size) {
+
+    PcapProduct(const u_char *data, const char *header, int size) : Product(data, header, size) {
+      //:
+        //data((const char*)data, size), header(header, sizeof(pcap_pkthdr)), size(size) {
         //qInfo("Constructor PcapProduct. %i", sizeof(pcap_pkthdr));
     }
 

@@ -37,7 +37,6 @@ void MainWindow::loadSettings() {
     ui->playbackWidget->loadSettings();
     ui->recordWidget->loadSettings();
     ui->convertWidget->loadSettings();
-
 }
 
 void MainWindow::saveSettings() {
@@ -49,9 +48,9 @@ void MainWindow::saveSettings() {
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     qInfo("Closing workers");
-    if (PlaybackWidget::pcapFileNetworkPlayer != NULL) {
-        qInfo("pcapFileNetworkPlayer stopAndWait");
-        PlaybackWidget::pcapFileNetworkPlayer->stopAndWait();
+    if (PlaybackWidget::fileNetworkPlayer != NULL) {
+        qInfo("fileNetworkPlayer stopAndWait");
+        PlaybackWidget::fileNetworkPlayer->stopAndWait();
     }
     if (RecordWidget::RecordWidget::networkPcapFileRecorder != NULL) {
         qInfo("networkPcapFileRecorder stopAndWait");

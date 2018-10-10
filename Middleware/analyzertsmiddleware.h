@@ -1,41 +1,37 @@
-#ifndef ANALYZERPCAPMIDDLEWARE_H
-#define ANALYZERPCAPMIDDLEWARE_H
+#ifndef ANALYZERTSMIDDLEWARE_H
+#define ANALYZERTSMIDDLEWARE_H
 
-#include "pcapmiddleware.h"
+#include "tsmiddleware.h"
 #include "concurrentqueue.h"
 #include "Status/analyzerstatus.h"
 #include "pidinfo.h"
 #include "Analyzer/tsanalyzer.h"
 #include "Analyzer/tserrors.h"
 #include "Status/streaminfo.h"
-
 #include <QMap>
 #include <QHash>
 
-class AnalyzerPcapMiddleware : public PcapMiddleware
+class AnalyzerTsMiddleware : public TsMiddleware
 {
-    Q_OBJECT
 private:
     ConcurrentQueue<Product> buffer;
     TsParser tsParser;
     TsAnalyzer tsAnalyzer;
-    QMap<int, PIDInfo> pidMap;
     TsErrors tsErrors;
-    qint64 duration;
+    QMap<int, PIDInfo> pidMap;
     qint64 packetNumber;
+    qint64 duration;
     void bufferProducts();
     QHash<quint64, StreamInfo> streams;
-
 public:
-    AnalyzerPcapMiddleware(WorkerConfiguration config) :
-        PcapMiddleware(config),
+    AnalyzerTsMiddleware(WorkerConfiguration config) :
+        TsMiddleware(config),
         buffer(MIDDLEWARE_BUFFER_SIZE),
         tsParser(),
         tsAnalyzer(tsParser, duration, packetNumber)
     {
         init();
     }
-
     void init();
     Product getProduct();
 
@@ -50,4 +46,4 @@ public slots:
     void stop();
 };
 
-#endif // ANALYZERPCAPMIDDLEWARE_H
+#endif // ANALYZERTSMIDDLEWARE_H

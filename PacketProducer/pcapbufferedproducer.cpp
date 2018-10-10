@@ -4,6 +4,9 @@
 #include <QElapsedTimer>
 #include <QSocketNotifier>
 
+#include <fstream>
+#include <iostream>
+
 void PcapBufferedProducer::init(QThread *thread) {
     this->moveToThread(thread);
     connect(thread, SIGNAL(started()),  this, SLOT(setup()));
@@ -11,7 +14,7 @@ void PcapBufferedProducer::init(QThread *thread) {
     connect(this, SIGNAL(_internalStopSignal()), this, SLOT(_internalStop()));
 }
 
-PcapProduct PcapBufferedProducer::getProduct() {
+Product PcapBufferedProducer::getProduct() {
     return buffer.pop();
 }
 
@@ -112,8 +115,10 @@ void PcapBufferedProducer::bufferFromFileRun()
     struct pcap_pkthdr *header;
     PacketParser parser;
     int ret;
-
     while (!stopping ) {
+
+
+
         pcapHandle = pcap_open_offline(
                     config.getFileInput().getFilename().toLocal8Bit().constData(),
                     pcap_errbuf);
@@ -166,7 +171,7 @@ void PcapBufferedProducer::bufferFromFileRun()
                 // EOF; We should loop (e.g. restart from beginning of file)
                 pcap_close(pcapHandle);
                 pcapHandle = NULL;
-                buffer.push(PcapProduct(PcapProduct::LOOP));
+                buffer.push(Product(Product::LOOP));
                 continue;
             }
         }
@@ -185,7 +190,7 @@ void PcapBufferedProducer::bufferFromFileRun()
         pcapHandle = NULL;
     }
 
-    buffer.push(PcapProduct(PcapProduct::END));
+    buffer.push(Product(Product::END));
 
     emit workerStatus(WorkerStatus(WorkerStatus::STATUS_FINISHED, streams));
 

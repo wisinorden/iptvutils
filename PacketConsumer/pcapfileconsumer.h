@@ -3,13 +3,13 @@
 
 #include "packetconsumer.h"
 #include "../PacketProducer/pcapbufferedproducer.h"
-#include "PacketProducer/pcapproductprovider.h"
+#include "PacketProducer/productprovider.h"
 
 extern "C" {
     #include <pcap.h>
 }
 
-class PcapFileConsumer : public PacketConsumer, public PcapProductProvider
+class PcapFileConsumer : public PacketConsumer, public ProductProvider
 {
 private:
     void analysisMode();

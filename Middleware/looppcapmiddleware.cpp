@@ -58,7 +58,7 @@ void LoopPcapMiddleware::bufferProducts() {
     TsParser tsparser;
 
     while (!stopping) {
-        PcapProduct input = prevProvider->getProduct();
+        Product input = prevProvider->getProduct();
         if (input.type == PcapProduct::LOOP) {
             qInfo("LOOOOP");
 
@@ -101,7 +101,6 @@ void LoopPcapMiddleware::bufferProducts() {
                 header->ts = usecToTimeval(lastTime+timeOffset);
             }
 
-
             for (uint i = 0; i < parser.data_len/188; i++) {
                 tsparser.parse((quint8*)(parser.data+i*188));
 
@@ -141,6 +140,6 @@ void LoopPcapMiddleware::bufferProducts() {
     }
 }
 
-PcapProduct LoopPcapMiddleware::getProduct() {
+Product LoopPcapMiddleware::getProduct() {
     return buffer.pop();
 }

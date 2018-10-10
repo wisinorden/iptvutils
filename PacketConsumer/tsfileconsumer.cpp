@@ -42,7 +42,7 @@ void TsFileConsumer::run() {
 }
 
 void TsFileConsumer::analysisMode() {
-    PcapProduct packet = prevProvider->getProduct();
+    Product packet = prevProvider->getProduct();
     while (!stopping && packet.type == PcapProduct::NORMAL) {
         packet = prevProvider->getProduct();
     }
@@ -50,6 +50,7 @@ void TsFileConsumer::analysisMode() {
 
 // Pcap-packets
 void TsFileConsumer::saveToFile() {
+    printf("ts save to file\n");
     qInfo("TsFileConsumer: Starting dump to: %s", qPrintable(config.getFileOutput().getFilename()));
     QFile dumpfile;
 
@@ -63,7 +64,7 @@ void TsFileConsumer::saveToFile() {
     QDataStream savefileStream(&dumpfile);
 
     PacketParser parser;
-    PcapProduct packet;
+    Product packet;
     QElapsedTimer timer;
     timer.start();
     QElapsedTimer statusTimer;

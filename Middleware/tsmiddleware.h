@@ -1,5 +1,5 @@
-#ifndef PCAPMIDDLEWARE_H
-#define PCAPMIDDLEWARE_H
+#ifndef TSMIDDLEWARE_H
+#define TSMIDDLEWARE_H
 
 #include <QThread>
 #include "PacketProducer/productprovider.h"
@@ -8,7 +8,7 @@
 
 #define MIDDLEWARE_BUFFER_SIZE 16
 
-class PcapMiddleware : public QObject, public ProductProvider
+class TsMiddleware : public QObject, public ProductProvider
 {
     Q_OBJECT
 protected:
@@ -17,7 +17,7 @@ protected:
     QThread runnerThread;
 
 public:
-    PcapMiddleware(WorkerConfiguration config) :
+    TsMiddleware(WorkerConfiguration config) :
         QObject(), config(config) {}
 
 signals:
@@ -33,4 +33,4 @@ public slots:
     virtual void stop() { stopping = true; }
 };
 
-#endif // PCAPMIDDLEWARE_H
+#endif // TSMIDDLEWARE_H

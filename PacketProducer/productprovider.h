@@ -2,20 +2,21 @@
 #define PCAPPRODUCTPROVIDER_H
 
 #include "pcapproduct.h"
+#include "tsproduct.h"
 
-class PcapProductProvider {
+class ProductProvider {
 protected:
-    PcapProductProvider *prevProvider = NULL;
-    PcapProductProvider *nextProvider = NULL;
+    ProductProvider *prevProvider = NULL;
+    ProductProvider *nextProvider = NULL;
 
 public:
-    PcapProductProvider* addNext(PcapProductProvider* next) {
+    ProductProvider* addNext(ProductProvider* next) {
         this->nextProvider = next;
         next->prevProvider = this;
         return next;
     }
 
-    PcapProductProvider* addToEnd(PcapProductProvider* next) {
+    ProductProvider* addToEnd(ProductProvider* next) {
         // this provider is not last in chain, add to nextProvider
         if (this->nextProvider != NULL) {
             return this->nextProvider->addToEnd(next);
@@ -23,7 +24,7 @@ public:
         return addNext(next);
     }
 
-    virtual PcapProduct getProduct() {
+    virtual Product getProduct() {
         return prevProvider->getProduct();
     }
 };
