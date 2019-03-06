@@ -219,11 +219,13 @@ void RecordWidget::on_recordOpenFileDialog_clicked()
         fileDialog.exec();
     }
 
-    QString filename = fileDialog.selectedFiles().first();
-    if (filename != "" && !QFileInfo(filename).isDir()) {
-        ui->recordFilename->setText(filename);
-        currentFilename = filename;
-        currentDirectory = QFileInfo(filename).absolutePath();
+    if (!fileDialog.selectedFiles().empty()){
+        QString filename = fileDialog.selectedFiles().first();
+        if (filename != "" && !QFileInfo(filename).isDir()) {
+            ui->recordFilename->setText(filename);
+            currentFilename = filename;
+            currentDirectory = QFileInfo(filename).absolutePath();
+        }
     }
 }
 
