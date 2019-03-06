@@ -7,7 +7,7 @@ class PcapFilter
 {
 public:
     PcapFilter();
-    static QString generateFilter(QString host, short port, bool rtpFec);
+    static QString generateFilter(QString host, unsigned short port, bool rtpFec);
     static QString generateFilter(QString hostport, bool rtpFec);
 };
 

@@ -118,11 +118,11 @@ void RecordWidget::recordFilterShouldUpdate() {
         if (ui->recordUnicastCheckBox->checkState() == Qt::Checked) {
             // Use address of selected interface if unicast.
             address = MainWindow::interfaces.at(ui->recordInterfaceSelect->currentIndex()).getAddress();
-            ui->recordFilter->setText(PcapFilter::generateFilter(address.toString(), ui->recordPort->text().toShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
+            ui->recordFilter->setText(PcapFilter::generateFilter(address.toString(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
             ui->recordHost->setEnabled(false);
         }
         else {
-            ui->recordFilter->setText(PcapFilter::generateFilter(ui->recordHost->text(), ui->recordPort->text().toShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
+            ui->recordFilter->setText(PcapFilter::generateFilter(ui->recordHost->text(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
             ui->recordHost->setEnabled(true);
         }
         ui->recordFilter->setToolTip(ui->recordFilter->text());
@@ -213,6 +213,8 @@ void RecordWidget::on_recordOpenFileDialog_clicked()
         fileDialog.setDefaultSuffix("pcap");
         fileDialog.exec();
     }
+
+
     else {
         fileDialog.setNameFilter(tr("MPEG-TS (*.ts)"));
         fileDialog.setDefaultSuffix("ts");
