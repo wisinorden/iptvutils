@@ -39,7 +39,8 @@ RecordWidget::RecordWidget(QWidget *parent) :
     }
 
     // revalidate fields and calculate filter
-    validateRecordInputs();
+    validateAdressInputs();
+    validatePortInputs();
     recordFilterShouldUpdate();
 }
 
@@ -103,17 +104,28 @@ void RecordWidget::recordingFinished() {
     started = false;
 }
 
-bool RecordWidget::validateRecordInputs() {
+
+bool RecordWidget::validatePortInputs() {
     bool valid = true;
 
-    // Performs validation on everything, and sets correct color
-    valid = Validator::validateIp(ui->recordHost) && valid;
-
+    // Performs validation on Port and sets correct color
 
     valid = Validator::validatePort(ui->recordPort) && valid;
 
     return valid;
 }
+
+
+
+bool RecordWidget::validateAdressInputs() {
+    bool valid = true;
+
+    // Performs validation on Address and sets correct color
+    valid = Validator::validateIp(ui->recordHost) && valid;
+
+    return valid;
+}
+
 
 
 void RecordWidget::recordFilterShouldUpdate() {
@@ -129,9 +141,24 @@ void RecordWidget::recordFilterShouldUpdate() {
         ui->recordFilter->setText(PcapFilter::generateFilter(ui->recordHost->text(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
         ui->recordHost->setEnabled(true);
     }
-   //Validates adress, host. Also sets color of field
+    if(validateAdressInputs()){
+        //Sets color of address field
 
-    validateRecordInputs();
+        ui->recordHost->setStyleSheet("");
+
+    } else {
+        ui->recordHost->setStyleSheet("QLineEdit{background: #ffd3d3;}");
+
+    }
+
+    if(validatePortInputs()){
+
+        ui->recordPort->setStyleSheet("");
+
+    } else {
+        ui->recordPort->setStyleSheet("QLineEdit{background: #ffd3d3;}");
+
+    }
 
 }
 
@@ -269,7 +296,7 @@ void RecordWidget::on_recordStartStopBtn_clicked()
             }
         }
 
-        if (!validateRecordInputs()) {
+        if (!validatePortInputs() || !validateAdressInputs()) {
             QMessageBox::warning(
                         this,
                         tr("IPTV Utilities"),

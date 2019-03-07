@@ -9,11 +9,9 @@ Validator::Validator()
 
 bool Validator::validateIp(QLineEdit *field) {
     if (isValidIp(field->text())) {
-        field->setStyleSheet("");
         return true;
     }
     else {
-        field->setStyleSheet("QLineEdit{background: #ffd3d3;}");
         return false;
     }
 
@@ -41,14 +39,12 @@ bool Validator::validatePort(QLineEdit *field) {
     uint port = field->text().toUShort(&ok);
 
     if(ok) {
-        field->setStyleSheet("");
 
         return true;
     }
 
 
     else {
-        field->setStyleSheet("QLineEdit{background: #ffd3d3;}");
         return false;
     }
 }

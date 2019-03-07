@@ -33,7 +33,10 @@ private:
 private slots:
     void recordingStarted();
     void recordingFinished();
-    bool validateRecordInputs();
+    bool validateAdressInputs();
+    bool validatePortInputs();
+
+
 
 
     void recordFilterShouldUpdate();
