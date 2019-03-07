@@ -86,6 +86,16 @@ void RecordWidget::recordingStarted() {
     started = true;
     ui->recordStartStopBtn->setText(tr("Stop recording"));
     ui->recordStartStopBtn->setEnabled(true);
+    ui->recordHost->setEnabled(false);
+    ui->recordPort->setEnabled(false);
+    ui->recordRtpFecCheckBox->setEnabled(false);
+    ui->recordUnicastCheckBox->setEnabled(false);
+    ui->recordExpandPCAPFilterButton->setEnabled(false);
+    ui->recordPcapFilterContainer->setEnabled(false);
+    ui->recordFileFormatPCAP->setEnabled(false);
+
+
+
 }
 
 void RecordWidget::recordStatusChanged(FinalStatus status) {
@@ -136,6 +146,7 @@ void RecordWidget::recordFilterShouldUpdate() {
         address = MainWindow::interfaces.at(ui->recordInterfaceSelect->currentIndex()).getAddress();
         ui->recordFilter->setText(PcapFilter::generateFilter(address.toString(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
         ui->recordHost->setEnabled(false);
+
     }
     else {
         ui->recordFilter->setText(PcapFilter::generateFilter(ui->recordHost->text(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
@@ -150,7 +161,7 @@ void RecordWidget::recordFilterShouldUpdate() {
         ui->recordHost->setStyleSheet("QLineEdit{background: #ffd3d3;}");
 
     }
-
+      //Sets color of port field
     if(validatePortInputs()){
 
         ui->recordPort->setStyleSheet("");
