@@ -7,8 +7,8 @@ Validator::Validator()
 
 }
 
-bool Validator::validateIp(QLineEdit *field, bool emptyAllowed) {
-    if ((emptyAllowed && field->text().length() == 0) || isValidIp(field->text())) {
+bool Validator::validateIp(QLineEdit *field) {
+    if (isValidIp(field->text())) {
         field->setStyleSheet("");
         return true;
     }
@@ -16,13 +16,15 @@ bool Validator::validateIp(QLineEdit *field, bool emptyAllowed) {
         field->setStyleSheet("QLineEdit{background: #ffd3d3;}");
         return false;
     }
+
 }
 
 bool Validator::isValidIp(QString ip) {
     QStringList parts = ip.split('.');
 
-    if (parts.length() != 4)
+    if (parts.length() != 4 || parts.at(0).toInt() > 239 || parts.at(0).toInt() < 224){
         return false;
+    }
 
     bool ok;
     for (int i = 0; i < parts.length(); i++) {
@@ -34,7 +36,7 @@ bool Validator::isValidIp(QString ip) {
     return true;
 }
 
-bool Validator::validatePort(QLineEdit *field, bool emptyAllowed) {
+bool Validator::validatePort(QLineEdit *field) {
     bool ok;
     uint port = field->text().toUShort(&ok);
 

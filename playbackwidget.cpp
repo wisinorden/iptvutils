@@ -116,9 +116,9 @@ void PlaybackWidget::playbackFinished() {
 bool PlaybackWidget::validatePlaybackInputs() {
     bool valid = true;
 
-    // Performs validation on everything
-    valid = Validator::validateIp(ui->playbackHost, true) && valid;
-    valid = Validator::validatePort(ui->playbackPort, true) && valid;
+    // Performs validation on everything, calls on function which sets color on host & adress field
+    valid = Validator::validateIp(ui->playbackHost) && valid;
+    valid = Validator::validatePort(ui->playbackPort) && valid;
 
     return valid;
 }

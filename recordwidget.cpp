@@ -9,6 +9,8 @@
 #include <QStandardPaths>
 #include <QMessageBox>
 
+#include <iostream>
+
 NetworkPcapFileRecorder* RecordWidget::networkPcapFileRecorder;
 TsNetworkFileRecorder* RecordWidget::tsNetworkFileRecorder;
 
@@ -104,7 +106,7 @@ void RecordWidget::recordingFinished() {
 bool RecordWidget::validateRecordInputs() {
     bool valid = true;
 
-    // Performs validation on everything
+    // Performs validation on everything, and sets correct color
     valid = Validator::validateIp(ui->recordHost) && valid;
 
 
@@ -114,39 +116,24 @@ bool RecordWidget::validateRecordInputs() {
 }
 
 
-bool RecordWidget::validatePortInputs() {
-
-    // Checks if port input is within range of UShort.
-    bool valid = true;
-    if((ui->recordPort->text().toUShort() < 65535) && (ui->recordPort->text().toUShort() > -1)) {
-        valid = Validator::validatePort(ui->recordPort) && valid;
-    }
-    return valid;
-}
-
-
-
-
-
 void RecordWidget::recordFilterShouldUpdate() {
     QHostAddress address;
-    // This check prevents check box to close if empty
-    //if(validateRecordInputs()){
-        if (ui->recordUnicastCheckBox->checkState() == Qt::Checked) {
-            // Use address of selected interface if unicast.
-            address = MainWindow::interfaces.at(ui->recordInterfaceSelect->currentIndex()).getAddress();
-            ui->recordFilter->setText(PcapFilter::generateFilter(address.toString(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
-            ui->recordHost->setEnabled(false);
-        }
-        else if (validatePortInputs()) {
-            ui->recordFilter->setText(PcapFilter::generateFilter(ui->recordHost->text(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
-            ui->recordHost->setEnabled(true);
-        }
 
-        ui->recordFilter->setToolTip(ui->recordFilter->text());
-        //   }
+    if (ui->recordUnicastCheckBox->checkState() == Qt::Checked) {
+        // Use address of selected interface if unicast. If Unicastbox is checked forbids user to write in adress field
+        address = MainWindow::interfaces.at(ui->recordInterfaceSelect->currentIndex()).getAddress();
+        ui->recordFilter->setText(PcapFilter::generateFilter(address.toString(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
+        ui->recordHost->setEnabled(false);
     }
-//}
+    else {
+        ui->recordFilter->setText(PcapFilter::generateFilter(ui->recordHost->text(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
+        ui->recordHost->setEnabled(true);
+    }
+   //Validates adress, host. Also sets color of field
+
+    validateRecordInputs();
+
+}
 
 
 
