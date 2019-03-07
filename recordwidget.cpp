@@ -106,28 +106,49 @@ bool RecordWidget::validateRecordInputs() {
 
     // Performs validation on everything
     valid = Validator::validateIp(ui->recordHost) && valid;
+
+
     valid = Validator::validatePort(ui->recordPort) && valid;
 
     return valid;
 }
 
+
+bool RecordWidget::validatePortInputs() {
+
+    // Checks if port input is within range of UShort.
+    bool valid = true;
+    if((ui->recordPort->text().toUShort() < 65535) && (ui->recordPort->text().toUShort() > -1)) {
+        valid = Validator::validatePort(ui->recordPort) && valid;
+    }
+    return valid;
+}
+
+
+
+
+
 void RecordWidget::recordFilterShouldUpdate() {
     QHostAddress address;
-
-    if (validateRecordInputs()) {
+    // This check prevents check box to close if empty
+    //if(validateRecordInputs()){
         if (ui->recordUnicastCheckBox->checkState() == Qt::Checked) {
             // Use address of selected interface if unicast.
             address = MainWindow::interfaces.at(ui->recordInterfaceSelect->currentIndex()).getAddress();
             ui->recordFilter->setText(PcapFilter::generateFilter(address.toString(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
             ui->recordHost->setEnabled(false);
         }
-        else {
+        else if (validatePortInputs()) {
             ui->recordFilter->setText(PcapFilter::generateFilter(ui->recordHost->text(), ui->recordPort->text().toUShort(), ui->recordRtpFecCheckBox->checkState() == Qt::Checked));
             ui->recordHost->setEnabled(true);
         }
+
         ui->recordFilter->setToolTip(ui->recordFilter->text());
+        //   }
     }
-}
+//}
+
+
 
 bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     if (networkPcapFileRecorder != NULL) {

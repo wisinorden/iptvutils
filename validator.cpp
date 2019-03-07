@@ -36,12 +36,15 @@ bool Validator::isValidIp(QString ip) {
 
 bool Validator::validatePort(QLineEdit *field, bool emptyAllowed) {
     bool ok;
-    uint num = field->text().toUInt(&ok);
+    uint port = field->text().toUShort(&ok);
 
-    if ((ok && num <= 65535) || (emptyAllowed && field->text().length() == 0)) {
+    if(ok) {
         field->setStyleSheet("");
+
         return true;
     }
+
+
     else {
         field->setStyleSheet("QLineEdit{background: #ffd3d3;}");
         return false;

@@ -34,6 +34,8 @@ private slots:
     void recordingStarted();
     void recordingFinished();
     bool validateRecordInputs();
+    bool validatePortInputs();
+
     void recordFilterShouldUpdate();
 
     bool startPcapRecord(WorkerConfiguration::WorkerMode mode = WorkerConfiguration::NORMAL_MODE);
