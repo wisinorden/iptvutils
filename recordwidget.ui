@@ -158,38 +158,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QLabel" name="recordFileFormatLbl">
-          <property name="text">
-           <string>File format</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="recordFileFormatHLayout">
-          <item>
-           <widget class="QRadioButton" name="recordFileFormatPCAP">
-            <property name="text">
-             <string>PCAP</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">recordFileFormatGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="recordFileFormatTS">
-            <property name="text">
-             <string>TS</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">recordFileFormatGroup</string>
-            </attribute>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="recordFileFormatHLayout"/>
         </item>
        </layout>
       </item>
@@ -201,14 +170,18 @@
         <item>
          <widget class="QLabel" name="recordFilenameLbl">
           <property name="text">
-           <string>Save to file</string>
+           <string>Save to file (.ts or .pcap)</string>
           </property>
          </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="recordFilenameHLayout">
           <item>
-           <widget class="QLineEdit" name="recordFilename"/>
+           <widget class="QLineEdit" name="recordFilename">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="recordOpenFileDialog">

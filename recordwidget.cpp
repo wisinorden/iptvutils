@@ -10,7 +10,7 @@
 #include <QMessageBox>
 
 #include <iostream>
-
+#include <cstddef>
 NetworkPcapFileRecorder* RecordWidget::networkPcapFileRecorder;
 TsNetworkFileRecorder* RecordWidget::tsNetworkFileRecorder;
 
@@ -26,8 +26,8 @@ RecordWidget::RecordWidget(QWidget *parent) :
     connect(ui->recordExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_recordExpandPCAPFilterButton_toggled(bool)));
 
     // File format
-    connect(ui->recordFileFormatPCAP, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatPCAP_toggled(bool)));
-    connect(ui-> recordFileFormatTS, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatTS_toggled(bool)));
+   // connect(ui->recordFileFormatPCAP, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatPCAP_toggled(bool)));
+  //  connect(ui-> recordFileFormatTS, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatTS_toggled(bool)));
 
     connect(ui->recordHost, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordPort, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
@@ -94,8 +94,9 @@ void RecordWidget::recordingStarted() {
     ui->recordUnicastCheckBox->setEnabled(false);
     ui->recordExpandPCAPFilterButton->setEnabled(false);
     ui->recordPcapFilterContainer->setEnabled(false);
-    ui->recordFileFormatPCAP->setEnabled(false);
-    ui-> recordFileFormatTS->setEnabled(false);
+    ui->recordInterfaceSelect->setEnabled(false);
+ //   ui->recordFileFormatPCAP->setEnabled(false);
+  //  ui-> recordFileFormatTS->setEnabled(false);
  //   ui->recordExpandPCAPFilterButton->setEnabled(false);
 
 
@@ -120,8 +121,10 @@ void RecordWidget::recordingFinished() {
     ui->recordUnicastCheckBox->setEnabled(true);
     ui->recordExpandPCAPFilterButton->setEnabled(true);
     ui->recordPcapFilterContainer->setEnabled(true);
-    ui->recordFileFormatPCAP->setEnabled(true);
-    ui-> recordFileFormatTS->setEnabled(true);
+    ui->recordInterfaceSelect->setEnabled(true);
+
+  //  ui->recordFileFormatPCAP->setEnabled(true);
+  //  ui-> recordFileFormatTS->setEnabled(true);
 
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
@@ -210,6 +213,7 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     ui->recordStartStopBtn->setEnabled(false);
 
     networkPcapFileRecorder->start();
+
     return true;
 }
 
@@ -233,7 +237,6 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);
-
     tsNetworkFileRecorder->start();
     return true;
 }
@@ -268,18 +271,11 @@ void RecordWidget::on_recordOpenFileDialog_clicked()
     if (path.length() == 0)
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
-    if (ui->recordFileFormatPCAP->isChecked()) {
-        fileDialog.setNameFilter(tr("Capture file (*.pcap)"));
+
+        fileDialog.setNameFilter(tr("Capture file (*.pcap *.ts)"));
         fileDialog.setDefaultSuffix("pcap");
         fileDialog.exec();
-    }
 
-
-    else {
-        fileDialog.setNameFilter(tr("MPEG-TS (*.ts)"));
-        fileDialog.setDefaultSuffix("ts");
-        fileDialog.exec();
-    }
 
     if (!fileDialog.selectedFiles().empty()){
         QString filename = fileDialog.selectedFiles().first();
@@ -311,8 +307,7 @@ void RecordWidget::on_recordStartStopBtn_clicked()
         }
 
         if (ui->recordFilename->text() > 0) {
-            QString suffix = ui->recordFileFormatPCAP->isChecked() ? "pcap" : "ts";
-            if (QFileInfo(ui->recordFilename->text()).suffix() != suffix) {
+             if (QFileInfo(ui->recordFilename->text()).suffix() != "pcap" && QFileInfo(ui->recordFilename->text()).suffix() != "ts") {
                 QMessageBox::warning(
                             this,
                             tr("IPTV Utilities"),
@@ -339,12 +334,13 @@ void RecordWidget::on_recordStartStopBtn_clicked()
                 return;
         }
 
-        if (ui->recordFileFormatPCAP->isChecked()) {
+        if (QFileInfo(ui->recordFilename->text()).suffix() == "pcap") {
             startPcapRecord();
         }
-        else {
+        else if (QFileInfo(ui->recordFilename->text()).suffix() == "ts") {
             startTsRecord();
         }
+
     }
     else {
         if (networkPcapFileRecorder != Q_NULLPTR) {

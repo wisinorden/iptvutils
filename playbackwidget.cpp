@@ -93,6 +93,14 @@ void PlaybackWidget::playbackStarted() {
     started = true;
     ui->playbackStartStopBtn->setText(tr("Stop"));
     ui->playbackStartStopBtn->setEnabled(true);
+    ui->playbackHost->setEnabled(false);
+    ui->playbackPort->setEnabled(false);
+    ui->playbackPcapFilterContainer->setEnabled(false);
+    ui->playbackInterfaceSelect->setEnabled(false);
+    ui->playbackFilename->setEnabled(false);
+    ui->playbackLoopCheckbox->setEnabled(false);
+
+
 }
 
 void PlaybackWidget::playbackStatusChanged(FinalStatus status) {
@@ -109,6 +117,12 @@ void PlaybackWidget::playbackWorkerStatusChanged(WorkerStatus status) {
 void PlaybackWidget::playbackFinished() {
     ui->playbackStartStopBtn->setText(tr("Start"));
     ui->playbackStartStopBtn->setEnabled(true);
+    ui->playbackHost->setEnabled(true);
+    ui->playbackPort->setEnabled(true);
+    ui->playbackInterfaceSelect->setEnabled(true);
+    ui->playbackFilename->setEnabled(true);
+    ui->playbackLoopCheckbox->setEnabled(true);
+
     pcapFileNetworkPlayer = NULL;
     started = false;
 }
@@ -117,6 +131,21 @@ bool PlaybackWidget::validatePlaybackInputs() {
     bool valid = true;
 
     // Performs validation on everything, calls on function which sets color on host & adress field
+    if(Validator::validateIp(ui->playbackHost) && valid){
+        ui->playbackHost->setStyleSheet("");
+    } else {
+        ui->playbackHost->setStyleSheet("QLineEdit{background: #ffd3d3;}");
+    }
+
+    if(Validator::validatePort(ui->playbackPort) && valid){
+
+        ui->playbackPort->setStyleSheet("");
+
+
+    } else {
+
+        ui->playbackPort->setStyleSheet("QLineEdit{background: #ffd3d3;}");
+    }
     valid = Validator::validateIp(ui->playbackHost) && valid;
     valid = Validator::validatePort(ui->playbackPort) && valid;
 
