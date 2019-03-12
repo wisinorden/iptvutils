@@ -96,8 +96,8 @@ void PcapNetworkConsumer::playFromPcapNetwork() {
     qint64 sentBytes = 0, lastSentBytes = 0;
 
     // Set this to 1 s less so we can send first packet on time
-    std::chrono::microseconds recordedStartTime(std::chrono::seconds(header->ts.tv_sec - 1) +
-                                                std::chrono::microseconds(header->ts.tv_usec));
+    std::chrono::microseconds recordedStartTime(std::chrono::seconds(header->ts.tv_sec) +
+                                                std::chrono::microseconds(header->ts.tv_usec - 200));
     auto startTime = std::chrono::steady_clock::now();
     std::chrono::nanoseconds packetOffset;
 
