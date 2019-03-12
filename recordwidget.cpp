@@ -27,6 +27,7 @@ RecordWidget::RecordWidget(QWidget *parent) :
 
     // File format
     connect(ui->recordFileFormatPCAP, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatPCAP_toggled(bool)));
+    connect(ui-> recordFileFormatTS, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatTS_toggled(bool)));
 
     connect(ui->recordHost, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordPort, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
@@ -85,6 +86,7 @@ void RecordWidget::saveSettings() {
 void RecordWidget::recordingStarted() {
     started = true;
     ui->recordStartStopBtn->setText(tr("Stop recording"));
+    ui->recordOpenFileDialog->setEnabled(false);
     ui->recordStartStopBtn->setEnabled(true);
     ui->recordHost->setEnabled(false);
     ui->recordPort->setEnabled(false);
@@ -93,6 +95,8 @@ void RecordWidget::recordingStarted() {
     ui->recordExpandPCAPFilterButton->setEnabled(false);
     ui->recordPcapFilterContainer->setEnabled(false);
     ui->recordFileFormatPCAP->setEnabled(false);
+    ui-> recordFileFormatTS->setEnabled(false);
+ //   ui->recordExpandPCAPFilterButton->setEnabled(false);
 
 
 
@@ -109,6 +113,16 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 void RecordWidget::recordingFinished() {
     ui->recordStartStopBtn->setText(tr("Start recording"));
     ui->recordStartStopBtn->setEnabled(true);
+    ui->recordOpenFileDialog->setEnabled(true);
+    ui->recordHost->setEnabled(true);
+    ui->recordPort->setEnabled(true);
+    ui->recordRtpFecCheckBox->setEnabled(true);
+    ui->recordUnicastCheckBox->setEnabled(true);
+    ui->recordExpandPCAPFilterButton->setEnabled(true);
+    ui->recordPcapFilterContainer->setEnabled(true);
+    ui->recordFileFormatPCAP->setEnabled(true);
+    ui-> recordFileFormatTS->setEnabled(true);
+
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
     started = false;
