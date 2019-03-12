@@ -99,6 +99,7 @@ void PlaybackWidget::playbackStarted() {
     ui->playbackInterfaceSelect->setEnabled(false);
     ui->playbackFilename->setEnabled(false);
     ui->playbackLoopCheckbox->setEnabled(false);
+    ui->playbackOpenFileDialog->setEnabled(false);
 
 
 }
@@ -122,6 +123,8 @@ void PlaybackWidget::playbackFinished() {
     ui->playbackInterfaceSelect->setEnabled(true);
     ui->playbackFilename->setEnabled(true);
     ui->playbackLoopCheckbox->setEnabled(true);
+    ui->playbackOpenFileDialog->setEnabled(true);
+
 
     pcapFileNetworkPlayer = NULL;
     started = false;
