@@ -283,11 +283,6 @@ int PcapBufferedProducer::bufferFromNetworkSetup() {
     elapsedTimer.start();
 
 #ifndef Q_OS_WIN
-    // Setup periodic status update
-    networkSocketStatusTimer = new QTimer();
-    connect(networkSocketStatusTimer, SIGNAL(timeout()), this, SLOT(networkSocketStatusUpdate()));
-    networkSocketStatusTimer->start(1000);
-
     // Setup no data timer
     networkSocketTimer = new QTimer();
     connect(networkSocketTimer, SIGNAL(timeout()), this, SLOT(networkSocketTimeout()));
@@ -351,9 +346,7 @@ void PcapBufferedProducer::bufferFromNetworkTeardown() {
         disconnect(networkSocketTimer, SIGNAL(timeout()), this, SLOT(networkSocketTimeout()));
         networkSocketTimer->stop();
         delete networkSocketTimer;
-        disconnect(networkSocketStatusTimer, SIGNAL(timeout()), this, SLOT(networkSocketStatusUpdate()));
-        networkSocketStatusTimer->stop();
-        delete networkSocketStatusTimer;
+
 #endif
 
         emit status(Status(Status::STATUS_FINISHED, bytes, elapsedTimer.elapsed()));
@@ -387,5 +380,8 @@ void PcapBufferedProducer::networkSocketReadout() {
         QString statusName = "PCAP ERROR: " + QString(pcap_geterr(pcapHandle));
         qInfo("PcapBufferedProducer: pcap_next_ex returned with status: %s", qPrintable(statusName));
         emit status(Status(statusName));
+    } else if (elapsedTimer.elapsed() >=200){
+        networkSocketStatusUpdate();
+
     }
 }

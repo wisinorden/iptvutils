@@ -257,6 +257,9 @@ QTreeView::branch:open:has-children:has-siblings  {
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="recordStatus">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>Idle</string>
           </property>
@@ -271,7 +274,4 @@ QTreeView::branch:open:has-children:has-siblings  {
  </widget>
  <resources/>
  <connections/>
- <buttongroups>
-  <buttongroup name="recordFileFormatGroup"/>
- </buttongroups>
 </ui>

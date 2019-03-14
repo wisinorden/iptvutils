@@ -95,9 +95,7 @@ void RecordWidget::recordingStarted() {
     ui->recordExpandPCAPFilterButton->setEnabled(false);
     ui->recordPcapFilterContainer->setEnabled(false);
     ui->recordInterfaceSelect->setEnabled(false);
- //   ui->recordFileFormatPCAP->setEnabled(false);
-  //  ui-> recordFileFormatTS->setEnabled(false);
- //   ui->recordExpandPCAPFilterButton->setEnabled(false);
+
 
 
 
@@ -123,8 +121,7 @@ void RecordWidget::recordingFinished() {
     ui->recordPcapFilterContainer->setEnabled(true);
     ui->recordInterfaceSelect->setEnabled(true);
 
-  //  ui->recordFileFormatPCAP->setEnabled(true);
-  //  ui-> recordFileFormatTS->setEnabled(true);
+
 
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
@@ -135,7 +132,7 @@ void RecordWidget::recordingFinished() {
 bool RecordWidget::validatePortInputs() {
     bool valid = true;
 
-    // Performs validation on Port and sets correct color
+    // Performs validation on port
 
     valid = Validator::validatePort(ui->recordPort) && valid;
 
@@ -147,7 +144,7 @@ bool RecordWidget::validatePortInputs() {
 bool RecordWidget::validateAdressInputs() {
     bool valid = true;
 
-    // Performs validation on Address and sets correct color
+    // Performs validation on Address
     valid = Validator::validateIp(ui->recordHost) && valid;
 
     return valid;

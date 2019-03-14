@@ -7,6 +7,9 @@
 
 #include <QElapsedTimer>
 
+#include <iostream>
+
+
 void AnalyzerPcapMiddleware::init() {
     this->moveToThread(&runnerThread);
     connect(&runnerThread, &QThread::started, this, &AnalyzerPcapMiddleware::run);
@@ -55,16 +58,14 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
     while (!stopping) {
         input = prevProvider->getProduct();
-        packetNumber++;
         if (input.type == PcapProduct::NORMAL && !hasLooped) {
             PacketParser parser((pcap_pkthdr*)input.header.data(), (const u_char*)input.data.data());
             bytes += parser.data_len;
+
             if (startTime == -1) {
-                startTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec*1000; // convert to ms
                 startTime += ((pcap_pkthdr*)input.header.data())->ts.tv_usec/1000; // convert to ms
             }
             else {
-                endTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec*1000; // convert to ms
                 endTime += ((pcap_pkthdr*)input.header.data())->ts.tv_usec/1000; // convert to ms
                 duration = endTime - startTime;
                 if (lastDuration == 0)
@@ -72,17 +73,23 @@ void AnalyzerPcapMiddleware::bufferProducts() {
             }
 
             // 1 second of trafic, calculate bitrate for that second
+
             if (duration - lastDuration >= 1000) {
                 bitrate = (bytes - lastSecondBytes)*8*1000/(duration - lastDuration);
                 lastSecondBytes = bytes;
                 lastDuration = duration;
+
             }
 
             // sanity check, prevents analyzation of packets that do not contain ts-packets
-            if (parser.data_len % 188 == 0 && parser.ih->proto == 17) {
+            if (parser.data_len % 188 == 0 && parser.ih->proto == 17 && parser.data_len != 0) {
+
+
                 tsPerIp = parser.data_len/188;
 
                 // For now, assume the only existing protocols
+
+
                 if (parser.rp_len > 0)
                     proto = AnalyzerStatus::RTP;
                 else
@@ -114,27 +121,48 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                 for (quint8 i = 0; i < tsPerIp; i++) {
                     tsParser.parse((quint8*)(parser.data+i*188));
 
-                    tsAnalyzer.validSyncByte();
-                    tsAnalyzer.ccErrorDetect();
 
-                    // save information about this packet
-                    stream.pidMap[tsParser.hdr.PID].cc = tsParser.hdr.CC;
-                    stream.pidMap[tsParser.hdr.PID].scramble = tsParser.hdr.TSC;
-                    stream.pidMap[tsParser.hdr.PID].lastArrived = duration;
+                    if(tsAnalyzer.validSyncByte()){
+
+                        tsAnalyzer.ccErrorDetect();
+
+                        // save information about this packet
+                        stream.pidMap[tsParser.hdr.PID].cc = tsParser.hdr.CC;
+                        stream.pidMap[tsParser.hdr.PID].scramble = tsParser.hdr.TSC;
+                        stream.pidMap[tsParser.hdr.PID].lastArrived = duration;
+                    }
+                    else {
+
+
+                    }
                 }
+
+                // case 1: sanity check true
+                buffer.push(input);
+                packetNumber++;
+
+
             }
             else {
+
+                // If the IP - packet contains anything thats not TS this activates.
                 qInfo("Detected packet that is not TS");
+                continue;
             }
 
         }
         else if (input.type == PcapProduct::LOOP) {
             hasLooped = true;
+
+            buffer.push(input);
+            packetNumber++;
+
         }
-        buffer.push(input);
+
 
         if (statusTimer.elapsed() >= 200) {
-            emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
+            emit status(AnalyzerStatus(Status::STATUS_PERIODIC, 0, 0, 0, 0, pidMap, tsErrors, proto, tsPerIp));
+            //emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
             emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
             statusTimer.restart();
         }
