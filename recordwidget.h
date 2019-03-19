@@ -48,6 +48,10 @@ private slots:
     void on_recordOpenFileDialog_clicked();
     void on_recordStartStopBtn_clicked();
 
+    void on_treeWidget_activated(const QModelIndex &index);
+
+    void on_treeWidget_clicked(const QModelIndex &index);
+
 public slots:
     void recordStatusChanged(FinalStatus status);
     void recordWorkerStatusChanged(WorkerStatus status);

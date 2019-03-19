@@ -352,3 +352,13 @@ void RecordWidget::on_recordStartStopBtn_clicked()
         }
     }
 }
+
+void RecordWidget::on_treeWidget_activated(const QModelIndex &index)
+{
+
+}
+
+void RecordWidget::on_treeWidget_clicked(const QModelIndex &index)
+{
+
+}

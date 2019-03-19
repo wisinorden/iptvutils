@@ -63,9 +63,11 @@ void AnalyzerPcapMiddleware::bufferProducts() {
             bytes += parser.data_len;
 
             if (startTime == -1) {
+                startTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec * 1000; // convert to ms
                 startTime += ((pcap_pkthdr*)input.header.data())->ts.tv_usec/1000; // convert to ms
             }
             else {
+                endTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec*1000;
                 endTime += ((pcap_pkthdr*)input.header.data())->ts.tv_usec/1000; // convert to ms
                 duration = endTime - startTime;
                 if (lastDuration == 0)
@@ -161,8 +163,7 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
 
         if (statusTimer.elapsed() >= 200) {
-            emit status(AnalyzerStatus(Status::STATUS_PERIODIC, 0, 0, 0, 0, pidMap, tsErrors, proto, tsPerIp));
-            //emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
+            emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
             emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
             statusTimer.restart();
         }

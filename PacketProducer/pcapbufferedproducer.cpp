@@ -86,9 +86,11 @@ void PcapBufferedProducer::networkSocketTimeout()
 void PcapBufferedProducer::networkSocketStatusUpdate()
 {
     qint64 timeNow = elapsedTimer.elapsed();
-    emit status(Status(Status::STATUS_PERIODIC, bytes, timeNow, ((bytes-statusLastBytes)*8*1000)/(timeNow-statusLastTime)));
-    statusLastBytes = bytes;
-    statusLastTime = timeNow;
+    if(timeNow - statusLastTime > 999){
+        emit status(Status(Status::STATUS_PERIODIC, bytes, timeNow, ((bytes-statusLastBytes)*8*1000)/(timeNow-statusLastTime)));
+        statusLastBytes = bytes;
+        statusLastTime = timeNow;
+    }
 }
 
 #endif /* ifndef Q_OS_WIN */
@@ -380,8 +382,9 @@ void PcapBufferedProducer::networkSocketReadout() {
         QString statusName = "PCAP ERROR: " + QString(pcap_geterr(pcapHandle));
         qInfo("PcapBufferedProducer: pcap_next_ex returned with status: %s", qPrintable(statusName));
         emit status(Status(statusName));
-    } else if (elapsedTimer.elapsed() >=200){
+    } else {
         networkSocketStatusUpdate();
+
 
     }
 }
