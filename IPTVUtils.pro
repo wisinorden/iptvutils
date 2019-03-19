@@ -11,8 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = iptvutils
 TEMPLATE = app
 
-win32:VERSION = 0.7.0.1 # major.minor.patch.build
-else:VERSION = 0.7.0    # major.minor.patch
+win32:VERSION = 0.8.0.1 # major.minor.patch.build
+else:VERSION = 0.8.0    # major.minor.patch
 
 CONFIG += c++14
 

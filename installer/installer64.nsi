@@ -100,7 +100,7 @@ Section "IPTVUtils (required)"
   ; Write the uninstall keys for Windows
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\IPTVUtils" "DisplayName" "IPTVUtils"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\IPTVUtils" "Publisher" "WISI Norden AB"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\IPTVUtils" "DisplayVersion" "0.7.0"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\IPTVUtils" "DisplayVersion" "0.8.0"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\IPTVUtils" "EstimatedSize" $0
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\IPTVUtils" "DisplayIcon" "$INSTDIR\logo.ico"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\IPTVUtils" "InstallLocation" "$INSTDIR"
