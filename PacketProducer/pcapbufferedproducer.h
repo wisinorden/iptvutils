@@ -47,8 +47,8 @@ private slots:
     void _internalStop();
     void networkSocketActivated(int socket);
     void networkSocketTimeout();
-    void networkSocketStatusUpdate();
 #endif
+    void networkSocketStatusUpdate();
 
 private:
     int bufferFromFileSetup();

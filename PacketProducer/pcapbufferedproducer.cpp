@@ -80,6 +80,8 @@ void PcapBufferedProducer::networkSocketTimeout()
     networkSocketTimer->start(1000);
 }
 
+#endif /* ifndef Q_OS_WIN */
+
 /**
  * @brief Timer handler for status update from network PCAP
  */
@@ -93,7 +95,8 @@ void PcapBufferedProducer::networkSocketStatusUpdate()
     }
 }
 
-#endif /* ifndef Q_OS_WIN */
+
+
 
 int PcapBufferedProducer::bufferFromFileSetup() {
     qInfo("Buffering pcap from file, buffer size: %lu", buffer.max_size());
@@ -105,6 +108,9 @@ int PcapBufferedProducer::bufferFromFileSetup() {
 
     return 0;
 }
+
+
+
 
 void PcapBufferedProducer::bufferFromFileRun()
 {
@@ -309,16 +315,10 @@ void PcapBufferedProducer::bufferFromNetworkRun() {
     const u_char *pkt_data;
     struct pcap_pkthdr *header;
     PacketParser parser;
-    QElapsedTimer statusTimer;
-    statusTimer.start();
     int pcapStatus = 5; // some value that does not otherwise appear as status
 
     while(!stopping && (pcapStatus = pcap_next_ex(pcapHandle, &header, &pkt_data)) >= 0) {
-        if (statusTimer.elapsed() >= 1000) {
-            emit status(Status(Status::STATUS_PERIODIC, bytes, elapsedTimer.elapsed(), ((bytes-statusLastBytes)*8*1000)/statusTimer.elapsed()));
-            statusLastBytes = bytes;
-            statusTimer.restart();
-        }
+        networkSocketStatusUpdate();
         // pcap timeout, no data is contained here
         if (pcapStatus == 0) {
             continue;
@@ -335,6 +335,12 @@ void PcapBufferedProducer::bufferFromNetworkRun() {
     }
 
     bufferFromNetworkTeardown();
+
+
+
+
+
+
 #else /* ifdef Q_OS_WIN */
     // We have an event loop setup in bufferFromNetworkSetup(), lets just silently return
 #endif /* ifdef Q_OS_WIN */
