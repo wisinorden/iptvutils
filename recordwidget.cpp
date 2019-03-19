@@ -26,8 +26,8 @@ RecordWidget::RecordWidget(QWidget *parent) :
     connect(ui->recordExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_recordExpandPCAPFilterButton_toggled(bool)));
 
     // File format
-   // connect(ui->recordFileFormatPCAP, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatPCAP_toggled(bool)));
-  //  connect(ui-> recordFileFormatTS, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatTS_toggled(bool)));
+    // connect(ui->recordFileFormatPCAP, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatPCAP_toggled(bool)));
+    //  connect(ui-> recordFileFormatTS, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatTS_toggled(bool)));
 
     connect(ui->recordHost, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordPort, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
@@ -175,7 +175,7 @@ void RecordWidget::recordFilterShouldUpdate() {
         ui->recordHost->setStyleSheet("QLineEdit{background: #ffd3d3;}");
 
     }
-      //Sets color of port field
+    //Sets color of port field
     if(validatePortInputs()){
 
         ui->recordPort->setStyleSheet("");
@@ -269,9 +269,9 @@ void RecordWidget::on_recordOpenFileDialog_clicked()
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
 
-        fileDialog.setNameFilter(tr("Capture file (*.pcap *.ts)"));
-        fileDialog.setDefaultSuffix("pcap");
-        fileDialog.exec();
+    fileDialog.setNameFilter(tr("Capture file (*.pcap *.ts)"));
+    fileDialog.setDefaultSuffix("pcap");
+    fileDialog.exec();
 
 
     if (!fileDialog.selectedFiles().empty()){
@@ -304,7 +304,7 @@ void RecordWidget::on_recordStartStopBtn_clicked()
         }
 
         if (ui->recordFilename->text() > 0) {
-             if (QFileInfo(ui->recordFilename->text()).suffix() != "pcap" && QFileInfo(ui->recordFilename->text()).suffix() != "ts") {
+            if (QFileInfo(ui->recordFilename->text()).suffix() != "pcap" && QFileInfo(ui->recordFilename->text()).suffix() != "ts") {
                 QMessageBox::warning(
                             this,
                             tr("IPTV Utilities"),

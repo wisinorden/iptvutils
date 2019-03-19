@@ -282,7 +282,9 @@ int PcapBufferedProducer::bufferFromNetworkSetup() {
     emit status(Status(Status::STATUS_STARTED));
 
     // Start elapsed timer (before any potential events below)
+    statusLastTime = 0;
     elapsedTimer.start();
+
 
 #ifndef Q_OS_WIN
     // Setup no data timer

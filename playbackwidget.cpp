@@ -43,10 +43,10 @@ PlaybackWidget::PlaybackWidget(QWidget *parent) :
     loopOptions.insert("PCR Rewrite",        FileInputConfiguration::LOOP_PCR_REWRITE);
     ui->playbackLoopCombo->addItem(loopOptions.key(FileInputConfiguration::LOOP_SIMPLE));
     ui->playbackLoopCombo->setItemData(0,
-            "No data modification, equivalent to pressing play over and over.", Qt::ToolTipRole);
+                                       "No data modification, equivalent to pressing play over and over.", Qt::ToolTipRole);
     ui->playbackLoopCombo->addItem(loopOptions.key(FileInputConfiguration::LOOP_DISCONTINUITY_FLAG));
     ui->playbackLoopCombo->setItemData(1,
-            "Offsets CC at loop and sets discontinuity flag on first PCR after loop.", Qt::ToolTipRole);
+                                       "Offsets CC at loop and sets discontinuity flag on first PCR after loop.", Qt::ToolTipRole);
 }
 
 PlaybackWidget::~PlaybackWidget() {
@@ -112,6 +112,7 @@ void PlaybackWidget::playbackWorkerStatusChanged(WorkerStatus status) {
     if (status.getType() == WorkerStatus::STATUS_ANALYZED_ENTIRE) {
         status.insertIntoTree(ui->treeWidget);
         streams = status.getStreams();
+        playbackFinished();
     }
 }
 
@@ -223,7 +224,7 @@ void PlaybackWidget::on_playbackOpenFileDialog_clicked() {
         path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
     QString filename = QFileDialog::getOpenFileName(this,
-        tr("Open recorded traffic"), path, tr("Pcap files (*.pcap *.pcapng)"));
+                                                    tr("Open recorded traffic"), path, tr("Pcap files (*.pcap *.pcapng)"));
     if (filename != "") {
         ui->playbackFilename->setText(filename);
         currentFile = filename;
@@ -276,6 +277,6 @@ void PlaybackWidget::on_treeWidget_itemSelectionChanged()
     if (ui->treeWidget->selectedItems().size() == 1 && ui->treeWidget->selectedItems().at(0)->parent() == NULL) {
         selectedStreamId = StreamId(StreamId::calcId(ui->treeWidget->selectedItems().at(0)->text(0)));
         ui->playbackFilter->setText(
-            PcapFilter::generateFilter(selectedStreamId.getHost(), selectedStreamId.getPort(), false));
+                    PcapFilter::generateFilter(selectedStreamId.getHost(), selectedStreamId.getPort(), false));
     }
 }
