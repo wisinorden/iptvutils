@@ -31,7 +31,7 @@ quint64 LoopPcapMiddleware::timevalToUsec(timeval time) {
     quint64 usecs = secs*1000000 + time.tv_usec;
     return usecs;
 }
-
+//test
 timeval LoopPcapMiddleware::usecToTimeval(quint64 time) {
     long int seconds = time/1000000;
     long int usecs = time - seconds*1000000;
