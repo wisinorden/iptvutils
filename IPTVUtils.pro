@@ -61,7 +61,8 @@ SOURCES += \
     Analyzer/tsanalyzer.cpp \
     playbackwidget.cpp \
     recordwidget.cpp \
-    convertwidget.cpp
+    convertwidget.cpp \
+    Middleware/networkjitter.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -110,7 +111,8 @@ HEADERS += \
     recordwidget.h \
     convertwidget.h \
     Status/streamid.h \
-    Status/workerstatus.h
+    Status/workerstatus.h \
+    Middleware/networkjitter.h
 
 FORMS += \
         mainwindow.ui \

@@ -5,6 +5,7 @@
 #include "PacketProducer/pcapbufferedproducer.h"
 #include "PacketConsumer/pcapfileconsumer.h"
 #include "Middleware/analyzerpcapmiddleware.h"
+#include "Middleware/networkjitter.h"
 
 class NetworkPcapFileRecorder : public Recorder
 {
@@ -12,6 +13,8 @@ class NetworkPcapFileRecorder : public Recorder
 private:
     PcapBufferedProducer producer;
     PcapFileConsumer consumer;
+    NetworkJitter networkJitter;
+
     AnalyzerPcapMiddleware analyzerMiddleware;
 
 public:
@@ -19,7 +22,10 @@ public:
         Recorder(config, parent),
         producer(config),
         consumer(config),
-        analyzerMiddleware(config) {}
+        networkJitter(config),
+        analyzerMiddleware(config) {
+
+    }
 
     void start();
     void stop();

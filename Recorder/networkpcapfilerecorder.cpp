@@ -2,7 +2,7 @@
 
 void NetworkPcapFileRecorder::start() {
     finalStatus.setAnalysisMode(config.getWorkerMode());
-    producer.addNext(&analyzerMiddleware)->addNext(&consumer);
+    producer.addNext(&analyzerMiddleware)->addNext(&networkJitter)->addNext(&consumer);
     producer.init(&producerThread);
 
     connect(&consumer, &PcapFileConsumer::finished, &producer, &PcapBufferedProducer::stop);
@@ -19,6 +19,7 @@ void NetworkPcapFileRecorder::start() {
 
     producerThread.start();
     analyzerMiddleware.start();
+    networkJitter.start();
     consumer.start(&consumerThread);
 
     emit started();

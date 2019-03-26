@@ -1,7 +1,7 @@
 #include "pcaptsconverter.h"
 
 void PcapTsConverter::start() {
-    producer.addToEnd(&analyzerMiddleware)->addToEnd(&consumer);
+    producer.addToEnd(&analyzerMiddleware)->addToEnd(&consumer); // Add NetworkJitter after analyzer middleware (Maybe?)s
     producer.init(&producerThread);
 
     connect(&consumer, &TsFileConsumer::finished, &producer, &PcapBufferedProducer::stop);
