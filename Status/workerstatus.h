@@ -74,6 +74,7 @@ public:
             parent->addChild(makeItem(QString(tr("protocol %1")).arg(info.protocolName())));
             parent->addChild(makeItem(QString(tr("bitrate mode %1")).arg(info.bitrateModeName())));
             parent->addChild(makeItem(QString(tr("%1 TS/IP")).arg(info.tsPerIp)));
+            parent->addChild(makeItem(QString(tr("%1 msec Networkjitter")).arg(info.networkJitters)));
             parent->addChild(makeItem(QString(tr("%1 PIDs")).arg(info.pidMap.size())));
 
             quint64 tsErrCount = info.tsErrors.totalErrors();

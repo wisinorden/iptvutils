@@ -3,6 +3,7 @@
 void TsNetworkFileRecorder::start() {
     finalStatus.setAnalysisMode(config.getWorkerMode());
     producer.addToEnd(&analyzerMiddleware)->addToEnd(&consumer);
+
     producer.init(&producerThread);
 
     connect(&consumer, &TsFileConsumer::finished, &producer, &PcapBufferedProducer::stop);
@@ -16,6 +17,7 @@ void TsNetworkFileRecorder::start() {
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::status, this, &TsNetworkFileRecorder::gotAnalyzerStatus);
     connect(&consumer, &TsFileConsumer::status, this, &TsNetworkFileRecorder::gotConsumerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &TsNetworkFileRecorder::workerStatus);
+
 
     producerThread.start();
     analyzerMiddleware.start();

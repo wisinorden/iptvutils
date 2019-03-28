@@ -23,6 +23,7 @@ protected:
 
     Protocol proto = UNKNOWN;
     quint8 tsPerIp = 0;
+    quint8 networkJitters = 0;
 
 public:
     AnalyzerStatus() : Status() {}
@@ -36,13 +37,15 @@ public:
                    QMap<int, PIDInfo> pidMap,
                    TsErrors tsErrors,
                    Protocol proto = UNKNOWN,
-                   quint8 tsPerIp = -1) :
+                   quint8 tsPerIp = -1,
+                   quint8 networkJitters = -1) :
         Status(type),
         duration(duration),
         pidMap(pidMap),
         tsErrors(tsErrors),
         proto(proto),
-        tsPerIp(tsPerIp)
+        tsPerIp(tsPerIp),
+        networkJitters(networkJitters)
     {}
     AnalyzerStatus(StatusType type,
                    qint64 bytes,
@@ -52,13 +55,15 @@ public:
                    QMap<int, PIDInfo> pidMap,
                    TsErrors tsErrors,
                    Protocol proto = UNKNOWN,
-                   quint8 tsPerIp = -1) :
+                   quint8 tsPerIp = -1,
+                   quint8 networkJitters = -1) :
         Status(type, bytes, elapsed, bitrate),
         duration(duration),
         pidMap(pidMap),
         tsErrors(tsErrors),
         proto(proto),
-        tsPerIp(tsPerIp)
+        tsPerIp(tsPerIp),
+        networkJitters(networkJitters)
     {}
     ~AnalyzerStatus() {}
     AnalyzerStatus(AnalyzerStatus const &other) :
@@ -67,10 +72,14 @@ public:
         pidMap(other.pidMap),
         tsErrors(other.tsErrors),
         proto(other.proto),
-        tsPerIp(other.tsPerIp) {}
+        tsPerIp(other.tsPerIp),
+        networkJitters(other.networkJitters)
+    {}
 
     void setTsPerIp(quint8 tsPerIp) { this->tsPerIp = tsPerIp; }
+    void setNetworkJitter(quint8 networkJitters) {this->networkJitters =networkJitters; }
     void setProtocol(Protocol proto) { this->proto = proto; }
+
 
     qint64 getDuration() const { return duration; }
 
@@ -82,6 +91,7 @@ public:
     }
 
     quint8 getTsPerIp() const { return this->tsPerIp; }
+    quint8 getNetworkJitter() const {return this->networkJitters; }
     Protocol getProtocol() const { return this->proto; }
 
 };
