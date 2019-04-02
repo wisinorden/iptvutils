@@ -11,11 +11,19 @@ void NetworkPcapFileRecorder::start() {
     connect(&producerThread, &QThread::finished, this, &NetworkPcapFileRecorder::moduleFinished);
     connect(analyzerMiddleware.thread(), &QThread::finished, this, &NetworkPcapFileRecorder::moduleFinished);
     connect(&consumerThread, &QThread::finished, this, &NetworkPcapFileRecorder::moduleFinished);
+    connect(networkJitter.thread(), &QThread::finished, this, &NetworkPcapFileRecorder::moduleFinished);
+
 
     connect(&producer, &PcapBufferedProducer::status, this, &NetworkPcapFileRecorder::gotProducerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::status, this, &NetworkPcapFileRecorder::gotAnalyzerStatus);
+    connect(&networkJitter, &NetworkJitter::status, this, &NetworkPcapFileRecorder::gotNetworkStatus);
+
+
+    //Worker-status is connected to the right side stream info panel
     connect(&consumer, &PcapFileConsumer::status, this, &NetworkPcapFileRecorder::gotConsumerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &NetworkPcapFileRecorder::workerStatus);
+    connect(&networkJitter, &NetworkJitter::workerStatus, this, &NetworkPcapFileRecorder::workerStatus);
+
 
     producerThread.start();
     analyzerMiddleware.start();
@@ -50,6 +58,24 @@ void NetworkPcapFileRecorder::gotAnalyzerStatus(AnalyzerStatus aStatus) {
         emit status(finalStatus);
     }
 }
+
+
+void NetworkPcapFileRecorder::gotNetworkStatus(AnalyzerStatus dStatus) {
+    if (dStatus.getType() == Status::STATUS_ERROR) {
+        finalStatus.setError(dStatus.getError());
+        stop();
+        emit status(finalStatus);
+        return;
+    }
+    else {
+        finalStatus.setNetworkJitter(dStatus);
+        emit status(finalStatus);
+    }
+}
+
+
+
+
 
 void NetworkPcapFileRecorder::gotConsumerStatus(Status cStatus) {
     if (cStatus.getType() == Status::STATUS_ERROR) {

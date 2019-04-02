@@ -24,13 +24,6 @@ signals:
     void started();
     void finished();
     void workerStatus(WorkerStatus status);
-
-protected slots:
-    virtual void run() = 0;
-
-public slots:
-    virtual void start() = 0;
-    virtual void stop() { stopping = true; }
 };
 
 #endif // PCAPMIDDLEWARE_H

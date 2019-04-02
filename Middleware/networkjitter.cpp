@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "Status/streamid.h"
+#include "Status/streaminfo.h"
 #include "packetparser.h"
 #include "tsparser.h"
 #include <QDebug>
@@ -17,8 +18,8 @@ void NetworkJitter::init() {
 }
 
 
-
 void NetworkJitter::run(){
+
     emit started();
     QElapsedTimer statusTimer;
     statusTimer.start();
@@ -38,15 +39,15 @@ void NetworkJitter::run(){
 
 
     QList<qint16> distanceList;
-
-
-
     qint64 bytes = 0;
-    //    AnalyzerStatus::Protocol proto = AnalyzerStatus::UNKNOWN;
-
-//    bool hasLooped = false;
-
     PcapProduct input;
+
+
+
+
+
+
+
     PcapProduct previousInput = prevProvider->getProduct();
     buffer.push(previousInput);
 
@@ -63,13 +64,12 @@ void NetworkJitter::run(){
         input = prevProvider->getProduct();
 
 
-
-        //if (input.type == PcapProduct::NORMAL && !hasLooped)
         {
+
             PacketParser parser((pcap_pkthdr*)input.header.data(), (const u_char*)input.data.data());
             bytes += parser.data_len;
 
-
+            // Takes packet Timestamp and compares it to the previous one to calculate difference.
             inputTs = ((pcap_pkthdr*)input.header.data())->ts.tv_sec * 1000000;
             inputTs += ((pcap_pkthdr*)input.header.data())->ts.tv_usec;
 
@@ -82,19 +82,15 @@ void NetworkJitter::run(){
             //qInfo() << difference;
 
 
-
             if (difference != 0){
                 //   qInfo() << difference;
-            } else {
-
             }
 
 
-            //Calculate average diff per second
+            //Calculate average diff per second and IAT standard deviation
 
             if(statusTimer.elapsed() >= 1000){
                 diffratePerSec = differencePerSec/packetCounter;
-
 
                 for( int a = 0; a < distanceList.length(); a = a + 1 ) {
 
@@ -104,21 +100,34 @@ void NetworkJitter::run(){
                 finalSum = diffSum/ distanceList.length();
 
                 qInfo() << "Std deviation: " << sqrt(finalSum);
+                //&StreamInfo.networkJitters = finalSum;
+
+
+
+
+
+                quint64 streamId = StreamId::calcId(parser.ih->daddr, parser.dport);
+                StreamInfo &stream = streams[streamId];
+
+
+                stream.networkJitters = sqrt(finalSum);
+
+
+                emit status(AnalyzerStatus(Status::STATUS_PERIODIC, finalSum));
+                emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
+
+
 
                 packetCounter = 0;
                 diffSum = 0;
                 finalSum = 0;
                 distanceList.clear();
 
+
                 differencePerSec = 0;
                 statusTimer.restart();
 
             }
-
-
-
-
-
 
         }
         previousInput = input;
@@ -126,24 +135,18 @@ void NetworkJitter::run(){
         packetNumber++;
         packetCounter ++;
 
-
         if (input.type == PcapProduct::END || input.type == PcapProduct::STOP) {
             break;
         }
-#include "Status/streamid.h"
 
     }
-
-emit finished();
-
+    emit finished();
 }
 
 
 
 void NetworkJitter::start() {
     runnerThread.start();
-//    run();
-
 }
 
 

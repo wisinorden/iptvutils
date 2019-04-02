@@ -19,6 +19,7 @@ protected:
     qint64 bytes = 0;
     qint64 elapsed = 0;
     qint64 bitrate = 0;
+    qint8 networkJitters = 0;
     QString error = "";
 
 public:
@@ -33,6 +34,8 @@ public:
         bytes(bytes),
         elapsed(elapsed),
         bitrate(bitrate) {}
+    Status(StatusType type, qint8 networkJitters) :
+    type(type), networkJitters(networkJitters){}
     ~Status() {}
     Status(Status const &other) :
         QObject(),

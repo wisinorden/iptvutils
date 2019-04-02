@@ -13,11 +13,15 @@
 #include <QMap>
 #include <QHash>
 
-
-#include <QObject>
-
 class NetworkJitter : public PcapMiddleware
 {
+    Q_OBJECT
+private:
+    ConcurrentQueue<PcapProduct> buffer;
+    qint64 duration;
+    qint64 packetNumber;
+    QHash<quint64, StreamInfo> streams;
+
 public:
     NetworkJitter(WorkerConfiguration config) :
         PcapMiddleware(config),
@@ -25,16 +29,11 @@ public:
     {
         init();
     }
-   void init();
+    void init();
+    PcapProduct getProduct();
 
-
-   PcapProduct getProduct();
-private:
-    ConcurrentQueue<PcapProduct> buffer;
-    qint64 duration;
-    qint64 packetNumber;
-//    void bufferProducts();
-    QHash<quint64, StreamInfo> streams;
+signals:
+    void status(AnalyzerStatus status);
 
 protected slots:
     void run();

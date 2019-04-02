@@ -30,6 +30,10 @@ public:
     AnalyzerStatus(Status::StatusType type) : Status(type) {}
     AnalyzerStatus(StatusType type, qint64 bytes, qint64 elapsed ) :
         Status(type, bytes, elapsed) {}
+
+    AnalyzerStatus(StatusType type, qint8 networkJitters) :
+            Status(type, networkJitters) {}
+
     AnalyzerStatus(StatusType type, qint64 bytes, qint64 elapsed, qint64 bitrate) :
         Status(type, bytes, elapsed, bitrate) {}
     AnalyzerStatus(StatusType type,
