@@ -2,7 +2,7 @@
 
 void TsNetworkFileRecorder::start() {
     finalStatus.setAnalysisMode(config.getWorkerMode());
-    producer.addToEnd(&analyzerMiddleware)->addToEnd(&consumer);
+    producer.addNext(&analyzerMiddleware)->addNext(&networkJitter)->addNext(&consumer);
 
     producer.init(&producerThread);
 
@@ -11,16 +11,22 @@ void TsNetworkFileRecorder::start() {
     // Performs waiting for all modules to finish before emitting finished
     connect(&producerThread, &QThread::finished, this, &TsNetworkFileRecorder::moduleFinished);
     connect(analyzerMiddleware.thread(), &QThread::finished, this, &TsNetworkFileRecorder::moduleFinished);
+    connect(networkJitter.thread(), &QThread::finished, this, &TsNetworkFileRecorder::moduleFinished);
+
     connect(&consumerThread, &QThread::finished, this, &TsNetworkFileRecorder::moduleFinished);
 
     connect(&producer, &PcapBufferedProducer::status, this, &TsNetworkFileRecorder::gotProducerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::status, this, &TsNetworkFileRecorder::gotAnalyzerStatus);
     connect(&consumer, &TsFileConsumer::status, this, &TsNetworkFileRecorder::gotConsumerStatus);
-    connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &TsNetworkFileRecorder::workerStatus);
+    connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &TsNetworkFileRecorder::joinStreamInfo);
+    connect(&networkJitter, &NetworkJitter::workerStatus, this, &TsNetworkFileRecorder::joinStreamInfo);
+
+
 
 
     producerThread.start();
     analyzerMiddleware.start();
+    networkJitter.start();
     consumer.start(&consumerThread);
 
     emit started();
@@ -49,6 +55,31 @@ void TsNetworkFileRecorder::gotAnalyzerStatus(AnalyzerStatus aStatus) {
     else {
         finalStatus.setAnalyzerInfo(aStatus);
         emit status(finalStatus);
+    }
+}
+
+
+void TsNetworkFileRecorder::joinStreamInfo(WorkerStatus xStatus) {
+
+    if (xStatus.getType() == WorkerStatus::STATUS_ERROR) {
+        stop();
+        return;
+    }
+
+    for(auto iter = xStatus.getStreams().begin(); iter != xStatus.getStreams().end(); ++iter) {
+        qint64 streamID = iter.key();
+        const StreamInfo &streamInfo= iter.value();
+
+        if(streamInfo.networkJitters == 0 && streamInfo.bytes != 0){
+            previousAnalyzerStream.streams[streamID] = streamInfo;
+
+
+        } else if(streamInfo.networkJitters != 0){
+            WorkerStatus tempStatus;
+            tempStatus.setStreams(previousAnalyzerStream.streams);
+            tempStatus.streams[streamID].networkJitters = streamInfo.networkJitters;
+            emit workerStatus(tempStatus);
+        }
     }
 }
 

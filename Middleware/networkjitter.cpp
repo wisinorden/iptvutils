@@ -46,9 +46,8 @@ void NetworkJitter::run(){
 
 
 
-
-
     PcapProduct previousInput = prevProvider->getProduct();
+
     buffer.push(previousInput);
 
 

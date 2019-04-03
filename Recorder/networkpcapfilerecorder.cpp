@@ -16,7 +16,7 @@ void NetworkPcapFileRecorder::start() {
    //These take care of the bottom info panel
     connect(&producer, &PcapBufferedProducer::status, this, &NetworkPcapFileRecorder::gotProducerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::status, this, &NetworkPcapFileRecorder::gotAnalyzerStatus);
-    connect(&networkJitter, &NetworkJitter::status, this, &NetworkPcapFileRecorder::gotNetworkStatus);
+  // connect(&networkJitter, &NetworkJitter::status, this, &NetworkPcapFileRecorder::gotNetworkStatus);
 
 
     //Worker-status is connected to the right side stream info panel
@@ -86,21 +86,6 @@ void NetworkPcapFileRecorder::gotAnalyzerStatus(AnalyzerStatus aStatus) {
         emit status(finalStatus);
     }
 }
-
-
-void NetworkPcapFileRecorder::gotNetworkStatus(AnalyzerStatus dStatus) {
-    if (dStatus.getType() == Status::STATUS_ERROR) {
-        finalStatus.setError(dStatus.getError());
-        stop();
-        emit status(finalStatus);
-        return;
-    }
-    else {
-        emit status(finalStatus);
-    }
-}
-
-
 
 
 
