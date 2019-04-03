@@ -57,10 +57,6 @@ void NetworkJitter::run(){
     while (!stopping) {
         PacketParser parser((pcap_pkthdr*)input.header.data(), (const u_char*)input.data.data());
         bytes += parser.data_len;
-
-
-        quint64 streamId = StreamId::calcId(parser.ih->daddr, parser.dport);
-
         input = prevProvider->getProduct();
 
 
@@ -79,15 +75,8 @@ void NetworkJitter::run(){
             difference = inputTs - previousInputTs;
             differencePerSec += difference;
             distanceList.append(difference);
-            //qInfo() << difference;
 
-
-            if (difference != 0){
-                //   qInfo() << difference;
-            }
-
-
-            //Calculate average diff per second and IAT standard deviation
+            //Calculate average diff per second and IAT standard deviation per microsecond
 
             if(statusTimer.elapsed() >= 1000){
                 diffratePerSec = differencePerSec/packetCounter;
@@ -100,10 +89,6 @@ void NetworkJitter::run(){
                 finalSum = diffSum/ distanceList.length();
 
                 qInfo() << "Std deviation: " << sqrt(finalSum);
-                //&StreamInfo.networkJitters = finalSum;
-
-
-
 
 
                 quint64 streamId = StreamId::calcId(parser.ih->daddr, parser.dport);
@@ -113,7 +98,6 @@ void NetworkJitter::run(){
                 stream.networkJitters = sqrt(finalSum);
 
 
-                emit status(AnalyzerStatus(Status::STATUS_PERIODIC, finalSum));
                 emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
 
 

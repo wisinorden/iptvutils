@@ -23,17 +23,12 @@ protected:
 
     Protocol proto = UNKNOWN;
     quint8 tsPerIp = 0;
-    quint8 networkJitters = 0;
 
 public:
     AnalyzerStatus() : Status() {}
     AnalyzerStatus(Status::StatusType type) : Status(type) {}
     AnalyzerStatus(StatusType type, qint64 bytes, qint64 elapsed ) :
         Status(type, bytes, elapsed) {}
-
-    AnalyzerStatus(StatusType type, qint8 networkJitters) :
-            Status(type, networkJitters) {}
-
     AnalyzerStatus(StatusType type, qint64 bytes, qint64 elapsed, qint64 bitrate) :
         Status(type, bytes, elapsed, bitrate) {}
     AnalyzerStatus(StatusType type,
@@ -41,15 +36,13 @@ public:
                    QMap<int, PIDInfo> pidMap,
                    TsErrors tsErrors,
                    Protocol proto = UNKNOWN,
-                   quint8 tsPerIp = -1,
-                   quint8 networkJitters = -1) :
+                   quint8 tsPerIp = -1) :
         Status(type),
         duration(duration),
         pidMap(pidMap),
         tsErrors(tsErrors),
         proto(proto),
-        tsPerIp(tsPerIp),
-        networkJitters(networkJitters)
+        tsPerIp(tsPerIp)
     {}
     AnalyzerStatus(StatusType type,
                    qint64 bytes,
@@ -59,15 +52,13 @@ public:
                    QMap<int, PIDInfo> pidMap,
                    TsErrors tsErrors,
                    Protocol proto = UNKNOWN,
-                   quint8 tsPerIp = -1,
-                   quint8 networkJitters = -1) :
+                   quint8 tsPerIp = -1) :
         Status(type, bytes, elapsed, bitrate),
         duration(duration),
         pidMap(pidMap),
         tsErrors(tsErrors),
         proto(proto),
-        tsPerIp(tsPerIp),
-        networkJitters(networkJitters)
+        tsPerIp(tsPerIp)
     {}
     ~AnalyzerStatus() {}
     AnalyzerStatus(AnalyzerStatus const &other) :
@@ -76,12 +67,10 @@ public:
         pidMap(other.pidMap),
         tsErrors(other.tsErrors),
         proto(other.proto),
-        tsPerIp(other.tsPerIp),
-        networkJitters(other.networkJitters)
+        tsPerIp(other.tsPerIp)
     {}
 
     void setTsPerIp(quint8 tsPerIp) { this->tsPerIp = tsPerIp; }
-    void setNetworkJitter(quint8 networkJitters) {this->networkJitters =networkJitters; }
     void setProtocol(Protocol proto) { this->proto = proto; }
 
 
@@ -95,7 +84,6 @@ public:
     }
 
     quint8 getTsPerIp() const { return this->tsPerIp; }
-    quint8 getNetworkJitter() const {return this->networkJitters; }
     Protocol getProtocol() const { return this->proto; }
 
 };

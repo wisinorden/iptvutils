@@ -13,7 +13,7 @@ void NetworkPcapFileRecorder::start() {
     connect(&consumerThread, &QThread::finished, this, &NetworkPcapFileRecorder::moduleFinished);
     connect(networkJitter.thread(), &QThread::finished, this, &NetworkPcapFileRecorder::moduleFinished);
 
-
+   //These take care of the bottom info panel
     connect(&producer, &PcapBufferedProducer::status, this, &NetworkPcapFileRecorder::gotProducerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::status, this, &NetworkPcapFileRecorder::gotAnalyzerStatus);
     connect(&networkJitter, &NetworkJitter::status, this, &NetworkPcapFileRecorder::gotNetworkStatus);
@@ -21,8 +21,8 @@ void NetworkPcapFileRecorder::start() {
 
     //Worker-status is connected to the right side stream info panel
     connect(&consumer, &PcapFileConsumer::status, this, &NetworkPcapFileRecorder::gotConsumerStatus);
-    connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &NetworkPcapFileRecorder::workerStatus);
-    connect(&networkJitter, &NetworkJitter::workerStatus, this, &NetworkPcapFileRecorder::workerStatus);
+    connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &NetworkPcapFileRecorder::joinStreamInfo);
+    connect(&networkJitter, &NetworkJitter::workerStatus, this, &NetworkPcapFileRecorder::joinStreamInfo);
 
 
     producerThread.start();
@@ -46,6 +46,34 @@ void NetworkPcapFileRecorder::gotProducerStatus(Status pStatus) {
     }
 }
 
+
+// This function joins the signals coming in from NetworkJitter & AnalyzerPcapMiddleware and emits complete signal
+void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus xStatus) {
+
+    if (xStatus.getType() == WorkerStatus::STATUS_ERROR) {
+        stop();
+        return;
+    }
+
+    for(auto iter = xStatus.getStreams().begin(); iter != xStatus.getStreams().end(); ++iter) {
+        qint64 streamID = iter.key();
+        const StreamInfo &streamInfo= iter.value();
+
+        if(streamInfo.networkJitters == 0 && streamInfo.bytes != 0){
+            previousAnalyzerStream.streams[streamID] = streamInfo;
+
+
+        } else if(streamInfo.networkJitters != 0){
+            WorkerStatus tempStatus;
+            tempStatus.setStreams(previousAnalyzerStream.streams);
+            tempStatus.streams[streamID].networkJitters = streamInfo.networkJitters;
+            emit workerStatus(tempStatus);
+        }
+    }
+}
+
+
+
 void NetworkPcapFileRecorder::gotAnalyzerStatus(AnalyzerStatus aStatus) {
     if (aStatus.getType() == Status::STATUS_ERROR) {
         finalStatus.setError(aStatus.getError());
@@ -68,7 +96,6 @@ void NetworkPcapFileRecorder::gotNetworkStatus(AnalyzerStatus dStatus) {
         return;
     }
     else {
-        finalStatus.setNetworkJitter(dStatus);
         emit status(finalStatus);
     }
 }

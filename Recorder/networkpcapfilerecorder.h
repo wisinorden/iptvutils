@@ -14,6 +14,7 @@ private:
     PcapBufferedProducer producer;
     PcapFileConsumer consumer;
     NetworkJitter networkJitter;
+    WorkerStatus previousAnalyzerStream;
 
     AnalyzerPcapMiddleware analyzerMiddleware;
 
@@ -35,6 +36,7 @@ private slots:
     void gotProducerStatus(Status pStatus);
     void gotAnalyzerStatus(AnalyzerStatus aStatus);
     void gotNetworkStatus(AnalyzerStatus dStatus);
+    void joinStreamInfo(WorkerStatus dStatus);
     void gotConsumerStatus(Status cStatus);
     void moduleFinished();
 };

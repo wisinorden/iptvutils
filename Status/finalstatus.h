@@ -17,8 +17,6 @@ public:
     FinalStatus(Status::StatusType type) : AnalyzerStatus(type) {}
     FinalStatus(StatusType type, qint64 bytes, qint64 elapsed) :
         AnalyzerStatus(type, bytes, elapsed) {}
-    FinalStatus(StatusType type, qint8 networkJitters) :
-            AnalyzerStatus(type, networkJitters) {}
     FinalStatus(StatusType type, qint64 bytes, qint64 elapsed, qint64 bitrate) :
         AnalyzerStatus(type, bytes, elapsed, bitrate) {}
     ~FinalStatus() {}
@@ -42,12 +40,6 @@ public:
         this->tsPerIp = aStatus.getTsPerIp();
         this->proto = aStatus.getProtocol();
     }
-
-    void setNetworkJitter(AnalyzerStatus &aStatus){
-     this->networkJitters = aStatus.getNetworkJitter();
-    }
-
-
 
     void setPidInfo(AnalyzerStatus &aStatus) {
         this->pidMap = aStatus.getPidMap();

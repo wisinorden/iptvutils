@@ -20,11 +20,11 @@ public:
         STATUS_ANALYZED_ENTIRE
     };
 
-protected:
     StatusType type = STATUS_ERROR;
-    qint64 networkJitters;
-    QString error = "";
     QHash<quint64, StreamInfo> streams;
+
+protected:
+    QString error = "";
 
     QTreeWidgetItem* makeItem(QString text, bool parent = false) {
         QTreeWidgetItem *item = new QTreeWidgetItem((QTreeWidget*)0, QStringList(text));
@@ -48,8 +48,6 @@ protected:
 public:
     WorkerStatus() : QObject() {}
     WorkerStatus(StatusType type) : QObject(), type(type) {}
-    WorkerStatus(StatusType type, qint64 networkJitters) :
-    type(type), networkJitters(networkJitters){}
     WorkerStatus(QString error) : QObject(), type(STATUS_ERROR), error(error) {}
     WorkerStatus(StatusType type, QHash<quint64, StreamInfo> streams) :
         QObject(),
@@ -63,7 +61,16 @@ public:
 
     StatusType getType() { return type; }
     QString getError() { return error; }
-    QHash<quint64, StreamInfo> getStreams() { return streams; }
+    const QHash<quint64, StreamInfo>& getStreams() const { return streams; }
+
+
+
+
+    void setStreams(const QHash<quint64, StreamInfo> &value)
+    {
+        streams = value;
+    }
+
 
     void insertIntoTree(QTreeWidget *tree) {
         tree->clear();
@@ -80,7 +87,9 @@ public:
             parent->addChild(makeItem(QString(tr("protocol %1")).arg(info.protocolName())));
             parent->addChild(makeItem(QString(tr("bitrate mode %1")).arg(info.bitrateModeName())));
             parent->addChild(makeItem(QString(tr("%1 TS/IP")).arg(info.tsPerIp)));
-            parent->addChild(makeItem(QString(tr("%1 std IAT deviation")).arg(info.networkJitters)));
+            if(info.networkJitters != 0){
+                parent->addChild(makeItem(QString(tr("%1 µs IAT deviation ")).arg(info.networkJitters)));
+            }
             parent->addChild(makeItem(QString(tr("%1 PIDs")).arg(info.pidMap.size())));
 
             quint64 tsErrCount = info.tsErrors.totalErrors();
@@ -100,7 +109,11 @@ public:
         }
 
     }
+
 };
+
+
+
 
 Q_DECLARE_METATYPE(WorkerStatus)
 

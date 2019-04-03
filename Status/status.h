@@ -19,7 +19,6 @@ protected:
     qint64 bytes = 0;
     qint64 elapsed = 0;
     qint64 bitrate = 0;
-    qint8 networkJitters = 0;
     QString error = "";
 
 public:
@@ -34,8 +33,6 @@ public:
         bytes(bytes),
         elapsed(elapsed),
         bitrate(bitrate) {}
-    Status(StatusType type, qint8 networkJitters) :
-    type(type), networkJitters(networkJitters){}
     ~Status() {}
     Status(Status const &other) :
         QObject(),
@@ -50,7 +47,15 @@ public:
     qint64 getElapsed() { return elapsed; }
     qint64 getBitrate() { return bitrate; }
     QString getError() { return error; }
+    void setType(const StatusType &value);
+    void setBytes(const qint64 &value);
+    void setElapsed(const qint64 &value);
+    void setBitrate(const qint64 &value);
 };
+
+
+
+
 
 Q_DECLARE_METATYPE(Status)
 

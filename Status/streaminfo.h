@@ -29,7 +29,7 @@ public:
     NetworkProtocol protocol;
     BitrateMode bitrateMode;
     quint8 tsPerIp;
-    quint8 networkJitters;
+    quint64 networkJitters;
     TsErrors tsErrors;
     QMap<int, PIDInfo> pidMap;
     QString protocolName() const {
