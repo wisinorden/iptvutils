@@ -40,8 +40,17 @@
 class RecordWidgetGraph : public QChartView
 {
 public:
+    QChart GraphChart;
     RecordWidgetGraph();
-    static QChart* setupGraph();
-};
+    qint64 chartCounter;
+    QChart* setupGraph();
 
+
+public slots:
+    void bitrateInfoUpdate (FinalStatus status);
+
+private:
+    QLineSeries *lineSeries;
+
+};
 #endif // RECORDWIDGETGRAPH_H

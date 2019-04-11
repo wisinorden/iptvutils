@@ -150,6 +150,7 @@ void RecordWidget::recordingFinished() {
 
 
 
+
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
     started = false;
@@ -215,7 +216,6 @@ void RecordWidget::recordFilterShouldUpdate() {
 }
 
 
-
 bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     if (networkPcapFileRecorder != NULL) {
         qWarning("Atempt to start PcapRecord while pointer not released");
@@ -232,6 +232,7 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
+    connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, &graph, &RecordWidgetGraph::bitrateInfoUpdate);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);
@@ -279,11 +280,11 @@ void RecordWidget::on_recordExpandPCAPFilterButton_toggled(bool checked)
 
 
 void RecordWidget::setupGraph(){
-
-    ui->graphView->setChart(RecordWidgetGraph::setupGraph());
+  //  RecordWidgetGraph graph;
+    graph.setupGraph();
+    ui->graphView->setChart(graph.chart());
     ui->graphView->setRenderHint(QPainter::Antialiasing);
     ui->graphView->show();
-    ui->graphView->setVisible(true);
 }
 
 void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)

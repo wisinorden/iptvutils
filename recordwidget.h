@@ -5,6 +5,10 @@
 #include "Recorder/networkpcapfilerecorder.h"
 #include "Recorder/tsnetworkfilerecorder.h"
 #include <QWidget>
+#include "Status/streaminfo.h"
+#include "recordwidgetgraph.h"
+
+
 
 namespace Ui {
 class RecordWidget;
@@ -29,6 +33,8 @@ private:
     bool started;
     QString currentDirectory;
     QString currentFilename;
+    RecordWidgetGraph graph;
+
 
 private slots:
     void recordingStarted();
