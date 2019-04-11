@@ -3,11 +3,32 @@
 #include "mainwindow.h"
 #include "validator.h"
 #include "pcapfilter.h"
+#include "recordwidgetgraph.cpp"
 
 #include <QFileDialog>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QMessageBox>
+
+#include <QApplication>
+
+
+#include <QtWidgets/QMainWindow>
+
+// Widget used to display charts
+#include <QtCharts/QChartView>
+
+// Adds categories to the charts axes
+#include <QtCharts/QBarCategoryAxis>
+
+// Used to create stacked bar charts
+#include <QtCharts/QHorizontalStackedBarSeries>
+
+// Used to create a line chart
+#include <QtCharts/QLineSeries>
+
+// Used to change names on axis
+#include <QtCharts/QCategoryAxis>
 
 #include <iostream>
 #include <cstddef>
@@ -20,10 +41,12 @@ RecordWidget::RecordWidget(QWidget *parent) :
     started(false)
 {
     ui->setupUi(this);
+    this->setupGraph();
 
     // Advanced PCAP filter
     ui->recordPcapFilterContainer->hide();
     connect(ui->recordExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_recordExpandPCAPFilterButton_toggled(bool)));
+
 
     // File format
     // connect(ui->recordFileFormatPCAP, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatPCAP_toggled(bool)));
@@ -33,6 +56,10 @@ RecordWidget::RecordWidget(QWidget *parent) :
     connect(ui->recordPort, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordRtpFecCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordUnicastCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
+
+ //   connect(ui->graphView, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate );
+
+
 
     for (int i = 0; i < MainWindow::interfaces.length(); i++) {
         ui->recordInterfaceSelect->addItem(MainWindow::interfaces.at(i).getName());
@@ -248,6 +275,15 @@ void RecordWidget::on_recordExpandPCAPFilterButton_toggled(bool checked)
         ui->recordExpandPCAPFilterButton->setArrowType(Qt::ArrowType::RightArrow);
         ui->recordPcapFilterContainer->hide();
     }
+}
+
+
+void RecordWidget::setupGraph(){
+
+    ui->graphView->setChart(RecordWidgetGraph::setupGraph());
+    ui->graphView->setRenderHint(QPainter::Antialiasing);
+    ui->graphView->show();
+    ui->graphView->setVisible(true);
 }
 
 void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)

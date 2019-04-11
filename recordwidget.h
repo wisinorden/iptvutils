@@ -36,6 +36,8 @@ private slots:
     bool validateAdressInputs();
     bool validatePortInputs();
 
+    void setupGraph();
+
 
 
 
