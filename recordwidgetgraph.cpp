@@ -10,6 +10,7 @@ QChart* RecordWidgetGraph::setupGraph(){
 
 
     lineSeries = new QLineSeries();
+
     lineSeries->append(0, 16);
     lineSeries->append(1, 0);
     lineSeries->append(2, 24);
@@ -20,8 +21,11 @@ QChart* RecordWidgetGraph::setupGraph(){
 
 
 
+
     // Create chart, add data, hide legend, and add axis
     QChart * chart = new QChart();
+
+    chart->setAnimationDuration(0);
     chart->legend()->hide();
     chart->addSeries(lineSeries);
     chart->createDefaultAxes();
@@ -39,6 +43,13 @@ QChart* RecordWidgetGraph::setupGraph(){
     lineSeries->setPen(pen);
 
     chart->setAnimationOptions(QChart::AllAnimations);
+
+
+    /*
+    QValueAxis *axisY = new QValueAxis();
+    axisY->setRange(0, 10);
+    chart->setAxisY(axisY);
+    */
 
     /*
         // Change the x axis categories
@@ -65,14 +76,13 @@ QChart* RecordWidgetGraph::setupGraph(){
 
 void RecordWidgetGraph::bitrateInfoUpdate (FinalStatus status){
 
-    quint64 tempInt = status.getBitrate();
-
-    lineSeries->append(chartCounter, tempInt/ 100000);
-    this->update();
-   // this->chart()->
+    double tempInt = status.getBitrate();
+    //Appends Mbit/s
+    lineSeries->append(chartCounter, tempInt/ 1000000);
+    this->chart()->removeSeries(lineSeries);
+    this->chart()->addSeries(lineSeries);
+    this->repaint();
     chartCounter++;
-
-
 }
 
 

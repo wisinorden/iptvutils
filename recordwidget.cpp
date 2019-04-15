@@ -122,6 +122,8 @@ void RecordWidget::recordingStarted() {
     ui->recordExpandPCAPFilterButton->setEnabled(false);
     ui->recordPcapFilterContainer->setEnabled(false);
     ui->recordInterfaceSelect->setEnabled(false);
+    this->setupGraph();
+
 
 
 
@@ -147,6 +149,7 @@ void RecordWidget::recordingFinished() {
     ui->recordExpandPCAPFilterButton->setEnabled(true);
     ui->recordPcapFilterContainer->setEnabled(true);
     ui->recordInterfaceSelect->setEnabled(true);
+
 
 
 
