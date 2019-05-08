@@ -19,38 +19,41 @@
 // Widget used to display charts
 #include <QtCharts/QChartView>
 
-// Represents 1 set of bars in a bar chart
-#include <QtCharts/QBarSet>
-
-// Displays the color used to represent each
-// QBarSet
-#include <QtCharts/QLegend>
-
-// Adds categories to the charts axes
-#include <QtCharts/QBarCategoryAxis>
-
 // Used to create a line chart
 #include <QtCharts/QLineSeries>
 
 // Used to change names on axis
 #include <QtCharts/QCategoryAxis>
 
+#include <QtGui/QMouseEvent>
+#include <QtWidgets/QRubberBand>
 
+
+QT_CHARTS_USE_NAMESPACE
 
 class RecordWidgetGraph : public QChartView
 {
+
+
 public:
     QChart GraphChart;
     RecordWidgetGraph();
     qint64 chartCounter;
+    qreal x;
     QChart* setupGraph();
 
+    void keyPressEvent(QKeyEvent *event);
+
+
+protected:
+  //  virtual void mousePressEvent(QMouseEvent *event) override;
+  //  virtual void mouseMoveEvent(QMouseEvent *event) override;
 
 public slots:
     void bitrateInfoUpdate (FinalStatus status);
 
 private:
     QLineSeries *lineSeries;
-
+    QPointF m_lastMousePos;
 };
 #endif // RECORDWIDGETGRAPH_H

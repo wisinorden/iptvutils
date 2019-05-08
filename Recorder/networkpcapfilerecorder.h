@@ -35,7 +35,6 @@ public:
 private slots:
     void gotProducerStatus(Status pStatus);
     void gotAnalyzerStatus(AnalyzerStatus aStatus);
-    void gotNetworkStatus(AnalyzerStatus dStatus);
     void joinStreamInfo(WorkerStatus dStatus);
     void gotConsumerStatus(Status cStatus);
     void moduleFinished();
