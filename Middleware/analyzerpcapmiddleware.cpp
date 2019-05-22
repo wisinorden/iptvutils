@@ -72,15 +72,15 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                 duration = endTime - startTime;
                 if (lastDuration == 0)
                     lastDuration = duration;
-            }
 
-            // 1 second of trafic, calculate bitrate for that second
+                // 1 second of trafic, calculate bitrate for that second
 
-            if (duration - lastDuration >= 1000) {
-                bitrate = (bytes - lastSecondBytes)*8*1000/(duration - lastDuration);
-                lastSecondBytes = bytes;
-                lastDuration = duration;
+                if (duration - lastDuration >= 200) {
+                    bitrate = (bytes - lastSecondBytes)*8*1000/(duration - lastDuration);
+                    lastSecondBytes = bytes;
+                    lastDuration = duration;
 
+                }
             }
 
             // sanity check, prevents analyzation of packets that do not contain ts-packets
@@ -164,6 +164,7 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
         if (statusTimer.elapsed() >= 200) {
             emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
+            emit bitrateStatus(bitrate);
             emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
             statusTimer.restart();
         }

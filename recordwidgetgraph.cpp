@@ -1,4 +1,6 @@
 #include "recordwidgetgraph.h"
+#include "chart.h"
+
 #include <QtCharts/QAbstractAxis>
 #include <QtCharts/QSplineSeries>
 #include <QtCharts/QValueAxis>
@@ -6,22 +8,31 @@
 #include <QtGui/QMouseEvent>
 
 
-RecordWidgetGraph::RecordWidgetGraph()
+
+RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
+    QChartView(parent),
+    m_isTouching(false)
+
 {
-     setDragMode(QGraphicsView::NoDrag);
-     this->setMouseTracking(true);
-     this->setRubberBand(QChartView::RectangleRubberBand);
+    m_isTouching = false;
+
+    setDragMode(QGraphicsView::NoDrag);
+    this->setMouseTracking(true);
+    this->setRubberBand(QChartView::RectangleRubberBand);
+    this->setFocusPolicy(Qt::StrongFocus);
 
 }
 
 
-QChart* RecordWidgetGraph::setupGraph(){
 
+
+
+QChart* RecordWidgetGraph::setupGraph(){
 
     lineSeries = new QLineSeries();
 
     // Create chart, add data, hide legend, and add axis
-    QChart * chart = new QChart();
+    Chart * chart = new Chart();
 
     chart->legend()->hide();
     chart->addSeries(lineSeries);
@@ -32,7 +43,7 @@ QChart* RecordWidgetGraph::setupGraph(){
     font.setPixelSize(8);
     chart->setTitleFont(font);
     chart->setTitleBrush(QBrush(Qt::black));
-    chart->setTitle("Bitrate per second mbps");
+ //   chart->setTitle("Bitrate per second mbps");
 
     // Change the line color and weight
     QPen pen(QRgb(0x000000));
@@ -40,9 +51,15 @@ QChart* RecordWidgetGraph::setupGraph(){
     lineSeries->setPen(pen);
 
     this->setChart(chart);
+  //  this->chart()->axisX()->setTitleText("Seconds");
+
     this->chartCounter = 0;
+
+    bitrateTimer.start();
     return(chart);
+
 }
+
 
 
 
@@ -54,32 +71,33 @@ void RecordWidgetGraph::bitrateInfoUpdate (FinalStatus status){
     //Appends Mbit/s
 
     if(tempInt != 0 /*&& chartCounter < 65 */){
-        lineSeries->append(chartCounter, tempInt/ 1000000);
+
+        double doubleBit = currentBitrate / 1000000;
+
+        lineSeries->append(bitrateTimer.elapsed(), currentBitrate);
         this->chart()->removeSeries(lineSeries);
         this->chart()->addSeries(lineSeries);
         this->chart()->createDefaultAxes();
 
 
-        this->chart()->scroll(chartCounter , 0);
-        this->chart()->axisX()->setRange(chartCounter- 10, chartCounter + 10);
+
+
+        this->chart()->scroll(chartCounter /5 , 0);
+        this->chart()->axisX()->setRange((bitrateTimer.elapsed()) - 2000, bitrateTimer.elapsed()+2000);
+
         this->repaint();
+
         chartCounter++;
+
     }
 }
 
 
-/*
+void RecordWidgetGraph::setBitrate (qint64 bitrate){
+    this->currentBitrate = bitrate;
+}
 
-void RecordWidgetGraph::keyPressEvent(QKeyEvent *event)
-{
-    switch (event->key()) {
-    case Qt::Key_Plus:
-        chart()->zoomIn();
-        break;
-    case Qt::Key_Minus:
-        chart()->zoomOut();
-        break;
-    }
+
 
 void RecordWidgetGraph::mousePressEvent(QMouseEvent *event)
 {
@@ -95,24 +113,50 @@ void RecordWidgetGraph::mousePressEvent(QMouseEvent *event)
 
 void RecordWidgetGraph::mouseMoveEvent(QMouseEvent *event)
 {
-    // pan the chart with a middle mouse drag
-    if (event->buttons() & Qt::MiddleButton)
-    {
-        QRectF bounds = QRectF(0,0,0,0);
-        for(auto series : this->chart()->series())
-            bounds.united(series->bounds())
+    if (m_isTouching)
+        return;
+    QChartView::mouseMoveEvent(event);
+}
 
-                    auto pos = this->chart()->mapToValue(event->pos()) - this->chart()->mapToValue(m_lastMousePos);
+void RecordWidgetGraph::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (m_isTouching)
+        m_isTouching = false;
 
-        if (this->rubberBand() == QChartView::RectangleRubberBand)
-            this->chart()->zoom(bounds.translated(-dPos.x(), -dPos.y()));
-        else if (this->rubberBand() == QChartView::HorizontalRubberBand)
-            this->chart()->zoom(bounds.translated(-dPos.x(), 0));
-        else if (this->rubberBand() == QChartView::VerticalRubberBand)
-            this->chart()->zoom(bounds.translated(0, -dPos.y()));
+    // Because we disabled animations when touch event was detected
+    // we must put them back on.
+    chart()->setAnimationOptions(QChart::SeriesAnimations);
 
-        m_lastMousePos = event->pos();
-        event->accept();
+    QChartView::mouseReleaseEvent(event);
+}
+
+void RecordWidgetGraph::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key()) {
+    case Qt::Key_Plus:
+        chart()->zoomIn();
+        break;
+    case Qt::Key_Minus:
+        chart()->zoomOut();
+        break;
+
+    case Qt::Key_Left:
+        chart()->scroll(-10, 0);
+
+        break;
+    case Qt::Key_Right:
+        chart()->scroll(10, 0);
+
+        break;
+    case Qt::Key_Up:
+        chart()->scroll(0, 10);
+        break;
+    case Qt::Key_Down:
+        chart()->scroll(0, -10);
+        break;
+    default:
+        QGraphicsView::keyPressEvent(event);
+        break;
     }
-*/
+}
 

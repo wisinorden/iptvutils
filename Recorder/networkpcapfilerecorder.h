@@ -37,6 +37,7 @@ private slots:
     void gotAnalyzerStatus(AnalyzerStatus aStatus);
     void joinStreamInfo(WorkerStatus dStatus);
     void gotConsumerStatus(Status cStatus);
+    void gotBitrate(qint64 bitrate);
     void moduleFinished();
 };
 

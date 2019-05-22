@@ -21,6 +21,8 @@ class RecordWidget : public QWidget
 public:
     explicit RecordWidget(QWidget *parent = 0);
     ~RecordWidget();
+    RecordWidgetGraph graph;
+
 
     void loadSettings();
     void saveSettings();
@@ -33,8 +35,6 @@ private:
     bool started;
     QString currentDirectory;
     QString currentFilename;
-    RecordWidgetGraph graph;
-
 
 private slots:
     void recordingStarted();

@@ -7,6 +7,10 @@
 #include <QApplication>
 #include "recordwidget.h"
 #include "ui_recordwidget.h"
+#include "Middleware/analyzerpcapmiddleware.h"
+#include <QElapsedTimer>
+
+
 
 // Manages the applications main settings like
 // widget initialization
@@ -36,24 +40,38 @@ class RecordWidgetGraph : public QChartView
 
 
 public:
+
+
+    RecordWidgetGraph(QWidget *parent);
     QChart GraphChart;
-    RecordWidgetGraph();
     qint64 chartCounter;
-    qreal x;
     QChart* setupGraph();
 
     void keyPressEvent(QKeyEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+
+    void mousePressEvent(QMouseEvent *event) override;
+
 
 
 protected:
-  //  virtual void mousePressEvent(QMouseEvent *event) override;
-  //  virtual void mouseMoveEvent(QMouseEvent *event) override;
+
 
 public slots:
     void bitrateInfoUpdate (FinalStatus status);
+    void setBitrate (qint64 bitrate);
+
 
 private:
+    QElapsedTimer bitrateTimer;
+    qint64 scrollCounter = 0;
+    qint64 currentBitrate = 0;
     QLineSeries *lineSeries;
     QPointF m_lastMousePos;
+    bool m_isTouching;
+    bool isScrolling = false;
+    bool scrollCountIsSet =false;
+
 };
 #endif // RECORDWIDGETGRAPH_H

@@ -73,6 +73,9 @@ int main(int argc, char *argv[])
     #endif // QT_DEBUG
 
     MainWindow w;
+   // w.setCentralWidget(ui);
+    w.grabGesture(Qt::PanGesture);
+    w.grabGesture(Qt::PinchGesture);
     w.show();
     qInfo() << QThread::currentThread();
 

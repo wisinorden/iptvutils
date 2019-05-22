@@ -41,6 +41,7 @@ public:
 
 signals:
     void status(AnalyzerStatus status);
+    void bitrateStatus(qint64 bitrate);
 
 protected slots:
     void run();

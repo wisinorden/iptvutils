@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "interface.h"
 #include "igmp.h"
+#include <QtGui/QMouseEvent>
 #include "Player/pcapfilenetworkplayer.h"
 #include "Recorder/networkpcapfilerecorder.h"
 #include "Recorder/tsnetworkfilerecorder.h"
@@ -9,7 +10,6 @@
 
 #include <QMessageBox>
 #include <QSettings>
-
 QList<Interface> MainWindow::interfaces = QList<Interface>();
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -19,12 +19,16 @@ MainWindow::MainWindow(QWidget *parent) :
     Interface::getInterfaces(&interfaces);
     ui->setupUi(this);
 
+
     // Setup strings
     setWindowTitle(QCoreApplication::applicationName());
     ui->actionAbout->setText(tr("About %1...").arg(QCoreApplication::applicationName()));
 
     IGMP::init();
     loadSettings();
+    this->setMouseTracking(true);
+   // this->setRubberBand(QChartView::RectangleRubberBand);
+
 }
 
 MainWindow::~MainWindow()
@@ -37,6 +41,8 @@ void MainWindow::loadSettings() {
     ui->playbackWidget->loadSettings();
     ui->recordWidget->loadSettings();
     ui->convertWidget->loadSettings();
+
+
 
 }
 
@@ -69,10 +75,38 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+
+    ui->recordWidget->graph.keyPressEvent(event);
+    QMainWindow::keyPressEvent(event);
+
+}
+
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    ui->recordWidget->graph.mousePressEvent(event);
+
+
+    QMainWindow::mousePressEvent(event);
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    ui->recordWidget->graph.mouseMoveEvent(event);
+
+    QMainWindow::mouseMoveEvent(event);
+}
+
+
+
+
 void MainWindow::on_actionExit_triggered()
 {
     close();
 }
+
 
 void MainWindow::on_actionAbout_triggered()
 {

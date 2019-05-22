@@ -16,6 +16,9 @@ void NetworkPcapFileRecorder::start() {
    //These take care of the bottom info panel
     connect(&producer, &PcapBufferedProducer::status, this, &NetworkPcapFileRecorder::gotProducerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::status, this, &NetworkPcapFileRecorder::gotAnalyzerStatus);
+    connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::bitrateStatus, this, &NetworkPcapFileRecorder::gotBitrate);
+
+
   // connect(&networkJitter, &NetworkJitter::status, this, &NetworkPcapFileRecorder::gotNetworkStatus);
 
 
@@ -47,7 +50,7 @@ void NetworkPcapFileRecorder::gotProducerStatus(Status pStatus) {
 }
 
 
-// This function joins the signals coming in from NetworkJitter & AnalyzerPcapMiddleware and emits complete signal
+// This function joins the signals coming in from NetworkJitter & AnalyzerPcapMiddleware and emits complete signal to be displayed in right-hand info panel
 void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus xStatus) {
 
     if (xStatus.getType() == WorkerStatus::STATUS_ERROR) {
@@ -85,6 +88,12 @@ void NetworkPcapFileRecorder::gotAnalyzerStatus(AnalyzerStatus aStatus) {
         finalStatus.setAnalyzerInfo(aStatus);
         emit status(finalStatus);
     }
+}
+
+void NetworkPcapFileRecorder::gotBitrate(qint64 bitrate){
+
+
+    emit bitrateStatus(bitrate);
 }
 
 

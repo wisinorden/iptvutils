@@ -38,7 +38,8 @@ TsNetworkFileRecorder* RecordWidget::tsNetworkFileRecorder;
 RecordWidget::RecordWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RecordWidget),
-    started(false)
+    started(false),
+    graph(this)
 {
     ui->setupUi(this);
     this->setupGraph();
@@ -235,6 +236,7 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
+    connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, &graph, &RecordWidgetGraph::bitrateInfoUpdate);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
@@ -262,6 +264,7 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, this, &RecordWidget::recordStatusChanged);
+    connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, &graph, &RecordWidgetGraph::bitrateInfoUpdate);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);
@@ -283,7 +286,7 @@ void RecordWidget::on_recordExpandPCAPFilterButton_toggled(bool checked)
 
 
 void RecordWidget::setupGraph(){
-  //  RecordWidgetGraph graph;
+  //  graph.setParent(this);
     graph.setupGraph();
     ui->graphView->setChart(graph.chart());
     ui->graphView->setRenderHint(QPainter::Antialiasing);

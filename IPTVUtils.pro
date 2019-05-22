@@ -65,8 +65,7 @@ SOURCES += \
     convertwidget.cpp \
     Middleware/networkjitter.cpp \
     recordwidgetgraph.cpp \
-    yaxis.cpp \
-    graphchart.cpp
+    chart.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -118,9 +117,7 @@ HEADERS += \
     Status/workerstatus.h \
     Middleware/networkjitter.h \
     recordwidgetgraph.h \
-    yaxis.h \
-    graphchart.h \
-    graphchart.h
+    chart.h
 
 FORMS += \
         mainwindow.ui \
