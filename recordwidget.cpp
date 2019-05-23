@@ -15,21 +15,6 @@
 
 #include <QtWidgets/QMainWindow>
 
-// Widget used to display charts
-#include <QtCharts/QChartView>
-
-// Adds categories to the charts axes
-#include <QtCharts/QBarCategoryAxis>
-
-// Used to create stacked bar charts
-#include <QtCharts/QHorizontalStackedBarSeries>
-
-// Used to create a line chart
-#include <QtCharts/QLineSeries>
-
-// Used to change names on axis
-#include <QtCharts/QCategoryAxis>
-
 #include <iostream>
 #include <cstddef>
 NetworkPcapFileRecorder* RecordWidget::networkPcapFileRecorder;

@@ -36,7 +36,6 @@ void AnalyzerPcapMiddleware::run() {
 
 // Buffers packets
 void AnalyzerPcapMiddleware::bufferProducts() {
-    QPair<qint64, double> bitratePair;
     QElapsedTimer statusTimer;
     statusTimer.start();
     packetNumber = 0;

@@ -9,7 +9,6 @@
 #include "Analyzer/tserrors.h"
 #include "Status/streaminfo.h"
 
-#include <QPair>
 #include <QMap>
 #include <QHash>
 
