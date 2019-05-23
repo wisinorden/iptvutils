@@ -36,6 +36,7 @@ void AnalyzerPcapMiddleware::run() {
 
 // Buffers packets
 void AnalyzerPcapMiddleware::bufferProducts() {
+    QPair<qint64, double> bitratePair;
     QElapsedTimer statusTimer;
     statusTimer.start();
     packetNumber = 0;
@@ -79,6 +80,8 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                     bitrate = (bytes - lastSecondBytes)*8*1000/(duration - lastDuration);
                     lastSecondBytes = bytes;
                     lastDuration = duration;
+
+
 
                 }
             }
@@ -164,7 +167,7 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
         if (statusTimer.elapsed() >= 200) {
             emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
-            emit bitrateStatus(bitrate);
+            emit bitrateStatus(bitrate, duration);
             emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
             statusTimer.restart();
         }

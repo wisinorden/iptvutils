@@ -37,9 +37,9 @@ TsNetworkFileRecorder* RecordWidget::tsNetworkFileRecorder;
 
 RecordWidget::RecordWidget(QWidget *parent) :
     QWidget(parent),
+    graph(this),
     ui(new Ui::RecordWidget),
-    started(false),
-    graph(this)
+    started(false)
 {
     ui->setupUi(this);
     this->setupGraph();
@@ -237,7 +237,7 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
-    connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, &graph, &RecordWidgetGraph::bitrateInfoUpdate);
+  //  connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, &graph, &RecordWidgetGraph::bitrateInfoUpdate);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);
@@ -264,7 +264,7 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, this, &RecordWidget::recordStatusChanged);
-    connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, &graph, &RecordWidgetGraph::bitrateInfoUpdate);
+    //connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, &graph, &RecordWidgetGraph::bitrateInfoUpdate);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);

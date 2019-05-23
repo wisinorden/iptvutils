@@ -59,14 +59,13 @@ protected:
 
 
 public slots:
-    void bitrateInfoUpdate (FinalStatus status);
-    void setBitrate (qint64 bitrate);
-
+    void setBitrate (qint64 bitrate, qint64 duration);
 
 private:
     QElapsedTimer bitrateTimer;
     qint64 scrollCounter = 0;
-    qint64 currentBitrate = 0;
+    qint64 currentBitrate;
+    qint64 bitrateTimestamp;
     QLineSeries *lineSeries;
     QPointF m_lastMousePos;
     bool m_isTouching;

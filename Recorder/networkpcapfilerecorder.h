@@ -27,6 +27,7 @@ public:
         analyzerMiddleware(config) {
 
     }
+    ~NetworkPcapFileRecorder() { printf("DESTRUCT\n"); }
 
     void start();
     void stop();
@@ -37,7 +38,7 @@ private slots:
     void gotAnalyzerStatus(AnalyzerStatus aStatus);
     void joinStreamInfo(WorkerStatus dStatus);
     void gotConsumerStatus(Status cStatus);
-    void gotBitrate(qint64 bitrate);
+    void gotBitrate(qint64 bitrate, qint64 duration);
     void moduleFinished();
 };
 

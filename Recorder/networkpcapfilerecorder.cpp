@@ -90,10 +90,9 @@ void NetworkPcapFileRecorder::gotAnalyzerStatus(AnalyzerStatus aStatus) {
     }
 }
 
-void NetworkPcapFileRecorder::gotBitrate(qint64 bitrate){
+void NetworkPcapFileRecorder::gotBitrate(qint64  bitrate, qint64 duration){
 
-
-    emit bitrateStatus(bitrate);
+    emit bitrateStatus(bitrate, duration);
 }
 
 

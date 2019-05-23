@@ -62,19 +62,16 @@ QChart* RecordWidgetGraph::setupGraph(){
 
 
 
+void RecordWidgetGraph::setBitrate (qint64 bitrate, qint64 duration){
+    this->currentBitrate = bitrate;
+    this->bitrateTimestamp = duration;
 
 
-void RecordWidgetGraph::bitrateInfoUpdate (FinalStatus status){
+    if(bitrate != 0 /*&& chartCounter < 65 */){
 
-    // Use status.bytes to calculate new bitrate for every 1000 ms
-    double tempInt = status.getBitrate();
-    //Appends Mbit/s
+        double doubleBit = currentBitrate/ 1000000;
 
-    if(tempInt != 0 /*&& chartCounter < 65 */){
-
-        double doubleBit = currentBitrate / 1000000;
-
-        lineSeries->append(bitrateTimer.elapsed(), currentBitrate);
+        lineSeries->append(bitrateTimestamp, currentBitrate);
         this->chart()->removeSeries(lineSeries);
         this->chart()->addSeries(lineSeries);
         this->chart()->createDefaultAxes();
@@ -83,18 +80,13 @@ void RecordWidgetGraph::bitrateInfoUpdate (FinalStatus status){
 
 
         this->chart()->scroll(chartCounter /5 , 0);
-        this->chart()->axisX()->setRange((bitrateTimer.elapsed()) - 2000, bitrateTimer.elapsed()+2000);
+        this->chart()->axisX()->setRange((bitrateTimer.elapsed()) - 2000, bitrateTimer.elapsed()+500);
 
         this->repaint();
 
         chartCounter++;
-
     }
-}
 
-
-void RecordWidgetGraph::setBitrate (qint64 bitrate){
-    this->currentBitrate = bitrate;
 }
 
 

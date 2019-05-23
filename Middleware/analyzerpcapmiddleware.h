@@ -9,6 +9,7 @@
 #include "Analyzer/tserrors.h"
 #include "Status/streaminfo.h"
 
+#include <QPair>
 #include <QMap>
 #include <QHash>
 
@@ -41,7 +42,7 @@ public:
 
 signals:
     void status(AnalyzerStatus status);
-    void bitrateStatus(qint64 bitrate);
+    void bitrateStatus(qint64 bitrate, qint64 duration);
 
 protected slots:
     void run();
