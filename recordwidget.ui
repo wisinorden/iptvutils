@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>644</width>
-    <height>555</height>
+    <height>1055</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -147,6 +147,12 @@
           <height>700</height>
          </size>
         </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
        </widget>
       </item>
       <item>
@@ -224,6 +230,9 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QTreeWidget" name="treeWidget">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="styleSheet">
            <string notr="true">QTreeView::branch:has-siblings:!adjoins-item {
     border-image: url(:/img/res/stylesheet-vline.png) 0;

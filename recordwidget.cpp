@@ -4,15 +4,6 @@
 #include "validator.h"
 #include "pcapfilter.h"
 #include "recordwidgetgraph.cpp"
-
-#include <QFileDialog>
-#include <QSettings>
-#include <QStandardPaths>
-#include <QMessageBox>
-
-#include <QApplication>
-
-
 #include <QtWidgets/QMainWindow>
 
 #include <iostream>
@@ -28,6 +19,7 @@ RecordWidget::RecordWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setupGraph();
+    this->setMouseTracking(true);
 
     // Advanced PCAP filter
     ui->recordPcapFilterContainer->hide();
@@ -380,6 +372,11 @@ void RecordWidget::on_recordStartStopBtn_clicked()
         }
     }
 }
+
+
+
+
+
 
 void RecordWidget::on_treeWidget_activated(const QModelIndex &index)
 {

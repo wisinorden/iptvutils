@@ -41,6 +41,7 @@ void MainWindow::loadSettings() {
     ui->playbackWidget->loadSettings();
     ui->recordWidget->loadSettings();
     ui->convertWidget->loadSettings();
+    ui->recordWidget->graph.setFocus();
 
 
 
@@ -86,10 +87,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    ui->recordWidget->graph.mousePressEvent(event);
+ //   ui->recordWidget->graph.mousePressEvent(event);
 
 
-    QMainWindow::mousePressEvent(event);
+  //  QMainWindow::mousePressEvent(event);
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)

@@ -74,7 +74,7 @@ public:
 
     void insertIntoTree(QTreeWidget *tree) {
         tree->clear();
-        tree->setSelectionMode(QAbstractItemView::SingleSelection);
+        //tree->setSelectionMode(QAbstractItemView::SingleSelection);
         for (int i = 0; i < streams.count(); i++) {
             quint64 key = streams.keys().at(i);
             const StreamInfo &info = streams.value(key);

@@ -2,7 +2,6 @@
 #include "chart.h"
 
 #include <QtCharts/QAbstractAxis>
-#include <QtCharts/QSplineSeries>
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QChart>
 #include <QtGui/QMouseEvent>
@@ -19,7 +18,7 @@ RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
     setDragMode(QGraphicsView::NoDrag);
     this->setMouseTracking(true);
     this->setRubberBand(QChartView::RectangleRubberBand);
-    this->setFocusPolicy(Qt::StrongFocus);
+   // this->setFocusPolicy(Qt::StrongFocus);
 
 }
 
@@ -67,9 +66,12 @@ void RecordWidgetGraph::setBitrate (qint64 bitrate, qint64 duration){
     this->bitrateTimestamp = duration;
 
 
-    if(bitrate != 0 /*&& chartCounter < 65 */){
+    if(bitrate != 0){
 
         double doubleBit = currentBitrate/ 1000000;
+
+        float x = bitrateTimestamp  /1000;
+        float y = currentBitrate /1000000;
 
         lineSeries->append(bitrateTimestamp, currentBitrate);
         this->chart()->removeSeries(lineSeries);
@@ -93,7 +95,7 @@ void RecordWidgetGraph::setBitrate (qint64 bitrate, qint64 duration){
 
 void RecordWidgetGraph::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::MiddleButton)
+    if (event->button() == Qt::LeftButton)
     {
         QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
         m_lastMousePos = event->pos();

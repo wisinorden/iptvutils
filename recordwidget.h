@@ -30,6 +30,7 @@ public:
     static NetworkPcapFileRecorder *networkPcapFileRecorder;
     static TsNetworkFileRecorder *tsNetworkFileRecorder;
 
+
 private:
     Ui::RecordWidget *ui;
     bool started;
