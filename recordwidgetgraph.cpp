@@ -62,29 +62,21 @@ QChart* RecordWidgetGraph::setupGraph(){
 
 
 void RecordWidgetGraph::setBitrate (qint64 bitrate, qint64 duration){
-    this->currentBitrate = bitrate;
-    this->bitrateTimestamp = duration;
 
+    // Appends new values and updates graph
 
     if(bitrate != 0){
 
-        double doubleBit = currentBitrate/ 1000000;
+        double timestampDouble = (double) duration  /1000;
+        double bitrateDouble = (double) bitrate /1000000;
 
-        float x = bitrateTimestamp  /1000;
-        float y = currentBitrate /1000000;
-
-        lineSeries->append(bitrateTimestamp, currentBitrate);
+        lineSeries->append(timestampDouble, bitrateDouble);
         this->chart()->removeSeries(lineSeries);
         this->chart()->addSeries(lineSeries);
         this->chart()->createDefaultAxes();
 
-
-
-
         this->chart()->scroll(chartCounter /5 , 0);
-        this->chart()->axisX()->setRange((bitrateTimer.elapsed()) - 2000, bitrateTimer.elapsed()+500);
-
-        this->repaint();
+        this->chart()->axisX()->setRange(timestampDouble - 10, timestampDouble + 2);
 
         chartCounter++;
     }
