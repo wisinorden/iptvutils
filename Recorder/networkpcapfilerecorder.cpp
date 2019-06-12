@@ -17,6 +17,7 @@ void NetworkPcapFileRecorder::start() {
     connect(&producer, &PcapBufferedProducer::status, this, &NetworkPcapFileRecorder::gotProducerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::status, this, &NetworkPcapFileRecorder::gotAnalyzerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::bitrateStatus, this, &NetworkPcapFileRecorder::gotBitrate);
+    connect(&networkJitter, &NetworkJitter::iatStatus, this, &NetworkPcapFileRecorder::gotIatDev);
 
 
   // connect(&networkJitter, &NetworkJitter::status, this, &NetworkPcapFileRecorder::gotNetworkStatus);
@@ -90,10 +91,16 @@ void NetworkPcapFileRecorder::gotAnalyzerStatus(AnalyzerStatus aStatus) {
     }
 }
 
-void NetworkPcapFileRecorder::gotBitrate(qint64  bitrate, qint64 duration){
+void NetworkPcapFileRecorder::gotBitrate(double  bitrate, qint64 duration){
 
     emit bitrateStatus(bitrate, duration);
 }
+
+void NetworkPcapFileRecorder::gotIatDev(double iatDev, qint64 duration){
+
+    emit iatStatus(iatDev, duration);
+}
+
 
 
 

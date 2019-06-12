@@ -34,6 +34,8 @@ public:
 
 signals:
     void status(AnalyzerStatus status);
+    void iatStatus(double iatDev, qint64 duration);
+
 
 protected slots:
     void run();

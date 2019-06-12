@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QtMath>
 
-//This class is measuring eventual network jitter
+//This class is for measuring network jitter
 
 void NetworkJitter::init() {
     this->moveToThread(&runnerThread);
@@ -36,6 +36,8 @@ void NetworkJitter::run(){
 
     qint64 diffSum = 0;
     qint64 finalSum = 0;
+    qint64 startTime = -1;
+    qint64 endTime = -1;
 
 
     QList<qint16> distanceList;
@@ -71,11 +73,28 @@ void NetworkJitter::run(){
             previousInputTs = ((pcap_pkthdr*)previousInput.header.data())->ts.tv_sec * 1000000;
             previousInputTs += ((pcap_pkthdr*)previousInput.header.data())->ts.tv_usec;
 
+
+
+            if (startTime == -1) {
+                startTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec * 1000; // convert to ms
+                startTime += ((pcap_pkthdr*)input.header.data())->ts.tv_usec/1000; // convert to ms
+            }
+            else {
+                endTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec*1000;
+                endTime += ((pcap_pkthdr*)input.header.data())->ts.tv_usec/1000; // convert to ms
+                duration = endTime - startTime;
+
+            }
+
+
+
+
+
             difference = inputTs - previousInputTs;
             differencePerSec += difference;
             distanceList.append(difference);
 
-            //Calculate average diff per second and IAT standard deviation per microsecond
+            //Calculate average diff per second and IAT standard deviation per millisecond
 
             if(statusTimer.elapsed() >= 1000){
                 // If no packages recieved, wait(?)
@@ -88,6 +107,8 @@ void NetworkJitter::run(){
                     diffSum += ((distanceList[a] - diffratePerSec) * (distanceList[a] - diffratePerSec));
                 }
 
+                // sqrt of finalSum is equal to the IAT dev
+
                 finalSum = diffSum/ distanceList.length();
 
                 qInfo() << "Std deviation: " << sqrt(finalSum);
@@ -99,6 +120,7 @@ void NetworkJitter::run(){
 
                 stream.networkJitters = sqrt(finalSum);
 
+                emit iatStatus(sqrt(finalSum), duration);
 
                 emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
 

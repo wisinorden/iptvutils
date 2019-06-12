@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>644</width>
-    <height>1055</height>
+    <height>1092</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -135,6 +135,99 @@
          </item>
          <item>
           <widget class="QLineEdit" name="recordFilter"/>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>37</height>
+            </size>
+           </property>
+           <property name="palette">
+            <palette>
+             <active/>
+             <inactive/>
+             <disabled/>
+            </palette>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-color: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));</string>
+           </property>
+           <property name="title">
+            <string>Graph Data</string>
+           </property>
+           <widget class="QFrame" name="frame">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>20</y>
+              <width>466</width>
+              <height>30</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>10</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <widget class="QRadioButton" name="bitrateBtn">
+             <property name="geometry">
+              <rect>
+               <x>70</x>
+               <y>0</y>
+               <width>112</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string>Bitrate</string>
+             </property>
+            </widget>
+            <widget class="QRadioButton" name="iatDevBtn">
+             <property name="geometry">
+              <rect>
+               <x>160</x>
+               <y>0</y>
+               <width>112</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string>Std IAT de&amp;v</string>
+             </property>
+            </widget>
+            <widget class="QRadioButton" name="pidBtn">
+             <property name="geometry">
+              <rect>
+               <x>280</x>
+               <y>0</y>
+               <width>112</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string>PIDS</string>
+             </property>
+            </widget>
+           </widget>
+          </widget>
          </item>
         </layout>
        </widget>

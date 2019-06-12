@@ -37,6 +37,8 @@ private slots:
     void gotConsumerStatus(Status cStatus);
     void moduleFinished();
     void joinStreamInfo(WorkerStatus dStatus);
+    void gotBitrate(qint64 bitrate, qint64 duration);
+
 };
 
 #endif // TSNETWORKFILERECORDER_H

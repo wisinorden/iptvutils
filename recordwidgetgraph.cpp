@@ -11,14 +11,10 @@
 RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
     QChartView(parent),
     m_isTouching(false)
-
 {
-    m_isTouching = false;
-
     setDragMode(QGraphicsView::NoDrag);
     this->setMouseTracking(true);
     this->setRubberBand(QChartView::RectangleRubberBand);
-   // this->setFocusPolicy(Qt::StrongFocus);
 
 }
 
@@ -39,10 +35,10 @@ QChart* RecordWidgetGraph::setupGraph(){
 
     // Customize the title font
     QFont font;
-    font.setPixelSize(8);
+    font.setPixelSize(3);
     chart->setTitleFont(font);
     chart->setTitleBrush(QBrush(Qt::black));
- //   chart->setTitle("Bitrate per second mbps");
+    //   chart->setTitle("Bitrate per second mbps");
 
     // Change the line color and weight
     QPen pen(QRgb(0x000000));
@@ -50,39 +46,59 @@ QChart* RecordWidgetGraph::setupGraph(){
     lineSeries->setPen(pen);
 
     this->setChart(chart);
-  //  this->chart()->axisX()->setTitleText("Seconds");
+    //  this->chart()->axisX()->setTitleText("Seconds");
 
     this->chartCounter = 0;
+    this->maxBitrate = 0;
+    this->minBitrate = 5000;
 
-    bitrateTimer.start();
+
+
+        QDateTimeAxis *axisX = new QDateTimeAxis;
+        axisX->setFormat("m:s");
+        axisX->setTickCount(10);
+        this->chart()->setAxisX(axisX, lineSeries);
+        lineSeries->attachAxis(axisX);
+
+
+
+
     return(chart);
+
 
 }
 
 
 
-void RecordWidgetGraph::setBitrate (qint64 bitrate, qint64 duration){
+void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
 
     // Appends new values and updates graph
 
+
     if(bitrate != 0){
 
-        double timestampDouble = (double) duration  /1000;
-        double bitrateDouble = (double) bitrate /1000000;
+        double timestampDouble = (double) duration;
+     //   double bitrateDouble = (double) bitrate /1000000;
 
-        lineSeries->append(timestampDouble, bitrateDouble);
-        this->chart()->removeSeries(lineSeries);
-        this->chart()->addSeries(lineSeries);
-        this->chart()->createDefaultAxes();
+        lineSeries->append(timestampDouble, bitrate);
 
-        this->chart()->scroll(chartCounter /5 , 0);
         this->chart()->axisX()->setRange(timestampDouble - 10, timestampDouble + 2);
+
+
+        if(bitrate < this->minBitrate){
+            minBitrate = bitrate;
+            this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
+        }
+
+        if (this->maxBitrate < bitrate) {
+            this->maxBitrate = bitrate;
+            this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
+        }
 
         chartCounter++;
     }
 
 }
-
 
 
 void RecordWidgetGraph::mousePressEvent(QMouseEvent *event)

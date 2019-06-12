@@ -25,7 +25,8 @@ signals:
     void started();
     void finished();
     void status(FinalStatus status);
-    void bitrateStatus(qint64 bitrate, qint64 duration);
+    void bitrateStatus(double bitrate, qint64 duration);
+    void iatStatus(double iatDev, qint64 duration);
     void workerStatus(WorkerStatus status);
 
 public slots:

@@ -45,6 +45,8 @@ public:
     RecordWidgetGraph(QWidget *parent);
     QChart GraphChart;
     qint64 chartCounter;
+    double maxBitrate;
+    double minBitrate;
     QChart* setupGraph();
 
     void keyPressEvent(QKeyEvent *event);
@@ -59,7 +61,9 @@ protected:
 
 
 public slots:
-    void setBitrate (qint64 bitrate, qint64 duration);
+    void setBitrate (double bitrate, qint64 duration);
+
+
 
 private:
     QElapsedTimer bitrateTimer;

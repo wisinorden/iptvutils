@@ -21,6 +21,7 @@ RecordWidget::RecordWidget(QWidget *parent) :
     this->setupGraph();
     this->setMouseTracking(true);
 
+
     // Advanced PCAP filter
     ui->recordPcapFilterContainer->hide();
     connect(ui->recordExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_recordExpandPCAPFilterButton_toggled(bool)));
@@ -213,8 +214,16 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
-    connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
-  //  connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, &graph, &RecordWidgetGraph::bitrateInfoUpdate);
+
+    if(ui->bitrateBtn->isChecked()){
+        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
+
+    } else if(ui->iatDevBtn->isChecked()){
+
+        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::iatStatus, &graph, &RecordWidgetGraph::setBitrate);
+
+    }
+
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);
@@ -241,7 +250,7 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, this, &RecordWidget::recordStatusChanged);
-    //connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, &graph, &RecordWidgetGraph::bitrateInfoUpdate);
+    connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);
@@ -259,6 +268,19 @@ void RecordWidget::on_recordExpandPCAPFilterButton_toggled(bool checked)
         ui->recordExpandPCAPFilterButton->setArrowType(Qt::ArrowType::RightArrow);
         ui->recordPcapFilterContainer->hide();
     }
+}
+
+
+void RecordWidget::setGraphData(){
+
+    if(ui->bitrateBtn->isChecked()){
+        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
+    } else if (ui->iatDevBtn->isChecked()){
+
+    } else if(ui->pidBtn->isChecked()){
+
+    }
+
 }
 
 
@@ -361,7 +383,7 @@ void RecordWidget::on_recordStartStopBtn_clicked()
     }
     else {
         if (networkPcapFileRecorder != Q_NULLPTR) {
-            qInfo("atempting to stop pcapRecorder");
+            ("atempting to stop pcapRecorder");
             ui->recordStartStopBtn->setEnabled(false);
             networkPcapFileRecorder->stop();
         }

@@ -41,7 +41,7 @@ public:
 
 signals:
     void status(AnalyzerStatus status);
-    void bitrateStatus(qint64 bitrate, qint64 duration);
+    void bitrateStatus(double bitrate, qint64 duration);
 
 protected slots:
     void run();

@@ -166,7 +166,7 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
         if (statusTimer.elapsed() >= 200) {
             emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
-            emit bitrateStatus(bitrate, duration);
+            emit bitrateStatus((double) bitrate /1000000,  duration );
             emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
             statusTimer.restart();
         }
