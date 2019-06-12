@@ -82,7 +82,8 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
 
         lineSeries->append(timestampDouble, bitrate);
 
-        this->chart()->axisX()->setRange(timestampDouble - 10, timestampDouble + 2);
+
+        this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(timestampDouble - 20000), QDateTime::fromMSecsSinceEpoch(timestampDouble + 2000));
 
 
         if(bitrate < this->minBitrate){

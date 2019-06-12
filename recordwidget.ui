@@ -64,7 +64,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="recordHost"/>
+           <widget class="QLineEdit" name="recordHost">
+            <property name="focusPolicy">
+             <enum>Qt::ClickFocus</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -81,12 +85,19 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="recordPort"/>
+           <widget class="QLineEdit" name="recordPort">
+            <property name="focusPolicy">
+             <enum>Qt::ClickFocus</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
         <item alignment="Qt::AlignBottom">
          <widget class="QCheckBox" name="recordUnicastCheckBox">
+          <property name="focusPolicy">
+           <enum>Qt::ClickFocus</enum>
+          </property>
           <property name="text">
            <string>Unicast</string>
           </property>
@@ -94,6 +105,9 @@
         </item>
         <item alignment="Qt::AlignBottom">
          <widget class="QCheckBox" name="recordRtpFecCheckBox">
+          <property name="focusPolicy">
+           <enum>Qt::ClickFocus</enum>
+          </property>
           <property name="text">
            <string>RTP-FEC</string>
           </property>
@@ -134,13 +148,17 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="recordFilter"/>
+          <widget class="QLineEdit" name="recordFilter">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+          </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QGroupBox" name="groupBox">
            <property name="maximumSize">
             <size>
-             <width>16777215</width>
+             <width>405</width>
              <height>37</height>
             </size>
            </property>
@@ -287,6 +305,9 @@
          <layout class="QHBoxLayout" name="recordFilenameHLayout">
           <item>
            <widget class="QLineEdit" name="recordFilename">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -294,6 +315,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="recordOpenFileDialog">
+            <property name="focusPolicy">
+             <enum>Qt::ClickFocus</enum>
+            </property>
             <property name="text">
              <string>Browse...</string>
             </property>
@@ -305,6 +329,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="recordStartStopBtn">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string>Start recording</string>
         </property>
@@ -317,6 +344,12 @@
     <layout class="QVBoxLayout" name="recordStatusVLayout">
      <item>
       <widget class="QGroupBox" name="recordStreamInfoGroup">
+       <property name="maximumSize">
+        <size>
+         <width>340</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="title">
         <string>Stream info</string>
        </property>
