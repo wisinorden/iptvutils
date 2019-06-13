@@ -103,6 +103,12 @@ void RecordWidget::recordingStarted() {
     ui->recordInterfaceSelect->setEnabled(false);
     this->setupGraph();
 
+    if(ui->bitrateBtn->isChecked()){
+        this->graph.setYAxisTitle("Bitrate mbps");
+    } else{
+        this->graph.setYAxisTitle("Std IAT dev µs/sec");
+    }
+
 
 
 
@@ -115,6 +121,10 @@ void RecordWidget::recordStatusChanged(FinalStatus status) {
 
 void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
     status.insertIntoTree(ui->treeWidget);
+    auto item = ui->treeWidget->topLevelItem(0)->child(2);
+    auto itemData = item->QTreeWidgetItem::data(0, Qt::UserRole);
+    bool success;
+    double qp = itemData.toLongLong(&success);
 }
 
 void RecordWidget::recordingFinished() {
@@ -215,13 +225,10 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
 
-    if(ui->bitrateBtn->isChecked()){
-        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
-
-    } else if(ui->iatDevBtn->isChecked()){
-
+    if(ui->iatDevBtn->isChecked()){
         connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::iatStatus, &graph, &RecordWidgetGraph::setBitrate);
-
+    } else {
+        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
     }
 
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);

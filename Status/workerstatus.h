@@ -32,6 +32,13 @@ protected:
         return item;
     }
 
+    QTreeWidgetItem* makeItems(QString text, QVariant value, bool parent = false) {
+        QTreeWidgetItem *item = new QTreeWidgetItem((QTreeWidget*)0, QStringList(text));
+        item->setData(0, Qt::UserRole, value);
+        item->setDisabled(!parent);
+        return item;
+    }
+
     void makeTsError(QTreeWidgetItem *parent, quint64 count, TsErrors::ErrorType error) {
         QTreeWidgetItem *item = new QTreeWidgetItem(
                     (QTreeWidget*)0,
@@ -83,7 +90,8 @@ public:
             tree->addTopLevelItem(parent);
             parent->addChild(makeItem(QString(tr("size %1 MB")).arg(QString::number(info.bytes/1000000.0, 'f', 2))));
             parent->addChild(makeItem(QString(tr("duration %1")).arg(QDateTime::fromTime_t(info.currentTime/1000).toUTC().toString("HH:mm:ss"))));
-            parent->addChild(makeItem(QString(tr("avg bitrate %1 Mbit/s")).arg(QString::number((info.bytes*8*1000.0/info.currentTime)/1000000.0, 'f', 2))));
+            auto value = (info.bytes*8*1000.0/info.currentTime)/1000000.0;
+            parent->addChild(makeItems(QString(tr("avg bitrate %1 Mbit/s")).arg(QString::number(value, 'f', 2)), value));    //Allows avg bitrate to be accessed in other places such as recordwidget
             parent->addChild(makeItem(QString(tr("protocol %1")).arg(info.protocolName())));
             parent->addChild(makeItem(QString(tr("bitrate mode %1")).arg(info.bitrateModeName())));
             parent->addChild(makeItem(QString(tr("%1 TS/IP")).arg(info.tsPerIp)));

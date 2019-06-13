@@ -2,7 +2,6 @@
 #include "chart.h"
 
 #include <QtCharts/QAbstractAxis>
-#include <QtCharts/QValueAxis>
 #include <QtCharts/QChart>
 #include <QtGui/QMouseEvent>
 
@@ -25,12 +24,15 @@ RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
 QChart* RecordWidgetGraph::setupGraph(){
 
     lineSeries = new QLineSeries();
+    avgSeries = new QLineSeries();
+
 
     // Create chart, add data, hide legend, and add axis
     Chart * chart = new Chart();
 
     chart->legend()->hide();
     chart->addSeries(lineSeries);
+    chart->addSeries(avgSeries);
     chart->createDefaultAxes();
 
     // Customize the title font
@@ -38,7 +40,7 @@ QChart* RecordWidgetGraph::setupGraph(){
     font.setPixelSize(3);
     chart->setTitleFont(font);
     chart->setTitleBrush(QBrush(Qt::black));
-    //   chart->setTitle("Bitrate per second mbps");
+    chart->axisY()->setTitleText("Bitrate mbps");
 
     // Change the line color and weight
     QPen pen(QRgb(0x000000));
@@ -46,19 +48,20 @@ QChart* RecordWidgetGraph::setupGraph(){
     lineSeries->setPen(pen);
 
     this->setChart(chart);
-    //  this->chart()->axisX()->setTitleText("Seconds");
 
     this->chartCounter = 0;
     this->maxBitrate = 0;
     this->minBitrate = 5000;
+    this->zoomInt = 0;
 
 
 
         QDateTimeAxis *axisX = new QDateTimeAxis;
-        axisX->setFormat("m:s");
+        axisX->setFormat("m:ss");
         axisX->setTickCount(10);
+        axisX->setTitleText("Time m:s");
         this->chart()->setAxisX(axisX, lineSeries);
-        lineSeries->attachAxis(axisX);
+        avgSeries->attachAxis(axisX);
 
 
 
@@ -70,20 +73,23 @@ QChart* RecordWidgetGraph::setupGraph(){
 
 
 
+void RecordWidgetGraph::setYAxisTitle(QString title){
+    chart()->axisY()->setTitleText(title);
+}
+
+
 void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
 
     // Appends new values and updates graph
 
 
     if(bitrate != 0){
-
-        double timestampDouble = (double) duration;
-     //   double bitrateDouble = (double) bitrate /1000000;
-
-        lineSeries->append(timestampDouble, bitrate);
+        this->durations = duration;
+        lineSeries->append(duration, bitrate);
+        avgSeries->append(duration, 7);
 
 
-        this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(timestampDouble - 20000), QDateTime::fromMSecsSinceEpoch(timestampDouble + 2000));
+        this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(duration - 20000), QDateTime::fromMSecsSinceEpoch(duration + 2000));
 
 
         if(bitrate < this->minBitrate){
@@ -140,7 +146,9 @@ void RecordWidgetGraph::keyPressEvent(QKeyEvent *event)
         chart()->zoomIn();
         break;
     case Qt::Key_Minus:
-        chart()->zoomOut();
+        this->zoomInt += 10000;
+        this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch((durations - 20000) - zoomInt), QDateTime::fromMSecsSinceEpoch(durations + 2000));
+        this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
         break;
 
     case Qt::Key_Left:

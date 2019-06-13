@@ -22,6 +22,9 @@
     <height>0</height>
    </size>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>Record</string>
   </property>
@@ -150,7 +153,7 @@
          <item>
           <widget class="QLineEdit" name="recordFilter">
            <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
+            <enum>Qt::ClickFocus</enum>
            </property>
           </widget>
          </item>
@@ -262,7 +265,7 @@
          <bool>true</bool>
         </property>
         <property name="focusPolicy">
-         <enum>Qt::StrongFocus</enum>
+         <enum>Qt::NoFocus</enum>
         </property>
        </widget>
       </item>
