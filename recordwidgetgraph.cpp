@@ -13,6 +13,7 @@ RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
 {
     setDragMode(QGraphicsView::NoDrag);
     this->setMouseTracking(true);
+
     this->setRubberBand(QChartView::RectangleRubberBand);
 
 }
@@ -25,21 +26,20 @@ QChart* RecordWidgetGraph::setupGraph(){
 
     lineSeries = new QLineSeries();
     avgSeries = new QLineSeries();
+    avgSeries->setName("Avg bitrate");
+    lineSeries->setName("Bitrate");
 
 
-    // Create chart, add data, hide legend, and add axis
+
+    // Create chart and add axis
     Chart * chart = new Chart();
 
-    chart->legend()->hide();
+   // chart->legend()->hide();
     chart->addSeries(lineSeries);
     chart->addSeries(avgSeries);
     chart->createDefaultAxes();
 
-    // Customize the title font
-    QFont font;
-    font.setPixelSize(3);
-    chart->setTitleFont(font);
-    chart->setTitleBrush(QBrush(Qt::black));
+
     chart->axisY()->setTitleText("Bitrate mbps");
 
     // Change the line color and weight
@@ -53,6 +53,7 @@ QChart* RecordWidgetGraph::setupGraph(){
     this->maxBitrate = 0;
     this->minBitrate = 5000;
     this->zoomInt = 0;
+    this->avgBitrate = 0;
 
 
 
@@ -63,18 +64,23 @@ QChart* RecordWidgetGraph::setupGraph(){
         this->chart()->setAxisX(axisX, lineSeries);
         avgSeries->attachAxis(axisX);
 
-
-
-
     return(chart);
-
-
 }
 
 
 
 void RecordWidgetGraph::setYAxisTitle(QString title){
     chart()->axisY()->setTitleText(title);
+
+    if(title.contains("Std")){
+        lineSeries->setName("IAT dev");
+        chart()->removeSeries(avgSeries);
+    }
+
+}
+
+void RecordWidgetGraph::setAvgBitrate(double avgBitrate){
+    this->avgBitrate = avgBitrate;
 }
 
 
@@ -86,7 +92,10 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
     if(bitrate != 0){
         this->durations = duration;
         lineSeries->append(duration, bitrate);
-        avgSeries->append(duration, 7);
+
+        if(avgBitrate != 0){
+            avgSeries->append(duration, avgBitrate);
+        }
 
 
         this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(duration - 20000), QDateTime::fromMSecsSinceEpoch(duration + 2000));

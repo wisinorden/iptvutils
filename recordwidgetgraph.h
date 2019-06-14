@@ -31,6 +31,7 @@ public:
     double minBitrate;
     QChart* setupGraph();
 
+    void setAvgBitrate(double avgBitrate);
     void keyPressEvent(QKeyEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -42,6 +43,7 @@ public:
 protected:
 
 
+
 public slots:
     void setBitrate (double bitrate, qint64 duration);
     void setYAxisTitle(QString title);
@@ -51,6 +53,7 @@ public slots:
 
 private:
     quint32 zoomInt;
+    double avgBitrate;
     qint64 durations;
     qint64 currentBitrate;
     qint64 bitrateTimestamp;
