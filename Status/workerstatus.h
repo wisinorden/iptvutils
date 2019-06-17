@@ -81,7 +81,7 @@ public:
 
     void insertIntoTree(QTreeWidget *tree) {
         tree->clear();
-        //tree->setSelectionMode(QAbstractItemView::SingleSelection);
+        tree->setSelectionMode(QAbstractItemView::SingleSelection);
         for (int i = 0; i < streams.count(); i++) {
             quint64 key = streams.keys().at(i);
             const StreamInfo &info = streams.value(key);
@@ -95,9 +95,9 @@ public:
             parent->addChild(makeItem(QString(tr("protocol %1")).arg(info.protocolName())));
             parent->addChild(makeItem(QString(tr("bitrate mode %1")).arg(info.bitrateModeName())));
             parent->addChild(makeItem(QString(tr("%1 TS/IP")).arg(info.tsPerIp)));
-            if(info.networkJitters != 0){
+     //       if(info.networkJitters != 0){
                 parent->addChild(makeItem(QString(tr("%1 µs IAT deviation ")).arg(info.networkJitters)));
-            }
+  //          }
             parent->addChild(makeItem(QString(tr("%1 PIDs")).arg(info.pidMap.size())));
 
             quint64 tsErrCount = info.tsErrors.totalErrors();

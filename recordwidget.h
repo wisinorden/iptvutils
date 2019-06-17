@@ -56,7 +56,6 @@ private slots:
     void on_recordFileFormatPCAP_toggled(bool);
     void on_recordOpenFileDialog_clicked();
     void on_recordStartStopBtn_clicked();
-    void setGraphData();
 
     void on_treeWidget_activated(const QModelIndex &index);
 

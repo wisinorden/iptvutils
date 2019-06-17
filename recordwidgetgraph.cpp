@@ -29,16 +29,13 @@ QChart* RecordWidgetGraph::setupGraph(){
     avgSeries->setName("Avg bitrate");
     lineSeries->setName("Bitrate");
 
-
-
     // Create chart and add axis
     Chart * chart = new Chart();
 
-   // chart->legend()->hide();
+    // chart->legend()->hide();
     chart->addSeries(lineSeries);
     chart->addSeries(avgSeries);
     chart->createDefaultAxes();
-
 
     chart->axisY()->setTitleText("Bitrate mbps");
 
@@ -55,14 +52,12 @@ QChart* RecordWidgetGraph::setupGraph(){
     this->zoomInt = 0;
     this->avgBitrate = 0;
 
-
-
-        QDateTimeAxis *axisX = new QDateTimeAxis;
-        axisX->setFormat("m:ss");
-        axisX->setTickCount(10);
-        axisX->setTitleText("Time m:s");
-        this->chart()->setAxisX(axisX, lineSeries);
-        avgSeries->attachAxis(axisX);
+    QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX->setFormat("m:ss");
+    axisX->setTickCount(10);
+    axisX->setTitleText("Time m:s");
+    this->chart()->setAxisX(axisX, lineSeries);
+    avgSeries->attachAxis(axisX);
 
     return(chart);
 }
@@ -96,7 +91,6 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
         if(avgBitrate != 0){
             avgSeries->append(duration, avgBitrate);
         }
-
 
         this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(duration - 20000), QDateTime::fromMSecsSinceEpoch(duration + 2000));
 

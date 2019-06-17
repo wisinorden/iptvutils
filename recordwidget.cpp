@@ -101,6 +101,7 @@ void RecordWidget::recordingStarted() {
     ui->recordExpandPCAPFilterButton->setEnabled(false);
     ui->recordPcapFilterContainer->setEnabled(false);
     ui->recordInterfaceSelect->setEnabled(false);
+    ui->graphDataBox->setEnabled(false);
     this->setupGraph();
 
     if(ui->graphDataBox->currentText()== "Bitrate"){
@@ -138,6 +139,7 @@ void RecordWidget::recordingFinished() {
     ui->recordExpandPCAPFilterButton->setEnabled(true);
     ui->recordPcapFilterContainer->setEnabled(true);
     ui->recordInterfaceSelect->setEnabled(true);
+    ui->graphDataBox->setEnabled(true);
 
 
 
@@ -257,7 +259,13 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, this, &RecordWidget::recordStatusChanged);
-    connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
+    if(ui->graphDataBox->currentText()!= "Bitrate"){
+        connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::iatStatus, &graph, &RecordWidgetGraph::setBitrate);
+
+    } else {
+        connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
+
+    }
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);
@@ -277,21 +285,10 @@ void RecordWidget::on_recordExpandPCAPFilterButton_toggled(bool checked)
     }
 }
 
-
-void RecordWidget::setGraphData(){
-
-    if(ui->graphDataBox->currentText()== "Bitrate"){
-        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
-    }
-}
-
-
 void RecordWidget::setupGraph(){
-  //  graph.setParent(this);
     graph.setupGraph();
     ui->graphView->setChart(graph.chart());
     ui->graphView->setRenderHint(QPainter::Antialiasing);
-    ui->graphView->show();
 }
 
 void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)

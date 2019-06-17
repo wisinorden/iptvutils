@@ -21,6 +21,8 @@ void TsNetworkFileRecorder::start() {
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &TsNetworkFileRecorder::joinStreamInfo);
     connect(&networkJitter, &NetworkJitter::workerStatus, this, &TsNetworkFileRecorder::joinStreamInfo);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::bitrateStatus, this, &TsNetworkFileRecorder::gotBitrate);
+    connect(&networkJitter, &NetworkJitter::iatStatus, this, &TsNetworkFileRecorder::gotIatDev);
+
 
 
 
@@ -94,10 +96,18 @@ void TsNetworkFileRecorder::gotConsumerStatus(Status cStatus) {
     }
 }
 
-void TsNetworkFileRecorder::gotBitrate(qint64  bitrate, qint64 duration){
+void TsNetworkFileRecorder::gotBitrate(double  bitrate, qint64 duration){
 
     emit bitrateStatus(bitrate, duration);
 }
+
+
+void TsNetworkFileRecorder::gotIatDev(double iatDev, qint64 duration){
+
+    emit iatStatus(iatDev, duration);
+}
+
+
 
 
 
