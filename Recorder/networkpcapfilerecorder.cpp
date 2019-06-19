@@ -1,5 +1,8 @@
 #include "networkpcapfilerecorder.h"
 
+#include <QCoreApplication>
+#include <QDebug>
+
 void NetworkPcapFileRecorder::start() {
     finalStatus.setAnalysisMode(config.getWorkerMode());
     producer.addNext(&analyzerMiddleware)->addNext(&networkJitter)->addNext(&consumer);
@@ -51,30 +54,33 @@ void NetworkPcapFileRecorder::gotProducerStatus(Status pStatus) {
 }
 
 
-// This function joins the signals coming in from NetworkJitter & AnalyzerPcapMiddleware and emits complete signal to be displayed in right-hand info panel
-void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus xStatus) {
 
-    if (xStatus.getType() == WorkerStatus::STATUS_ERROR) {
-        stop();
-        return;
-    }
+void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus xStatus, bool isDeviationSignal) {
 
+    //Iterates hashmap
     for(auto iter = xStatus.getStreams().begin(); iter != xStatus.getStreams().end(); ++iter) {
         qint64 streamID = iter.key();
         const StreamInfo &streamInfo= iter.value();
 
-        if(streamInfo.networkJitters == 0 && streamInfo.bytes != 0){
+        if(!isDeviationSignal){
             previousAnalyzerStream.streams[streamID] = streamInfo;
+            qInfo("hej");
 
+        } else if(isDeviationSignal){
+            previousAnalyzerStream.streams[streamID].iatDeviation = streamInfo.iatDeviation;
+            qInfo() << "iatDev" << streamID << streamInfo.iatDeviation;
+            WorkerStatus completeSignal;
 
-        } else if(streamInfo.networkJitters != 0){
-            WorkerStatus tempStatus;
-            tempStatus.setStreams(previousAnalyzerStream.streams);
-            tempStatus.streams[streamID].networkJitters = streamInfo.networkJitters;
-            emit workerStatus(tempStatus);
+            completeSignal.setStreams(previousAnalyzerStream.streams);
+            emit workerStatus(completeSignal);
         }
     }
 }
+
+
+
+
+
 
 
 

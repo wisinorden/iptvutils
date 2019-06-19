@@ -29,7 +29,7 @@ public:
     NetworkProtocol protocol;
     BitrateMode bitrateMode;
     quint8 tsPerIp;
-    quint64 networkJitters;
+    quint64 iatDeviation;
     TsErrors tsErrors;
     QMap<int, PIDInfo> pidMap;
     QString protocolName() const {
@@ -63,7 +63,7 @@ public:
         protocol(NetworkProtocol::UNKNOWN),
         bitrateMode(BitrateMode::UNKNOWN),
         tsPerIp(0),
-        networkJitters(0),
+        iatDeviation(0),
         tsErrors() {}
     StreamInfo(StreamId id,
                quint64 bytes,
@@ -77,7 +77,7 @@ public:
         bitrate(bitrate),
         protocol(protocol),
         tsPerIp(tsPerIp),
-        networkJitters(networkJitters),
+        iatDeviation(networkJitters),
         tsErrors(tsErrors) {}
 };
 

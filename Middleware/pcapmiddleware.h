@@ -23,7 +23,7 @@ public:
 signals:
     void started();
     void finished();
-    void workerStatus(WorkerStatus status);
+    void workerStatus(WorkerStatus status, bool signalType);
 };
 
 #endif // PCAPMIDDLEWARE_H

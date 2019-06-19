@@ -44,16 +44,9 @@ void NetworkJitter::run(){
     qint64 bytes = 0;
     PcapProduct input;
 
-
-
-
-
     PcapProduct previousInput = prevProvider->getProduct();
 
     buffer.push(previousInput);
-
-
-
 
     while (!stopping) {
         PacketParser parser((pcap_pkthdr*)input.header.data(), (const u_char*)input.data.data());
@@ -118,11 +111,11 @@ void NetworkJitter::run(){
                 StreamInfo &stream = streams[streamId];
 
 
-                stream.networkJitters = sqrt(finalSum);
+                stream.iatDeviation = sqrt(finalSum);
 
                 emit iatStatus(sqrt(finalSum), duration);
 
-                emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
+                emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams), true);
 
 
 

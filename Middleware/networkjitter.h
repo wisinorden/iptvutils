@@ -21,6 +21,7 @@ private:
     qint64 duration;
     qint64 packetNumber;
     QHash<quint64, StreamInfo> streams;
+    bool signalType;
 
 public:
     NetworkJitter(WorkerConfiguration config) :

@@ -19,12 +19,16 @@ private:
     AnalyzerPcapMiddleware analyzerMiddleware;
 
 public:
+
+
+
     NetworkPcapFileRecorder(WorkerConfiguration config, QObject *parent = 0) :
         Recorder(config, parent),
         producer(config),
         consumer(config),
         networkJitter(config),
         analyzerMiddleware(config) {
+
 
     }
     ~NetworkPcapFileRecorder() { printf("DESTRUCT\n"); }
@@ -36,7 +40,7 @@ public:
 private slots:
     void gotProducerStatus(Status pStatus);
     void gotAnalyzerStatus(AnalyzerStatus aStatus);
-    void joinStreamInfo(WorkerStatus dStatus);
+    void joinStreamInfo(WorkerStatus dStatus, bool isDeviationSignal);
     void gotConsumerStatus(Status cStatus);
     void gotBitrate(double bitrate, qint64 duration);
     void gotIatDev(double iatDev, qint64 duration);

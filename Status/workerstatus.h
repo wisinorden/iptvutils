@@ -95,9 +95,9 @@ public:
             parent->addChild(makeItem(QString(tr("protocol %1")).arg(info.protocolName())));
             parent->addChild(makeItem(QString(tr("bitrate mode %1")).arg(info.bitrateModeName())));
             parent->addChild(makeItem(QString(tr("%1 TS/IP")).arg(info.tsPerIp)));
-     //       if(info.networkJitters != 0){
-                parent->addChild(makeItem(QString(tr("%1 µs IAT deviation ")).arg(info.networkJitters)));
-  //          }
+            //       if(info.networkJitters != 0){
+            parent->addChild(makeItem(QString(tr("%1 µs IAT deviation ")).arg(info.iatDeviation)));
+            //          }
             parent->addChild(makeItem(QString(tr("%1 PIDs")).arg(info.pidMap.size())));
 
             quint64 tsErrCount = info.tsErrors.totalErrors();

@@ -79,9 +79,6 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                     bitrate = (bytes - lastSecondBytes)*8*1000/(duration - lastDuration);
                     lastSecondBytes = bytes;
                     lastDuration = duration;
-
-
-
                 }
             }
 
@@ -164,14 +161,15 @@ void AnalyzerPcapMiddleware::bufferProducts() {
         }
 
 
-        if (statusTimer.elapsed() >= 200) {
+        if (statusTimer.elapsed() >= 1000) {
             emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
             if(bitrate / 1000000 >!100){
                 emit bitrateStatus((double) bitrate /1000000,  duration );
 
             }
          //   emit bitrateStatus((double) bitrate /1000000,  duration );
-            emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
+            qInfo() << "bitrate" << (double) bitrate /1000000;
+            emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams), false);
             statusTimer.restart();
         }
 
@@ -182,12 +180,12 @@ void AnalyzerPcapMiddleware::bufferProducts() {
     qInfo("Analyzer done, processed %lli packets", packetNumber-1);
     emit status(AnalyzerStatus(Status::STATUS_FINISHED, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
 
-    emit workerStatus(WorkerStatus(WorkerStatus::STATUS_FINISHED, streams));
+    emit workerStatus(WorkerStatus(WorkerStatus::STATUS_FINISHED, streams), false);
     if (input.type == PcapProduct::END &&
             (config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_LIVE ||
              config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_OFFLINE)) {
 
-        emit workerStatus(WorkerStatus(WorkerStatus::STATUS_ANALYZED_ENTIRE, streams));
+        emit workerStatus(WorkerStatus(WorkerStatus::STATUS_ANALYZED_ENTIRE, streams), false);
     }
 }
 

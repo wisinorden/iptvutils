@@ -7,6 +7,7 @@
 #include <QWidget>
 #include "Status/streaminfo.h"
 #include "recordwidgetgraph.h"
+#include "recordtxtprinter.h"
 
 
 
@@ -36,7 +37,7 @@ private:
     bool started;
     QString currentDirectory;
     QString currentFilename;
-
+    RecordTxtPrinter printer;
 private slots:
     void recordingStarted();
     void recordingFinished();

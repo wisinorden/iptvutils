@@ -140,10 +140,7 @@ void RecordWidget::recordingFinished() {
     ui->recordPcapFilterContainer->setEnabled(true);
     ui->recordInterfaceSelect->setEnabled(true);
     ui->graphDataBox->setEnabled(true);
-
-
-
-
+    printer.printToFile("hallå");
 
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
