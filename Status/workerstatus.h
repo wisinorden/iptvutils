@@ -53,6 +53,8 @@ protected:
 
 
 public:
+    double value;
+    QTreeWidget *treeWidget;
     WorkerStatus() : QObject() {}
     WorkerStatus(StatusType type) : QObject(), type(type) {}
     WorkerStatus(QString error) : QObject(), type(STATUS_ERROR), error(error) {}
@@ -79,6 +81,39 @@ public:
     }
 
 
+    // New method that is meant to update the values in the tree rather than recreate the tree every iteration.
+    double updateTree(QTreeWidget *tree){
+
+        quint8 y = 0;
+
+
+        double value = 0;
+
+        for (int i = 0; i < streams.count(); i++){
+            quint64 key = streams.keys().at(i);
+            const StreamInfo &info = streams.value(key);
+
+
+            tree->topLevelItem(i)->child(y++)->setText(0, QString(tr("size %1 MB")).arg(QString::number(info.bytes/1000000.0, 'f', 2)));
+            tree->topLevelItem(i)->child(y++)->setText(0, QString(tr("duration %1")).arg(QDateTime::fromTime_t(info.currentTime/1000).toUTC().toString("HH:mm:ss")));
+            value = (info.bytes*8*1000.0/info.currentTime)/1000000.0;
+            tree->topLevelItem(i)->child(y++)->setText(0,QString((tr("avg bitrate %1 Mbit/s")).arg(QString::number(value, 'f', 2))));
+            tree->topLevelItem(i)->child(y++)->setText(0,QString(tr("protocol %1")).arg(info.protocolName()));
+            tree->topLevelItem(i)->child(y++)->setText(0, (QString(tr("bitrate mode %1")).arg(info.bitrateModeName())));
+            tree->topLevelItem(i)->child(y++)->setText(0, QString(tr("%1 TS/IP")).arg(info.tsPerIp));
+            tree->topLevelItem(i)->child(y++)->setText(0, QString(tr("%1 µs IAT deviation ")).arg(info.iatDeviation));
+            tree->topLevelItem(i)->child(y++)->setText(0, QString(tr("%1 PIDs")).arg(info.pidMap.size()));
+            y= 0;
+        }
+        return value;
+
+    }
+
+
+
+
+
+    // Keeping this method as the initial tree creator
     void insertIntoTree(QTreeWidget *tree) {
         tree->clear();
         tree->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -88,6 +123,7 @@ public:
 
             QTreeWidgetItem* parent = makeItem(StreamId::calcName(key), true);
             tree->addTopLevelItem(parent);
+
             parent->addChild(makeItem(QString(tr("size %1 MB")).arg(QString::number(info.bytes/1000000.0, 'f', 2))));
             parent->addChild(makeItem(QString(tr("duration %1")).arg(QDateTime::fromTime_t(info.currentTime/1000).toUTC().toString("HH:mm:ss"))));
             auto value = (info.bytes*8*1000.0/info.currentTime)/1000000.0;
@@ -111,7 +147,7 @@ public:
             }
 
             parent->setExpanded(true);
-
+           // this->treeWidget = tree;
             tree->clearSelection();
             parent->setSelected(true);
         }

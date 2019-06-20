@@ -37,6 +37,7 @@ private:
     bool started;
     QString currentDirectory;
     QString currentFilename;
+    quint8 treeWidgetCounter;
     RecordTxtPrinter printer;
 private slots:
     void recordingStarted();

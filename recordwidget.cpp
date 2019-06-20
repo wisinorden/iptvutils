@@ -20,6 +20,7 @@ RecordWidget::RecordWidget(QWidget *parent) :
     ui->setupUi(this);
     this->setupGraph();
     this->setMouseTracking(true);
+    treeWidgetCounter = 0;
 
 
     // Advanced PCAP filter
@@ -121,11 +122,23 @@ void RecordWidget::recordStatusChanged(FinalStatus status) {
 }
 
 void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
+
+    if(treeWidgetCounter == 0){
+        status.insertIntoTree(ui->treeWidget);
+        treeWidgetCounter++;
+    } else {
+        double avgBit = status.updateTree(ui->treeWidget);
+        this->graph.setAvgBitrate(avgBit);
+    }
+
+    /*
     status.insertIntoTree(ui->treeWidget);
+
     auto item = ui->treeWidget->topLevelItem(0)->child(2);
     auto itemData = item->QTreeWidgetItem::data(0, Qt::UserRole);
     double avgBit = itemData.toDouble();
     this->graph.setAvgBitrate(avgBit);
+    */
 }
 
 void RecordWidget::recordingFinished() {
@@ -140,7 +153,6 @@ void RecordWidget::recordingFinished() {
     ui->recordPcapFilterContainer->setEnabled(true);
     ui->recordInterfaceSelect->setEnabled(true);
     ui->graphDataBox->setEnabled(true);
-    printer.printToFile("hallå");
 
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
