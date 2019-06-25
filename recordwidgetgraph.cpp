@@ -84,7 +84,7 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
     // Appends new values and updates graph
 
 
-    if(bitrate != 0){
+    if(bitrate > 1 && bitrate < 1000){
         this->durations = duration;
         lineSeries->append(duration, bitrate);
 

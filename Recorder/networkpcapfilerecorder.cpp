@@ -64,12 +64,13 @@ void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus xStatus, bool isDeviat
 
         if(!isDeviationSignal){
             previousAnalyzerStream.streams[streamID] = streamInfo;
-            qInfo("hej");
+       //     qInfo("hej");
 
         } else if(isDeviationSignal){
             previousAnalyzerStream.streams[streamID].iatDeviation = streamInfo.iatDeviation;
-            qInfo("hejhejhejhejhej");
-            qInfo() << "iatDev" << streamID << streamInfo.iatDeviation;
+
+          //qInfo("hejhejhejhejhej");
+       //     qInfo() << "iatDev" << streamID  streamInfo.iatDeviation;
             WorkerStatus completeSignal;
 
             completeSignal.setStreams(previousAnalyzerStream.streams);

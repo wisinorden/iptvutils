@@ -89,7 +89,7 @@ void NetworkJitter::run(){
 
             //Calculate average diff per second and IAT standard deviation per millisecond
 
-            if(statusTimer.elapsed() >= 1000){
+            if(statusTimer.elapsed() >= 200){
                 // If no packages recieved, wait(?)
                 if(packetCounter != 0){
                 diffratePerSec = differencePerSec/packetCounter;

@@ -35,10 +35,18 @@ public:
 private:
     Ui::RecordWidget *ui;
     bool started;
+    QString currentTreeStream;
     QString currentDirectory;
     QString currentFilename;
     quint8 treeWidgetCounter;
     RecordTxtPrinter printer;
+    QTreeWidgetItem *currentStreamAdress;
+    quint8 selectedStreamIndex;
+
+  //  QString getTreeStream(QTreeWidget widget);
+ //   void getTreeData(QString string, QTreeWidget treeWidget);
+
+
 private slots:
     void recordingStarted();
     void recordingFinished();
@@ -66,6 +74,7 @@ private slots:
 public slots:
     void recordStatusChanged(FinalStatus status);
     void recordWorkerStatusChanged(WorkerStatus status);
+    void recordWorkerGraphInfo (WorkerStatus status);
 
 };
 

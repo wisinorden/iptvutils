@@ -21,6 +21,7 @@ RecordWidget::RecordWidget(QWidget *parent) :
     this->setupGraph();
     this->setMouseTracking(true);
     treeWidgetCounter = 0;
+    selectedStreamIndex = 0;
 
 
     // Advanced PCAP filter
@@ -103,7 +104,10 @@ void RecordWidget::recordingStarted() {
     ui->recordPcapFilterContainer->setEnabled(false);
     ui->recordInterfaceSelect->setEnabled(false);
     ui->graphDataBox->setEnabled(false);
+   // ui->treeWidget->clear();
     this->setupGraph();
+
+
 
     if(ui->graphDataBox->currentText()== "Bitrate"){
         this->graph.setYAxisTitle("Bitrate mbps");
@@ -121,26 +125,63 @@ void RecordWidget::recordStatusChanged(FinalStatus status) {
     ui->recordStatus->setText(status.toUiString());
 }
 
+void RecordWidget::recordWorkerGraphInfo(WorkerStatus status){
+    quint64 key = status.streams.keys().at(selectedStreamIndex);
+    graph.setBitrate(status.streams[key].currentBitrate, status.streams[key].currentTime);
+
+
+    //    connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
+}
+
 void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 
     if(treeWidgetCounter == 0){
         status.insertIntoTree(ui->treeWidget);
         treeWidgetCounter++;
     } else {
-        double avgBit = status.updateTree(ui->treeWidget);
-        this->graph.setAvgBitrate(avgBit);
+
+
+
+
+        QList<QTreeWidgetItem *> itemList;
+        itemList = this->ui->treeWidget->selectedItems();
+
+        foreach(QTreeWidgetItem *item, itemList)
+        {
+            QString str = item->text(0);
+            selectedStreamIndex = this->ui->treeWidget->indexOfTopLevelItem(item);
+            qInfo() << ui->treeWidget->selectedItems() << "ojojojojoj" << str << item->child(6)->text(0);
+            currentTreeStream = str;
+
+
+        }
+        quint64 key = status.streams.keys().at(selectedStreamIndex);
+        this->graph.setAvgBitrate(status.streams[key].avgBitrate);
+        recordWorkerGraphInfo(status);
+        status.updateTree(ui->treeWidget);
+
     }
 
-    /*
-    status.insertIntoTree(ui->treeWidget);
 
-    auto item = ui->treeWidget->topLevelItem(0)->child(2);
-    auto itemData = item->QTreeWidgetItem::data(0, Qt::UserRole);
-    double avgBit = itemData.toDouble();
-    this->graph.setAvgBitrate(avgBit);
-    */
 }
 
+/*
+// Would like to return IAT value and bitrate of given stream
+void RecordWidget::getTreeData(QString string, QTreeWidget treeWidget){
+
+    QList<QTreeWidgetItem *> itemList;
+    itemList = treeWidget.selectedItems();
+
+    foreach(QTreeWidgetItem *item, itemList)
+    {
+        QString str = item->text(0);
+        qInfo() << ui->treeWidget->selectedItems() << "ojojojojoj" << str;
+//        qInfo() << item->child(6)->text(0);
+
+        currentTreeStream = str;
+    }
+}
+*/
 void RecordWidget::recordingFinished() {
     ui->recordStartStopBtn->setText(tr("Start recording"));
     ui->recordStartStopBtn->setEnabled(true);
@@ -153,6 +194,9 @@ void RecordWidget::recordingFinished() {
     ui->recordPcapFilterContainer->setEnabled(true);
     ui->recordInterfaceSelect->setEnabled(true);
     ui->graphDataBox->setEnabled(true);
+    selectedStreamIndex = 0;
+    treeWidgetCounter = 0;
+
 
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
@@ -236,13 +280,14 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
 
-    if(ui->graphDataBox->currentText()!= "Bitrate"){
+
+    if(ui->graphDataBox->currentText()!= "Bitrate"){    //Check which stream is marked here?
         connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::iatStatus, &graph, &RecordWidgetGraph::setBitrate);
     } else {
-        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
+        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
     }
 
-    connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
+
 
     ui->recordStartStopBtn->setEnabled(false);
 

@@ -85,7 +85,6 @@ void AnalyzerPcapMiddleware::bufferProducts() {
             // sanity check, prevents analyzation of packets that do not contain ts-packets
             if (parser.data_len % 188 == 0 && parser.ih->proto == 17 && parser.data_len != 0) {
 
-
                 tsPerIp = parser.data_len/188;
 
                 // For now, assume the only existing protocols
@@ -111,13 +110,14 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                 else
                     stream.bitrateMode = StreamInfo::BitrateMode::VBR;
 
-                stream.id = StreamId(streamId);
-                stream.bytes += parser.data_len;
-                stream.tsPerIp = tsPerIp;
-                stream.currentTime = duration;
+                //if (duration - stream.lastDuration >= 200)
+                    stream.id = StreamId(streamId);
+                    stream.bytes += parser.data_len;
+                    stream.tsPerIp = tsPerIp;
+                    stream.currentTime = duration;
 
-                tsAnalyzer.setStream(&stream.tsErrors, &stream.pidMap);
-
+                    tsAnalyzer.setStream(&stream.tsErrors, &stream.pidMap);
+           //     }
                 // Analyze every TsPacket
                 for (quint8 i = 0; i < tsPerIp; i++) {
                     tsParser.parse((quint8*)(parser.data+i*188));
@@ -162,12 +162,18 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
 
         if (statusTimer.elapsed() >= 200) {
+            for (auto &stream : streams) {
+                stream.avgBitrate =  ((double)stream.bytes*8*1000.0/stream.currentTime) /1000000.0;
+                stream.currentBitrate = (double)(stream.bytes - stream.lastSecondBytes)*8*1000/(duration - stream.lastDuration) / 1000000;
+                stream.lastSecondBytes = stream.bytes;
+                stream.lastDuration = duration;
+            }
+
             emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
             if(bitrate / 1000000 >!100){
                 emit bitrateStatus((double) bitrate /1000000,  duration );
 
             }
-         //   emit bitrateStatus((double) bitrate /1000000,  duration );
             qInfo() << "bitrate" << (double) bitrate /1000000;
             emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams), false);
             statusTimer.restart();

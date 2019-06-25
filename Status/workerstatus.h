@@ -82,17 +82,14 @@ public:
 
 
     // New method that is meant to update the values in the tree rather than recreate the tree every iteration.
-    double updateTree(QTreeWidget *tree){
+    void updateTree(QTreeWidget *tree){
 
         quint8 y = 0;
-
-
         double value = 0;
 
         for (int i = 0; i < streams.count(); i++){
             quint64 key = streams.keys().at(i);
             const StreamInfo &info = streams.value(key);
-
 
             tree->topLevelItem(i)->child(y++)->setText(0, QString(tr("size %1 MB")).arg(QString::number(info.bytes/1000000.0, 'f', 2)));
             tree->topLevelItem(i)->child(y++)->setText(0, QString(tr("duration %1")).arg(QDateTime::fromTime_t(info.currentTime/1000).toUTC().toString("HH:mm:ss")));

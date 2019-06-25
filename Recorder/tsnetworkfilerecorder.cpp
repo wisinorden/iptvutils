@@ -72,11 +72,11 @@ void TsNetworkFileRecorder::joinStreamInfo(WorkerStatus xStatus, bool isDeviatio
 
         if(!isDeviationSignal){
             previousAnalyzerStream.streams[streamID] = streamInfo;
-            qInfo("hej");
+       //     qInfo("hej");
 
         } else if(isDeviationSignal){
             previousAnalyzerStream.streams[streamID].iatDeviation = streamInfo.iatDeviation;
-            qInfo("hejhejhejhejhej");
+          //  qInfo("hejhejhejhejhej");
             quint32 test = streamInfo.iatDeviation;
             qInfo() << streamID << test;
             WorkerStatus completeSignal;
