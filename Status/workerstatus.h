@@ -102,8 +102,6 @@ public:
             tree->topLevelItem(i)->child(y++)->setText(0, QString(tr("%1 PIDs")).arg(info.pidMap.size()));
             y= 0;
         }
-        return value;
-
     }
 
 

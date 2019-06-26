@@ -112,7 +112,7 @@ void RecordWidget::recordingStarted() {
     if(ui->graphDataBox->currentText()== "Bitrate"){
         this->graph.setYAxisTitle("Bitrate mbps");
     } else{
-        this->graph.setYAxisTitle("Std IAT dev µs/sec");
+        this->graph.setYAxisTitle("Std IAT dev µs");
     }
 
 
@@ -126,34 +126,22 @@ void RecordWidget::recordStatusChanged(FinalStatus status) {
 }
 
 void RecordWidget::recordWorkerGraphInfo(WorkerStatus status){
-    quint64 key = status.streams.keys().at(selectedStreamIndex);
-    graph.setBitrate(status.streams[key].currentBitrate, status.streams[key].currentTime);
-
-
-    //    connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
+    quint64 hashKey = status.streams.keys().at(selectedStreamIndex);
+    graph.setBitrate(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
 }
 
 void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 
-    if(treeWidgetCounter == 0){
+    if(this->treeWidgetCounter == 0 && started){ // Add check here to prevent crash when pressing stop button
         status.insertIntoTree(ui->treeWidget);
         treeWidgetCounter++;
-    } else {
-
-
-
-
+    } else if(this->treeWidgetCounter > 0 && started){
         QList<QTreeWidgetItem *> itemList;
         itemList = this->ui->treeWidget->selectedItems();
 
         foreach(QTreeWidgetItem *item, itemList)
         {
-            QString str = item->text(0);
             selectedStreamIndex = this->ui->treeWidget->indexOfTopLevelItem(item);
-            qInfo() << ui->treeWidget->selectedItems() << "ojojojojoj" << str << item->child(6)->text(0);
-            currentTreeStream = str;
-
-
         }
         quint64 key = status.streams.keys().at(selectedStreamIndex);
         this->graph.setAvgBitrate(status.streams[key].avgBitrate);
@@ -161,28 +149,10 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
         status.updateTree(ui->treeWidget);
 
     }
-
-
 }
 
-/*
-// Would like to return IAT value and bitrate of given stream
-void RecordWidget::getTreeData(QString string, QTreeWidget treeWidget){
-
-    QList<QTreeWidgetItem *> itemList;
-    itemList = treeWidget.selectedItems();
-
-    foreach(QTreeWidgetItem *item, itemList)
-    {
-        QString str = item->text(0);
-        qInfo() << ui->treeWidget->selectedItems() << "ojojojojoj" << str;
-//        qInfo() << item->child(6)->text(0);
-
-        currentTreeStream = str;
-    }
-}
-*/
 void RecordWidget::recordingFinished() {
+    started = false;
     ui->recordStartStopBtn->setText(tr("Start recording"));
     ui->recordStartStopBtn->setEnabled(true);
     ui->recordOpenFileDialog->setEnabled(true);
@@ -195,12 +165,11 @@ void RecordWidget::recordingFinished() {
     ui->recordInterfaceSelect->setEnabled(true);
     ui->graphDataBox->setEnabled(true);
     selectedStreamIndex = 0;
-    treeWidgetCounter = 0;
+    this->treeWidgetCounter = 0;
 
 
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
-    started = false;
 }
 
 
@@ -439,6 +408,7 @@ void RecordWidget::on_recordStartStopBtn_clicked()
             ("atempting to stop pcapRecorder");
             ui->recordStartStopBtn->setEnabled(false);
             networkPcapFileRecorder->stop();
+            recordingFinished();
         }
         if (tsNetworkFileRecorder != NULL) {
             qInfo("atempting to stop tsRecorder");
