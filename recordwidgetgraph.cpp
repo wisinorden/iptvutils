@@ -30,6 +30,7 @@ RecordWidgetGraph::~RecordWidgetGraph()
 
 QChart* RecordWidgetGraph::setupGraph(){
 
+    firstRound = true;
     lineSeries = new QLineSeries();
     avgSeries = new QLineSeries();
     avgSeries->setName("Avg bitrate");
@@ -64,7 +65,7 @@ QChart* RecordWidgetGraph::setupGraph(){
     axisX->setTitleText("Time m:s");
     this->chart()->setAxisX(axisX, lineSeries);
     avgSeries->attachAxis(axisX);
- //   this->axisX = axisX;
+    this->axisX = axisX;
 
     return(chart);
 }
@@ -118,10 +119,14 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
 
 
 void RecordWidgetGraph::changeStream(int selectedStream){
-   chart()->removeSeries(lineSeries);
-   lineSeries =  streamList[selectedStream];
-//   this->chart()->setAxisX(axisX, lineSeries);
 
+//   chart()->removeSeries(lineSeries);
+ //  lineSeries =  streamList[selectedStream];
+  // chart()->addSeries(streamList[selectedStream]);
+//   chart()->createDefaultAxes();
+
+
+   selectedStreamIndex = selectedStream;
 }
 
 void RecordWidgetGraph::setNoOfStreams(quint8 noOfStreams){
@@ -129,17 +134,15 @@ void RecordWidgetGraph::setNoOfStreams(quint8 noOfStreams){
 }
 
 void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ //Will gather data for lineSeries for multiple streams
-/*
+
     if (firstRound){
-
-
         for(int i = 0; i < status.streams.count(); i++){
 
             quint64 hashKey = status.streams.keys().at(i);
 
             QLineSeries *newLineSeries = new QLineSeries();
             this->streamList.append(newLineSeries);
-            streamList[i]->append(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
+            streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
 
         }
 
@@ -147,10 +150,10 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ //Will gathe
     } else {
         for(int i = 0; i < status.streams.count(); i++){
             quint64 hashKey = status.streams.keys().at(i);
-            streamList[i]->append(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
+            streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
         }
     }
-    */
+
 }
 
 void RecordWidgetGraph::updateMultipleStreams(WorkerStatus status){

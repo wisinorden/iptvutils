@@ -118,12 +118,20 @@ void RecordWidget::recordStatusChanged(FinalStatus status) {
 void RecordWidget::recordWorkerGraphInfo(WorkerStatus status){
     quint64 hashKey = status.streams.keys().at(selectedStreamIndex);
     graph.setBitrate(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
- //   graph.recordMultipleStreams(status);
+
+    if(ui->treeWidget->topLevelItemCount() > 1){
+    graph.recordMultipleStreams(status);
+
+
+    if(selectedStreamIndex != graph.selectedStreamIndex){
+        graph.changeStream(selectedStreamIndex);
+    }
+}
 }
 
 void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 
-    if(ui->treeWidget->topLevelItemCount() < status.streams.count() && started){ // started prevents crash when pressing stop button
+    if(ui->treeWidget->topLevelItemCount() != status.streams.count() && started){ // started prevents crash when pressing stop button
 
         status.insertIntoTree(ui->treeWidget);
      //   treeWidgetCounter ++;

@@ -23,6 +23,8 @@ class RecordWidgetGraph : public QChartView
 
 public:
 
+    quint8 selectedStreamIndex;
+
 
     RecordWidgetGraph(QWidget *parent);
     ~RecordWidgetGraph();
@@ -60,7 +62,7 @@ public slots:
 
 private:
     bool firstRound = true;
-//    QDateTimeAxis *axisX;
+    QDateTimeAxis *axisX;
     quint32 zoomInt;
     double avgBitrate;
     qint64 durations;
