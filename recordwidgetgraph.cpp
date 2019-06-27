@@ -20,6 +20,12 @@ RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
 
 
 
+RecordWidgetGraph::~RecordWidgetGraph()
+{
+    for (auto ls : this->streamList) {
+        delete ls;
+    }
+}
 
 
 QChart* RecordWidgetGraph::setupGraph(){
@@ -58,6 +64,7 @@ QChart* RecordWidgetGraph::setupGraph(){
     axisX->setTitleText("Time m:s");
     this->chart()->setAxisX(axisX, lineSeries);
     avgSeries->attachAxis(axisX);
+ //   this->axisX = axisX;
 
     return(chart);
 }
@@ -107,9 +114,52 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
 
         chartCounter++;
     }
+}
+
+
+void RecordWidgetGraph::changeStream(int selectedStream){
+   chart()->removeSeries(lineSeries);
+   lineSeries =  streamList[selectedStream];
+//   this->chart()->setAxisX(axisX, lineSeries);
 
 }
 
+void RecordWidgetGraph::setNoOfStreams(quint8 noOfStreams){
+    this->noOfStreams = noOfStreams;
+}
+
+void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ //Will gather data for lineSeries for multiple streams
+/*
+    if (firstRound){
+
+
+        for(int i = 0; i < status.streams.count(); i++){
+
+            quint64 hashKey = status.streams.keys().at(i);
+
+            QLineSeries *newLineSeries = new QLineSeries();
+            this->streamList.append(newLineSeries);
+            streamList[i]->append(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
+
+        }
+
+        this->firstRound = false;
+    } else {
+        for(int i = 0; i < status.streams.count(); i++){
+            quint64 hashKey = status.streams.keys().at(i);
+            streamList[i]->append(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
+        }
+    }
+    */
+}
+
+void RecordWidgetGraph::updateMultipleStreams(WorkerStatus status){
+ /*   for(int i = 0; i < status.streams.count(); i++){
+        quint64 hashKey = status.streams.keys().at(i);
+   //     streamList[i].append(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
+    }
+    */
+}
 
 void RecordWidgetGraph::mousePressEvent(QMouseEvent *event)
 {

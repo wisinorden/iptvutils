@@ -25,13 +25,19 @@ public:
 
 
     RecordWidgetGraph(QWidget *parent);
+    ~RecordWidgetGraph();
     QChart GraphChart;
     qint16 chartCounter;
+    quint8 noOfStreams;
     double maxBitrate;
     double minBitrate;
     QChart* setupGraph();
 
     void setAvgBitrate(double avgBitrate);
+    void changeStream(int i);
+    void recordMultipleStreams(WorkerStatus status);
+    void updateMultipleStreams(WorkerStatus status);
+    void setNoOfStreams(quint8 streams);
     void keyPressEvent(QKeyEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -41,6 +47,7 @@ public:
 
 
 protected:
+    QList <QLineSeries *> streamList;
 
 
 
@@ -52,6 +59,8 @@ public slots:
 
 
 private:
+    bool firstRound = true;
+//    QDateTimeAxis *axisX;
     quint32 zoomInt;
     double avgBitrate;
     qint64 durations;

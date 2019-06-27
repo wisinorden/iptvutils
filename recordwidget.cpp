@@ -40,8 +40,6 @@ RecordWidget::RecordWidget(QWidget *parent) :
 
  //   connect(ui->graphView, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate );
 
-
-
     for (int i = 0; i < MainWindow::interfaces.length(); i++) {
         ui->recordInterfaceSelect->addItem(MainWindow::interfaces.at(i).getName());
         ui->recordInterfaceSelect->setItemData(i, MainWindow::interfaces.at(i).getName(), Qt::ToolTipRole);
@@ -104,21 +102,13 @@ void RecordWidget::recordingStarted() {
     ui->recordPcapFilterContainer->setEnabled(false);
     ui->recordInterfaceSelect->setEnabled(false);
     ui->graphDataBox->setEnabled(false);
-   // ui->treeWidget->clear();
     this->setupGraph();
-
-
 
     if(ui->graphDataBox->currentText()== "Bitrate"){
         this->graph.setYAxisTitle("Bitrate mbps");
     } else{
         this->graph.setYAxisTitle("Std IAT dev µs");
     }
-
-
-
-
-
 }
 
 void RecordWidget::recordStatusChanged(FinalStatus status) {
@@ -128,18 +118,20 @@ void RecordWidget::recordStatusChanged(FinalStatus status) {
 void RecordWidget::recordWorkerGraphInfo(WorkerStatus status){
     quint64 hashKey = status.streams.keys().at(selectedStreamIndex);
     graph.setBitrate(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
+ //   graph.recordMultipleStreams(status);
 }
 
 void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 
-    if(this->treeWidgetCounter == 0 && started){ // Add check here to prevent crash when pressing stop button
+    if(ui->treeWidget->topLevelItemCount() < status.streams.count() && started){ // started prevents crash when pressing stop button
+
         status.insertIntoTree(ui->treeWidget);
-        treeWidgetCounter++;
-    } else if(this->treeWidgetCounter > 0 && started){
+     //   treeWidgetCounter ++;
+    } else { //if(this->treeWidgetCounter > 0 && started){
         QList<QTreeWidgetItem *> itemList;
         itemList = this->ui->treeWidget->selectedItems();
 
-        foreach(QTreeWidgetItem *item, itemList)
+        foreach(QTreeWidgetItem *item, itemList) // Maybe pass data to graph here if there are multiple streams?
         {
             selectedStreamIndex = this->ui->treeWidget->indexOfTopLevelItem(item);
         }
@@ -147,7 +139,6 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
         this->graph.setAvgBitrate(status.streams[key].avgBitrate);
         recordWorkerGraphInfo(status);
         status.updateTree(ui->treeWidget);
-
     }
 }
 
@@ -249,14 +240,11 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
 
-
-    if(ui->graphDataBox->currentText()!= "Bitrate"){    //Check which stream is marked here?
+    if(ui->graphDataBox->currentText()!= "Bitrate"){
         connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::iatStatus, &graph, &RecordWidgetGraph::setBitrate);
     } else {
         connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
     }
-
-
 
     ui->recordStartStopBtn->setEnabled(false);
 

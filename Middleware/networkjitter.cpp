@@ -115,7 +115,7 @@ void NetworkJitter::run(){
 
                 emit iatStatus(sqrt(finalSum), duration);
 
-                emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams), true);
+                // emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams), true);
 
 
 

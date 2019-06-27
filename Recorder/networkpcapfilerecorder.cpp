@@ -57,25 +57,21 @@ void NetworkPcapFileRecorder::gotProducerStatus(Status pStatus) {
 
 void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus xStatus, bool isDeviationSignal) {
 
-    //Iterates hashmap
     for(auto iter = xStatus.getStreams().begin(); iter != xStatus.getStreams().end(); ++iter) {
         qint64 streamID = iter.key();
         const StreamInfo &streamInfo= iter.value();
 
         if(!isDeviationSignal){
             previousAnalyzerStream.streams[streamID] = streamInfo;
-       //     qInfo("hej");
 
-        } else if(isDeviationSignal){
+    }  //  } else if(isDeviationSignal){
             previousAnalyzerStream.streams[streamID].iatDeviation = streamInfo.iatDeviation;
 
-          //qInfo("hejhejhejhejhej");
-       //     qInfo() << "iatDev" << streamID  streamInfo.iatDeviation;
             WorkerStatus completeSignal;
 
             completeSignal.setStreams(previousAnalyzerStream.streams);
             emit workerStatus(completeSignal);
-        }
+   //     }
     }
 }
 
