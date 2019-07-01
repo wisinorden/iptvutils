@@ -34,6 +34,7 @@ public:
     double maxBitrate;
     double minBitrate;
     QChart* setupGraph();
+//    QChart* changeStream(int i);
 
     void setAvgBitrate(double avgBitrate);
     void changeStream(int i);
@@ -50,6 +51,8 @@ public:
 
 protected:
     QList <QLineSeries *> streamList;
+    QList <QLineSeries *> avgStreamList;
+
 
 
 

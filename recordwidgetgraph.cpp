@@ -31,8 +31,12 @@ RecordWidgetGraph::~RecordWidgetGraph()
 QChart* RecordWidgetGraph::setupGraph(){
 
     firstRound = true;
+    streamList.clear();
+    avgStreamList.clear();
+
     lineSeries = new QLineSeries();
     avgSeries = new QLineSeries();
+
     avgSeries->setName("Avg bitrate");
     lineSeries->setName("Bitrate");
 
@@ -65,7 +69,7 @@ QChart* RecordWidgetGraph::setupGraph(){
     axisX->setTitleText("Time m:s");
     this->chart()->setAxisX(axisX, lineSeries);
     avgSeries->attachAxis(axisX);
-    this->axisX = axisX;
+    //    this->axisX = axisX;
 
     return(chart);
 }
@@ -90,18 +94,16 @@ void RecordWidgetGraph::setAvgBitrate(double avgBitrate){
 void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
 
     // Appends new values and updates graph
-
-
     if(bitrate > 1 && bitrate < 1000){
         this->durations = duration;
         lineSeries->append(duration, bitrate);
 
+        qInfo() << bitrate << "HEJEHEJEHEJEHJEHEJ";
+
         if(avgBitrate != 0){
             avgSeries->append(duration, avgBitrate);
         }
-
         this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(duration - 20000), QDateTime::fromMSecsSinceEpoch(duration + 2000));
-
 
         if(bitrate < this->minBitrate){
             minBitrate = bitrate;
@@ -120,50 +122,76 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
 
 void RecordWidgetGraph::changeStream(int selectedStream){
 
-//   chart()->removeSeries(lineSeries);
- //  lineSeries =  streamList[selectedStream];
-  // chart()->addSeries(streamList[selectedStream]);
-//   chart()->createDefaultAxes();
+    chart()->removeSeries(lineSeries);
+    chart()->removeSeries(avgSeries);
 
+    lineSeries =  streamList[selectedStream];
+    avgSeries = avgStreamList[selectedStream];
 
-   selectedStreamIndex = selectedStream;
+    avgSeries->setName("Avg bitrate");
+    lineSeries->setName("Bitrate");
+    chart()->axisY()->setTitleText("Bitrate mbps");
+
+    QPen pen(QRgb(0x000000));
+    pen.setWidth(1);
+    lineSeries->setPen(pen);
+
+    //  lineSeries->setColor("black");
+    chart()->addSeries(lineSeries);
+    chart()->addSeries(avgSeries);
+
+    chart()->createDefaultAxes();
+
+    QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX->setFormat("m:ss");
+    axisX->setTickCount(10);
+    axisX->setTitleText("Time m:s");
+
+    this->chart()->setAxisX(axisX, lineSeries);
+
+    avgSeries->attachAxis(chart()->axisX());
+
+    this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(durations - 20000), QDateTime::fromMSecsSinceEpoch(durations + 2000));
+
+    selectedStreamIndex = selectedStream;
 }
 
 void RecordWidgetGraph::setNoOfStreams(quint8 noOfStreams){
     this->noOfStreams = noOfStreams;
 }
 
-void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ //Will gather data for lineSeries for multiple streams
+void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // Collects data for multiple streams
 
     if (firstRound){
         for(int i = 0; i < status.streams.count(); i++){
 
             quint64 hashKey = status.streams.keys().at(i);
 
-            QLineSeries *newLineSeries = new QLineSeries();
-            this->streamList.append(newLineSeries);
-            streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
 
+            this->streamList.append(new QLineSeries());
+            this->avgStreamList.append(new QLineSeries());
+            streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
+            avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
+
+            firstRound = false;
         }
 
-        this->firstRound = false;
     } else {
         for(int i = 0; i < status.streams.count(); i++){
             quint64 hashKey = status.streams.keys().at(i);
+    //        qInfo() << status.streams[hashKey].currentBitrate << status.streams[hashKey].avgBitrate << i;
+
             streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
+            avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
         }
     }
 
 }
+/*
+void RecordWidgetGraph::setupLineSeries(){
 
-void RecordWidgetGraph::updateMultipleStreams(WorkerStatus status){
- /*   for(int i = 0; i < status.streams.count(); i++){
-        quint64 hashKey = status.streams.keys().at(i);
-   //     streamList[i].append(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
-    }
-    */
 }
-
+*/
 void RecordWidgetGraph::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)

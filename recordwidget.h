@@ -33,6 +33,9 @@ public:
 
 
 private:
+
+    void updateStreamIndex();
+
     Ui::RecordWidget *ui;
     bool started;
     QString currentTreeStream;
@@ -52,6 +55,7 @@ private slots:
     void recordingFinished();
     bool validateAdressInputs();
     bool validatePortInputs();
+    void changeStream();
 
     void setupGraph();
 

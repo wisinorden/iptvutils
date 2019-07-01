@@ -143,9 +143,11 @@ public:
             }
 
             parent->setExpanded(true);
-           // this->treeWidget = tree;
-            tree->clearSelection();
-            parent->setSelected(true);
+            // this->treeWidget = tree;
+            if (i==0){
+                tree->clearSelection();
+                parent->setSelected(true);
+            }
         }
 
     }

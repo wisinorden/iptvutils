@@ -37,6 +37,7 @@ RecordWidget::RecordWidget(QWidget *parent) :
     connect(ui->recordPort, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordRtpFecCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordUnicastCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
+    connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &RecordWidget::changeStream);
 
  //   connect(ui->graphView, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate );
 
@@ -120,13 +121,12 @@ void RecordWidget::recordWorkerGraphInfo(WorkerStatus status){
     graph.setBitrate(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
 
     if(ui->treeWidget->topLevelItemCount() > 1){
-    graph.recordMultipleStreams(status);
+        graph.recordMultipleStreams(status);
 
-
-    if(selectedStreamIndex != graph.selectedStreamIndex){
-        graph.changeStream(selectedStreamIndex);
+        if(selectedStreamIndex != graph.selectedStreamIndex){
+            graph.changeStream(selectedStreamIndex);
+        }
     }
-}
 }
 
 void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
@@ -134,19 +134,31 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
     if(ui->treeWidget->topLevelItemCount() != status.streams.count() && started){ // started prevents crash when pressing stop button
 
         status.insertIntoTree(ui->treeWidget);
-     //   treeWidgetCounter ++;
-    } else { //if(this->treeWidgetCounter > 0 && started){
-        QList<QTreeWidgetItem *> itemList;
-        itemList = this->ui->treeWidget->selectedItems();
 
-        foreach(QTreeWidgetItem *item, itemList) // Maybe pass data to graph here if there are multiple streams?
-        {
-            selectedStreamIndex = this->ui->treeWidget->indexOfTopLevelItem(item);
-        }
+    } else { //if(this->treeWidgetCounter > 0 && started){
+        updateStreamIndex();
         quint64 key = status.streams.keys().at(selectedStreamIndex);
         this->graph.setAvgBitrate(status.streams[key].avgBitrate);
         recordWorkerGraphInfo(status);
         status.updateTree(ui->treeWidget);
+    }
+}
+
+void RecordWidget::changeStream(){
+    updateStreamIndex();
+    graph.changeStream(selectedStreamIndex);
+    ui->graphView->setChart(graph.chart());
+    ui->graphView->setRenderHint(QPainter::Antialiasing);
+}
+
+void RecordWidget::updateStreamIndex(){
+    QList<QTreeWidgetItem *> itemList;
+
+    itemList = this->ui->treeWidget->selectedItems();
+
+    foreach(QTreeWidgetItem *item, itemList) // Maybe pass data to graph here if there are multiple streams?
+    {
+        selectedStreamIndex = this->ui->treeWidget->indexOfTopLevelItem(item);
     }
 }
 
@@ -187,7 +199,7 @@ bool RecordWidget::validatePortInputs() {
 bool RecordWidget::validateAdressInputs() {
     bool valid = true;
 
-    // Performs validation on Address
+    // Performs validation on adress
     valid = Validator::validateIp(ui->recordHost) && valid;
 
     return valid;
