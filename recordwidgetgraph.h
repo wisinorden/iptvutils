@@ -37,7 +37,7 @@ public:
 //    QChart* changeStream(int i);
 
     void setAvgBitrate(double avgBitrate);
-    void changeStream(int i);
+    void changeStream(int i, bool isBitrateSignal);
     void recordMultipleStreams(WorkerStatus status);
     void updateMultipleStreams(WorkerStatus status);
     void setNoOfStreams(quint8 streams);
@@ -52,6 +52,7 @@ public:
 protected:
     QList <QLineSeries *> streamList;
     QList <QLineSeries *> avgStreamList;
+    QList <QLineSeries *> iatDevList;
 
 
 

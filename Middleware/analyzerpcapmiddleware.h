@@ -16,6 +16,8 @@ class AnalyzerPcapMiddleware : public PcapMiddleware
 {
     Q_OBJECT
 private:
+    double currentIatDev;
+    qint64 currentIatDevTimestamp;
     ConcurrentQueue<PcapProduct> buffer;
     TsParser tsParser;
     TsAnalyzer tsAnalyzer;
@@ -48,6 +50,7 @@ protected slots:
 
 public slots:
     void start();
+    void recieveIatDev(double iatDev, qint64 duration);
     void stop();
 };
 

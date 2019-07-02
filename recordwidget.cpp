@@ -15,7 +15,8 @@ RecordWidget::RecordWidget(QWidget *parent) :
     QWidget(parent),
     graph(this),
     ui(new Ui::RecordWidget),
-    started(false)
+    started(false),
+    isBitrateSignal(true)
 {
     ui->setupUi(this);
     this->setupGraph();
@@ -118,13 +119,18 @@ void RecordWidget::recordStatusChanged(FinalStatus status) {
 
 void RecordWidget::recordWorkerGraphInfo(WorkerStatus status){
     quint64 hashKey = status.streams.keys().at(selectedStreamIndex);
-    graph.setBitrate(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
+    if(isBitrateSignal){
+        graph.setBitrate(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
+    } else {
 
+        graph.setBitrate(status.streams[hashKey].iatDeviation, status.streams[hashKey].currentTime);
+
+    }
     if(ui->treeWidget->topLevelItemCount() > 1){
         graph.recordMultipleStreams(status);
 
         if(selectedStreamIndex != graph.selectedStreamIndex){
-            graph.changeStream(selectedStreamIndex);
+            graph.changeStream(selectedStreamIndex, isBitrateSignal);
         }
     }
 }
@@ -138,7 +144,9 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
     } else { //if(this->treeWidgetCounter > 0 && started){
         updateStreamIndex();
         quint64 key = status.streams.keys().at(selectedStreamIndex);
-        this->graph.setAvgBitrate(status.streams[key].avgBitrate);
+        if(isBitrateSignal){
+            this->graph.setAvgBitrate(status.streams[key].avgBitrate);
+        }
         recordWorkerGraphInfo(status);
         status.updateTree(ui->treeWidget);
     }
@@ -146,9 +154,8 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 
 void RecordWidget::changeStream(){
     updateStreamIndex();
-    graph.changeStream(selectedStreamIndex);
+    graph.changeStream(selectedStreamIndex, isBitrateSignal);
     ui->graphView->setChart(graph.chart());
-    ui->graphView->setRenderHint(QPainter::Antialiasing);
 }
 
 void RecordWidget::updateStreamIndex(){
@@ -261,7 +268,8 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
 
     if(ui->graphDataBox->currentText()!= "Bitrate"){
-        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::iatStatus, &graph, &RecordWidgetGraph::setBitrate);
+        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
+        isBitrateSignal = false;
     } else {
         connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
     }
@@ -292,6 +300,7 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, this, &RecordWidget::recordStatusChanged);
     if(ui->graphDataBox->currentText()!= "Bitrate"){
         connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::iatStatus, &graph, &RecordWidgetGraph::setBitrate);
+        isBitrateSignal = false;
 
     } else {
         connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);

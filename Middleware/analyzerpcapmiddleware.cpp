@@ -14,6 +14,7 @@ void AnalyzerPcapMiddleware::init() {
     this->moveToThread(&runnerThread);
     connect(&runnerThread, &QThread::started, this, &AnalyzerPcapMiddleware::run);
     connect(this, &AnalyzerPcapMiddleware::finished, &runnerThread, &QThread::quit);
+
 }
 
 void AnalyzerPcapMiddleware::start() {
@@ -32,6 +33,12 @@ void AnalyzerPcapMiddleware::run() {
     qInfo("AnalyzerPcapMiddleware finished");
     emit finished();
     this->thread()->quit();
+}
+
+
+void AnalyzerPcapMiddleware::recieveIatDev(double iatDev, qint64 duration){
+  currentIatDev = iatDev;
+  currentIatDevTimestamp = duration;
 }
 
 // Buffers packets

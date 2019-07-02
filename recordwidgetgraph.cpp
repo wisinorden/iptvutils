@@ -120,25 +120,33 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
 }
 
 
-void RecordWidgetGraph::changeStream(int selectedStream){
+void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
 
     chart()->removeSeries(lineSeries);
     chart()->removeSeries(avgSeries);
 
-    lineSeries =  streamList[selectedStream];
-    avgSeries = avgStreamList[selectedStream];
+    if(isBitrateSignal){
 
-    avgSeries->setName("Avg bitrate");
-    lineSeries->setName("Bitrate");
-    chart()->axisY()->setTitleText("Bitrate mbps");
+        lineSeries =  streamList[selectedStream];
+        avgSeries = avgStreamList[selectedStream];
+
+        chart()->addSeries(lineSeries);
+        chart()->addSeries(avgSeries);
+    } else {
+
+        lineSeries =  iatDevList[selectedStream];
+        chart()->addSeries(lineSeries);
+    }
 
     QPen pen(QRgb(0x000000));
     pen.setWidth(1);
     lineSeries->setPen(pen);
 
     //  lineSeries->setColor("black");
-    chart()->addSeries(lineSeries);
-    chart()->addSeries(avgSeries);
+
+    avgSeries->setName("Avg bitrate");
+    lineSeries->setName("Bitrate");
+    chart()->axisY()->setTitleText("Bitrate mbps");
 
     chart()->createDefaultAxes();
 
@@ -167,11 +175,12 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // Collects 
 
             quint64 hashKey = status.streams.keys().at(i);
 
-
             this->streamList.append(new QLineSeries());
             this->avgStreamList.append(new QLineSeries());
+            this->iatDevList.append(new QLineSeries());
             streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
             avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
+            iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
 
             firstRound = false;
         }
@@ -179,10 +188,11 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // Collects 
     } else {
         for(int i = 0; i < status.streams.count(); i++){
             quint64 hashKey = status.streams.keys().at(i);
-    //        qInfo() << status.streams[hashKey].currentBitrate << status.streams[hashKey].avgBitrate << i;
 
             streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
             avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
+            iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
+
         }
     }
 

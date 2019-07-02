@@ -5,7 +5,7 @@
 
 void NetworkPcapFileRecorder::start() {
     finalStatus.setAnalysisMode(config.getWorkerMode());
-    producer.addNext(&analyzerMiddleware)->addNext(&networkJitter)->addNext(&consumer);
+    producer.addNext(&networkJitter)->addNext(&analyzerMiddleware)->addNext(&consumer);
     producer.init(&producerThread);
 
     connect(&consumer, &PcapFileConsumer::finished, &producer, &PcapBufferedProducer::stop);
@@ -20,7 +20,7 @@ void NetworkPcapFileRecorder::start() {
     connect(&producer, &PcapBufferedProducer::status, this, &NetworkPcapFileRecorder::gotProducerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::status, this, &NetworkPcapFileRecorder::gotAnalyzerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::bitrateStatus, this, &NetworkPcapFileRecorder::gotBitrate);
-    connect(&networkJitter, &NetworkJitter::iatStatus, this, &NetworkPcapFileRecorder::gotIatDev);
+    connect(&networkJitter, &NetworkJitter::workerStatus, this, &NetworkPcapFileRecorder::gotIatDev);
 
 
   // connect(&networkJitter, &NetworkJitter::status, this, &NetworkPcapFileRecorder::gotNetworkStatus);
@@ -29,7 +29,7 @@ void NetworkPcapFileRecorder::start() {
     //Worker-status is connected to the right side stream info panel
     connect(&consumer, &PcapFileConsumer::status, this, &NetworkPcapFileRecorder::gotConsumerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &NetworkPcapFileRecorder::joinStreamInfo);
-    connect(&networkJitter, &NetworkJitter::workerStatus, this, &NetworkPcapFileRecorder::joinStreamInfo);
+ //   connect(&networkJitter, &NetworkJitter::workerStatus, this, &NetworkPcapFileRecorder::joinStreamInfo);
 
 
     producerThread.start();
@@ -55,26 +55,43 @@ void NetworkPcapFileRecorder::gotProducerStatus(Status pStatus) {
 
 
 
-void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus xStatus, bool isDeviationSignal) {
+void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus status, bool isDeviationSignal) {
+    qint8 counter = 0;
 
-    for(auto iter = xStatus.getStreams().begin(); iter != xStatus.getStreams().end(); ++iter) {
+    for(auto iter = status.getStreams().begin(); iter != status.getStreams().end(); ++iter) {
         qint64 streamID = iter.key();
         const StreamInfo &streamInfo= iter.value();
 
-        if(!isDeviationSignal){
-            previousAnalyzerStream.streams[streamID] = streamInfo;
+        //     if(!isDeviationSignal){
+        previousAnalyzerStream.streams[streamID] = streamInfo;
 
-    }  //  } else if(isDeviationSignal){
-            previousAnalyzerStream.streams[streamID].iatDeviation = streamInfo.iatDeviation;
+        // Make IAT work for any numer of streams
+        if(iatVector.size() <= counter){
+            previousAnalyzerStream.streams[streamID].iatDeviation = 0;
 
-            WorkerStatus completeSignal;
+        } else {
+            previousAnalyzerStream.streams[streamID].iatDeviation = (iatVector[counter].last() );
+        }
+        WorkerStatus completeSignal;
 
-            completeSignal.setStreams(previousAnalyzerStream.streams);
-            emit workerStatus(completeSignal);
-   //     }
+        completeSignal.setStreams(previousAnalyzerStream.streams);
+        emit workerStatus(completeSignal);
+        counter++;
     }
 }
 
+void NetworkPcapFileRecorder::gotIatDev(WorkerStatus status, bool isDeviationSignal){
+
+    this->iatVector.resize(status.streams.count());
+
+    for(int i = 0; i < status.streams.count(); i++) {
+        quint64 hashKey = status.streams.keys().at(i);
+        //  qInfo() << (status.streams[hashKey].iatDeviation)<< "IATVALUE BEING APPENDED";
+
+        iatVector[i].append(status.streams[hashKey].iatDeviation);
+        //qInfo() << iatDevList.last() << "IATLIST VALUE AT INDEX 0";
+    }
+}
 
 
 
@@ -100,10 +117,6 @@ void NetworkPcapFileRecorder::gotBitrate(double  bitrate, qint64 duration){
     emit bitrateStatus(bitrate, duration);
 }
 
-void NetworkPcapFileRecorder::gotIatDev(double iatDev, qint64 duration){
-
-    emit iatStatus(iatDev, duration);
-}
 
 
 
