@@ -25,14 +25,6 @@ RecordWidgetGraph::~RecordWidgetGraph()
     for (auto ls : this->streamList) {
         delete ls;
     }
-
-    for (auto ls : this->avgStreamList) {
-        delete ls;
-    }
-
-    for (auto ls : this->iatDevList) {
-        delete ls;
-    }
 }
 
 
@@ -107,7 +99,6 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
         this->durations = duration;
         lineSeries->append(duration, bitrate);
 
-        qInfo() << bitrate << "HEJEHEJEHEJEHJEHEJ";
 
         if(avgBitrate != 0){
             avgSeries->append(duration, avgBitrate);
@@ -141,14 +132,11 @@ void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
         chart()->addSeries(lineSeries);
         chart()->addSeries(avgSeries);
 
-
         avgSeries->setName("Avg bitrate");
         lineSeries->setName("Bitrate");
     } else {
-
         lineSeries = iatDevList[selectedStream];
         chart()->addSeries(lineSeries);
-
         lineSeries->setName("IAT dev");
     }
 
@@ -156,15 +144,13 @@ void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
     pen.setWidth(1);
     lineSeries->setPen(pen);
 
-    //  lineSeries->setColor("black");
-
 
     chart()->createDefaultAxes();
 
     QDateTimeAxis *axisX = new QDateTimeAxis;
     axisX->setFormat("m:ss");
     axisX->setTickCount(10);
-    axisX->setTitleText("Time m:s");
+    axisX->setTitleText("Time m:ss");
 
     this->chart()->setAxisX(axisX, lineSeries);
 
@@ -188,7 +174,6 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // Collects 
 
     if (firstRound){
         for(int i = 0; i < status.streams.count(); i++){
-
             quint64 hashKey = status.streams.keys().at(i);
 
             this->streamList.append(new QLineSeries());
@@ -204,14 +189,12 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // Collects 
     } else {
         for(int i = 0; i < status.streams.count(); i++){
             quint64 hashKey = status.streams.keys().at(i);
-
             streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
             avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
             iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
 
         }
     }
-
 }
 /*
 void RecordWidgetGraph::setupLineSeries(){

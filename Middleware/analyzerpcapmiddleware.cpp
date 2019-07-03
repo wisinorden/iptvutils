@@ -136,15 +136,12 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                     }
                     else {
 
-
                     }
                 }
 
                 // case 1: sanity check true
                 buffer.push(input);
                 packetNumber++;
-
-
             }
             else {
 

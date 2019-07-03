@@ -60,10 +60,12 @@ void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus status, bool isDeviati
 
     for(auto iter = status.getStreams().begin(); iter != status.getStreams().end(); ++iter) {
         qint64 streamID = iter.key();
-        const StreamInfo &streamInfo= iter.value();
+        const StreamInfo &streamInfo = iter.value();
 
         //     if(!isDeviationSignal){
-        previousAnalyzerStream.streams[streamID] = streamInfo;
+        if (previousAnalyzerStream.streams.count(streamID) > 0) {
+            previousAnalyzerStream.streams[streamID] = streamInfo;
+        }
 
         // Make IAT work for any numer of streams
         if(iatVector.size() <= counter){
@@ -71,13 +73,18 @@ void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus status, bool isDeviati
 
         } else {
             previousAnalyzerStream.streams[streamID].iatDeviation = (iatVector[counter].last() );
+            qDebug() << streamInfo.currentTime << "IAT dev timestamp + " << previousAnalyzerStream.streams[streamID].iatDeviation;
         }
-        WorkerStatus completeSignal;
 
+        WorkerStatus completeSignal;
         completeSignal.setStreams(previousAnalyzerStream.streams);
         emit workerStatus(completeSignal);
+
+
         counter++;
     }
+
+
 }
 
 void NetworkPcapFileRecorder::gotIatDev(WorkerStatus status, bool isDeviationSignal){
