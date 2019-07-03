@@ -2,7 +2,7 @@
 
 void TsNetworkFileRecorder::start() {
     finalStatus.setAnalysisMode(config.getWorkerMode());
-    producer.addNext(&analyzerMiddleware)->addNext(&networkJitter)->addNext(&consumer);
+    producer.addNext(&networkJitter)->addNext(&analyzerMiddleware)->addNext(&consumer);
 
     producer.init(&producerThread);
 
@@ -19,9 +19,8 @@ void TsNetworkFileRecorder::start() {
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::status, this, &TsNetworkFileRecorder::gotAnalyzerStatus);
     connect(&consumer, &TsFileConsumer::status, this, &TsNetworkFileRecorder::gotConsumerStatus);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::workerStatus, this, &TsNetworkFileRecorder::joinStreamInfo);
-    connect(&networkJitter, &NetworkJitter::workerStatus, this, &TsNetworkFileRecorder::joinStreamInfo);
     connect(&analyzerMiddleware, &AnalyzerPcapMiddleware::bitrateStatus, this, &TsNetworkFileRecorder::gotBitrate);
-    connect(&networkJitter, &NetworkJitter::iatStatus, this, &TsNetworkFileRecorder::gotIatDev);
+    connect(&networkJitter, &NetworkJitter::workerStatus, this, &TsNetworkFileRecorder::gotIatDev);
 
 
 
@@ -62,28 +61,28 @@ void TsNetworkFileRecorder::gotAnalyzerStatus(AnalyzerStatus aStatus) {
     }
 }
 
+void TsNetworkFileRecorder::joinStreamInfo(WorkerStatus status, bool isDeviationSignal) {
+    qint8 counter = 0;
 
-void TsNetworkFileRecorder::joinStreamInfo(WorkerStatus xStatus, bool isDeviationSignal) {
-
-    //Iterates hashmap
-    for(auto iter = xStatus.getStreams().begin(); iter != xStatus.getStreams().end(); ++iter) {
+    for(auto iter = status.getStreams().begin(); iter != status.getStreams().end(); ++iter) {
         qint64 streamID = iter.key();
         const StreamInfo &streamInfo= iter.value();
 
-        if(!isDeviationSignal){
-            previousAnalyzerStream.streams[streamID] = streamInfo;
-       //     qInfo("hej");
+        //     if(!isDeviationSignal){
+        previousAnalyzerStream.streams[streamID] = streamInfo;
 
-        } else if(isDeviationSignal){
-            previousAnalyzerStream.streams[streamID].iatDeviation = streamInfo.iatDeviation;
-          //  qInfo("hejhejhejhejhej");
-            quint32 test = streamInfo.iatDeviation;
-            qInfo() << streamID << test;
-            WorkerStatus completeSignal;
+        // Make IAT work for any numer of streams
+        if(iatVector.size() <= counter){
+            previousAnalyzerStream.streams[streamID].iatDeviation = 0;
 
-            completeSignal.setStreams(previousAnalyzerStream.streams);
-            emit workerStatus(completeSignal);
+        } else {
+            previousAnalyzerStream.streams[streamID].iatDeviation = (iatVector[counter].last() );
         }
+        WorkerStatus completeSignal;
+
+        completeSignal.setStreams(previousAnalyzerStream.streams);
+        emit workerStatus(completeSignal);
+        counter++;
     }
 }
 
@@ -102,11 +101,19 @@ void TsNetworkFileRecorder::gotBitrate(double  bitrate, qint64 duration){
 }
 
 
-void TsNetworkFileRecorder::gotIatDev(double iatDev, qint64 duration){
 
-    emit iatStatus(iatDev, duration);
+void TsNetworkFileRecorder::gotIatDev(WorkerStatus status, bool isDeviationSignal){
+
+    this->iatVector.resize(status.streams.count());
+
+    for(int i = 0; i < status.streams.count(); i++) {
+        quint64 hashKey = status.streams.keys().at(i);
+        //  qInfo() << (status.streams[hashKey].iatDeviation)<< "IATVALUE BEING APPENDED";
+
+        iatVector[i].append(status.streams[hashKey].iatDeviation);
+        //qInfo() << iatDevList.last() << "IATLIST VALUE AT INDEX 0";
+    }
 }
-
 
 
 

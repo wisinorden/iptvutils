@@ -36,11 +36,6 @@ void AnalyzerPcapMiddleware::run() {
 }
 
 
-void AnalyzerPcapMiddleware::recieveIatDev(double iatDev, qint64 duration){
-  currentIatDev = iatDev;
-  currentIatDevTimestamp = duration;
-}
-
 // Buffers packets
 void AnalyzerPcapMiddleware::bufferProducts() {
     QElapsedTimer statusTimer;

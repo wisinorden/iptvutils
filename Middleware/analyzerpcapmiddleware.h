@@ -50,7 +50,6 @@ protected slots:
 
 public slots:
     void start();
-    void recieveIatDev(double iatDev, qint64 duration);
     void stop();
 };
 

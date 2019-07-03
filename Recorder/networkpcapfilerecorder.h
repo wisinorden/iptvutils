@@ -12,8 +12,6 @@ class NetworkPcapFileRecorder : public Recorder
     Q_OBJECT
 private:
     QVector <QVector <quint16> > iatVector;
-    QList <quint16> iatDevList;
-    QList <qint64 *> iatDevdurationList;
     PcapBufferedProducer producer;
     PcapFileConsumer consumer;
     NetworkJitter networkJitter;

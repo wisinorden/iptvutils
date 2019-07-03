@@ -39,6 +39,7 @@ RecordWidget::RecordWidget(QWidget *parent) :
     connect(ui->recordRtpFecCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordUnicastCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &RecordWidget::changeStream);
+//    connect(ui->graphDataBox, &QComboBox::currentTextChanged, this, &RecordWidget::changeStream);
 
  //   connect(ui->graphView, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate );
 
@@ -153,7 +154,15 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 }
 
 void RecordWidget::changeStream(){
+
     updateStreamIndex();
+/*
+    if (ui->graphDataBox->currentText().contains("IAT")){
+       isBitrateSignal = false;
+    } else {
+        isBitrateSignal = true;
+    }
+*/
     graph.changeStream(selectedStreamIndex, isBitrateSignal);
     ui->graphView->setChart(graph.chart());
 }
@@ -182,7 +191,7 @@ void RecordWidget::recordingFinished() {
     ui->recordPcapFilterContainer->setEnabled(true);
     ui->recordInterfaceSelect->setEnabled(true);
     ui->graphDataBox->setEnabled(true);
-    selectedStreamIndex = 0;
+ //   selectedStreamIndex = 0;
     this->treeWidgetCounter = 0;
 
 
@@ -268,9 +277,10 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
 
     if(ui->graphDataBox->currentText()!= "Bitrate"){
-        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
         isBitrateSignal = false;
+        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
     } else {
+        isBitrateSignal = true;
         connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
     }
 
@@ -298,15 +308,15 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, this, &RecordWidget::recordStatusChanged);
+
     if(ui->graphDataBox->currentText()!= "Bitrate"){
-        connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::iatStatus, &graph, &RecordWidgetGraph::setBitrate);
         isBitrateSignal = false;
-
+        connect(tsNetworkFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
     } else {
-        connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::bitrateStatus, &graph, &RecordWidgetGraph::setBitrate);
-
+        isBitrateSignal = true;
+        connect(tsNetworkFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
     }
-    connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
+ //   connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);
     tsNetworkFileRecorder->start();

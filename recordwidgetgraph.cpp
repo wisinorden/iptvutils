@@ -25,6 +25,14 @@ RecordWidgetGraph::~RecordWidgetGraph()
     for (auto ls : this->streamList) {
         delete ls;
     }
+
+    for (auto ls : this->avgStreamList) {
+        delete ls;
+    }
+
+    for (auto ls : this->iatDevList) {
+        delete ls;
+    }
 }
 
 
@@ -33,6 +41,7 @@ QChart* RecordWidgetGraph::setupGraph(){
     firstRound = true;
     streamList.clear();
     avgStreamList.clear();
+    iatDevList.clear();
 
     lineSeries = new QLineSeries();
     avgSeries = new QLineSeries();
@@ -126,16 +135,21 @@ void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
     chart()->removeSeries(avgSeries);
 
     if(isBitrateSignal){
-
         lineSeries =  streamList[selectedStream];
         avgSeries = avgStreamList[selectedStream];
 
         chart()->addSeries(lineSeries);
         chart()->addSeries(avgSeries);
+
+
+        avgSeries->setName("Avg bitrate");
+        lineSeries->setName("Bitrate");
     } else {
 
-        lineSeries =  iatDevList[selectedStream];
+        lineSeries = iatDevList[selectedStream];
         chart()->addSeries(lineSeries);
+
+        lineSeries->setName("IAT dev");
     }
 
     QPen pen(QRgb(0x000000));
@@ -144,9 +158,6 @@ void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
 
     //  lineSeries->setColor("black");
 
-    avgSeries->setName("Avg bitrate");
-    lineSeries->setName("Bitrate");
-    chart()->axisY()->setTitleText("Bitrate mbps");
 
     chart()->createDefaultAxes();
 
@@ -157,7 +168,12 @@ void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
 
     this->chart()->setAxisX(axisX, lineSeries);
 
-    avgSeries->attachAxis(chart()->axisX());
+    if(isBitrateSignal){
+        avgSeries->attachAxis(chart()->axisX());
+        chart()->axisY()->setTitleText("Bitrate mbps");
+    } else {
+        chart()->axisY()->setTitleText("Std IAT dev µs");
+    }
 
     this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(durations - 20000), QDateTime::fromMSecsSinceEpoch(durations + 2000));
 

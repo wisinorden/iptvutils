@@ -10,6 +10,7 @@
 class TsNetworkFileRecorder : public Recorder
 {
 private:
+    QVector <QVector <quint16> > iatVector;
     PcapBufferedProducer producer;
     TsFileConsumer consumer;
     AnalyzerPcapMiddleware analyzerMiddleware;
@@ -38,7 +39,7 @@ private slots:
     void moduleFinished();
     void joinStreamInfo(WorkerStatus dStatus, bool signalType);
     void gotBitrate(double bitrate, qint64 duration);
-    void gotIatDev(double iatDev, qint64 duration);
+    void gotIatDev(WorkerStatus status, bool isDeviationSignal);
 
 
 };
