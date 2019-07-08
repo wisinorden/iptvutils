@@ -5,7 +5,6 @@
 
 #include "mainwindow.h"
 #include "recordwidget.h"
-#include "Middleware/analyzerpcapmiddleware.h"
 
 
 #include <QtCharts/QChartView>
@@ -20,11 +19,9 @@ QT_CHARTS_USE_NAMESPACE
 class RecordWidgetGraph : public QChartView
 {
 
-
 public:
 
     quint8 selectedStreamIndex;
-
 
     RecordWidgetGraph(QWidget *parent);
     ~RecordWidgetGraph();
@@ -39,7 +36,6 @@ public:
     void setAvgBitrate(double avgBitrate);
     void changeStream(int i, bool isBitrateSignal);
     void recordMultipleStreams(WorkerStatus status);
-    void updateMultipleStreams(WorkerStatus status);
     void setNoOfStreams(quint8 streams);
     void keyPressEvent(QKeyEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

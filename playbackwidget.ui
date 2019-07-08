@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>730</width>
-    <height>389</height>
+    <width>764</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,8 +31,8 @@
      <property name="title">
       <string>Settings</string>
      </property>
-     <layout class="QVBoxLayout" name="playbackSettingsVLayout">
-      <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
        <layout class="QVBoxLayout" name="playbackFilenameVLayout">
         <property name="spacing">
          <number>0</number>
@@ -60,7 +60,7 @@
         </item>
        </layout>
       </item>
-      <item>
+      <item row="1" column="0">
        <layout class="QVBoxLayout" name="playbackInterfaceVLayout">
         <property name="spacing">
          <number>0</number>
@@ -77,7 +77,7 @@
         </item>
        </layout>
       </item>
-      <item>
+      <item row="2" column="0">
        <layout class="QHBoxLayout" name="playbackAddressHLayout" stretch="2,1">
         <item>
          <layout class="QVBoxLayout" name="AddressVLayout">
@@ -115,7 +115,7 @@
         </item>
        </layout>
       </item>
-      <item>
+      <item row="3" column="0">
        <widget class="QToolButton" name="playbackExpandPCAPFilterButton">
         <property name="styleSheet">
          <string notr="true">border: none</string>
@@ -134,7 +134,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="4" column="0">
        <widget class="QWidget" name="playbackPcapFilterContainer" native="true">
         <layout class="QVBoxLayout" name="playbackPcapFilterVLayout">
          <property name="spacing">
@@ -153,7 +153,23 @@
         </layout>
        </widget>
       </item>
-      <item>
+      <item row="5" column="0">
+       <widget class="QChartView" name="graphView">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>300</height>
+         </size>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -166,7 +182,7 @@
         </property>
        </spacer>
       </item>
-      <item>
+      <item row="6" column="0">
        <layout class="QHBoxLayout" name="playbackFilteringHLayout" stretch="1,3">
         <item>
          <widget class="QCheckBox" name="playbackLoopCheckbox">
@@ -176,11 +192,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="playbackLoopCombo" />
+         <widget class="QComboBox" name="playbackLoopCombo"/>
         </item>
        </layout>
       </item>
-      <item>
+      <item row="8" column="0">
        <widget class="QPushButton" name="playbackStartStopBtn">
         <property name="text">
          <string>Play</string>
@@ -255,9 +271,13 @@ QTreeView::branch:open:has-children:has-siblings  {
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">QtCharts</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
- <buttongroups>
-  <buttongroup name="recordFileFormatGroup"/>
- </buttongroups>
 </ui>

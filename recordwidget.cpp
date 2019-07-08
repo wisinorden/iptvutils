@@ -16,13 +16,15 @@ RecordWidget::RecordWidget(QWidget *parent) :
     graph(this),
     ui(new Ui::RecordWidget),
     started(false),
-    isBitrateSignal(true)
+    isBitrateSignal(true),
+    didRun(false)
 {
     ui->setupUi(this);
     this->setupGraph();
     this->setMouseTracking(true);
     treeWidgetCounter = 0;
     selectedStreamIndex = 0;
+
 
 
     // Advanced PCAP filter
@@ -39,7 +41,8 @@ RecordWidget::RecordWidget(QWidget *parent) :
     connect(ui->recordRtpFecCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordUnicastCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &RecordWidget::changeStream);
-//    connect(ui->graphDataBox, &QComboBox::currentTextChanged, this, &RecordWidget::changeStream);
+
+    connect(ui->graphDataBox, &QComboBox::currentTextChanged, this, &RecordWidget::changeStream);
 
  //   connect(ui->graphView, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate );
 
@@ -106,6 +109,7 @@ void RecordWidget::recordingStarted() {
     ui->recordInterfaceSelect->setEnabled(false);
     ui->graphDataBox->setEnabled(false);
     this->setupGraph();
+    didRun = true;
 
     if(ui->graphDataBox->currentText()== "Bitrate"){
         this->graph.setYAxisTitle("Bitrate mbps");
@@ -127,7 +131,7 @@ void RecordWidget::recordWorkerGraphInfo(WorkerStatus status){
         graph.setBitrate(status.streams[hashKey].iatDeviation, status.streams[hashKey].currentTime);
 
     }
-    if(ui->treeWidget->topLevelItemCount() > 1){
+    if(ui->treeWidget->topLevelItemCount() > 0){
         graph.recordMultipleStreams(status);
 
         if(selectedStreamIndex != graph.selectedStreamIndex){
@@ -155,16 +159,19 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 
 void RecordWidget::changeStream(){
 
-    updateStreamIndex();
-/*
-    if (ui->graphDataBox->currentText().contains("IAT")){
-       isBitrateSignal = false;
-    } else {
-        isBitrateSignal = true;
+    if(didRun){
+        updateStreamIndex();
+
+        if (ui->graphDataBox->currentText().contains("IAT")){
+            isBitrateSignal = false;
+        } else {
+            isBitrateSignal = true;
+        }
+
+        graph.changeStream(selectedStreamIndex, isBitrateSignal);
+        ui->graphView->setChart(graph.chart());
+
     }
-*/
-    graph.changeStream(selectedStreamIndex, isBitrateSignal);
-    ui->graphView->setChart(graph.chart());
 }
 
 void RecordWidget::updateStreamIndex(){

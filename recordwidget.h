@@ -39,6 +39,7 @@ private:
     Ui::RecordWidget *ui;
     bool started;
     bool isBitrateSignal;
+    bool didRun;
     QString currentTreeStream;
     QString currentDirectory;
     QString currentFilename;

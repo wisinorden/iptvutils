@@ -20,9 +20,13 @@ StreamId selectedStreamId;
 PlaybackWidget::PlaybackWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PlaybackWidget),
-    started(false)
+    started(false),
+    graph(this)
 {
     ui->setupUi(this);
+    graph.setupGraph();
+    ui->graphView->setChart(graph.chart());
+    ui->graphView->setRenderHint(QPainter::Antialiasing);
 
     // Advanced PCAP filter
     ui->playbackPcapFilterContainer->hide();
@@ -31,9 +35,11 @@ PlaybackWidget::PlaybackWidget(QWidget *parent) :
     connect(ui->playbackHost, &QLineEdit::textChanged, this, &PlaybackWidget::playbackInputChanged);
     connect(ui->playbackPort, &QLineEdit::textChanged, this, &PlaybackWidget::playbackInputChanged);
 
+
     for (int i = 0; i < MainWindow::interfaces.length(); i++) {
         ui->playbackInterfaceSelect->addItem(MainWindow::interfaces.at(i).getName());
         ui->playbackInterfaceSelect->setItemData(i, MainWindow::interfaces.at(i).getName(), Qt::ToolTipRole);
+
     }
 
 

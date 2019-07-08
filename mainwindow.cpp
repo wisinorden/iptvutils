@@ -41,7 +41,7 @@ void MainWindow::loadSettings() {
     ui->playbackWidget->loadSettings();
     ui->recordWidget->loadSettings();
     ui->convertWidget->loadSettings();
-    ui->recordWidget->graph.setFocus();
+    //ui->recordWidget->graph.setFocus();
 
 
 

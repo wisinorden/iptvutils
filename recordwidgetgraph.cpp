@@ -170,7 +170,7 @@ void RecordWidgetGraph::setNoOfStreams(quint8 noOfStreams){
     this->noOfStreams = noOfStreams;
 }
 
-void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // Collects data for multiple streams
+void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This should probably be made more generic, it's not optimal
 
     if (firstRound){
         for(int i = 0; i < status.streams.count(); i++){
@@ -179,28 +179,32 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // Collects 
             this->streamList.append(new QLineSeries());
             this->avgStreamList.append(new QLineSeries());
             this->iatDevList.append(new QLineSeries());
-            streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
-            avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
-            iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
 
-            firstRound = false;
+            if(status.streams[hashKey].currentBitrate != 0 && status.streams[hashKey].avgBitrate != 0 && status.streams[hashKey].iatDeviation ){
+                streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
+                avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
+                iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
+
+                firstRound = false;
+            }
         }
 
     } else {
         for(int i = 0; i < status.streams.count(); i++){
-            quint64 hashKey = status.streams.keys().at(i);
-            streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
-            avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
-            iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
 
+            quint64 hashKey = status.streams.keys().at(i);
+
+            if(status.streams[hashKey].currentBitrate != 0 && status.streams[hashKey].avgBitrate != 0 && status.streams[hashKey].iatDeviation){
+
+                streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
+                avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
+                iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
+            }
         }
     }
 }
-/*
-void RecordWidgetGraph::setupLineSeries(){
 
-}
-*/
+
 void RecordWidgetGraph::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)

@@ -41,10 +41,10 @@ public:
 private slots:
     void gotProducerStatus(Status pStatus);
     void gotAnalyzerStatus(AnalyzerStatus aStatus);
-    void joinStreamInfo(WorkerStatus dStatus, bool isDeviationSignal);
+    void joinStreamInfo(WorkerStatus dStatus);
     void gotConsumerStatus(Status cStatus);
     void gotBitrate(double bitrate, qint64 duration);
-    void gotIatDev(WorkerStatus dStatus, bool isDeviationSignal);
+    void gotIatDev(WorkerStatus dStatus);
 
     void moduleFinished();
 };

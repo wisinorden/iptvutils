@@ -55,7 +55,7 @@ void NetworkPcapFileRecorder::gotProducerStatus(Status pStatus) {
 
 
 
-void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus status, bool isDeviationSignal) {
+void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus status) {
     qint8 counter = 0;
 
     for(auto iter = status.getStreams().begin(); iter != status.getStreams().end(); ++iter) {
@@ -87,7 +87,7 @@ void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus status, bool isDeviati
 
 }
 
-void NetworkPcapFileRecorder::gotIatDev(WorkerStatus status, bool isDeviationSignal){
+void NetworkPcapFileRecorder::gotIatDev(WorkerStatus status){
 
     this->iatVector.resize(status.streams.count());
 
