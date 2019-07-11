@@ -192,7 +192,10 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This shou
                 avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
                 iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
 
-                //     printer->printToFile(((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), firstRound, currentFileName);
+
+                QString streamIpAdress = StreamId::calcName(hashKey);
+
+                printer->printToFile(((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), firstRound, currentFileName, streamIpAdress);
             }
         }
         firstRound = false;
@@ -207,7 +210,9 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This shou
                 avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
                 iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
 
-                printer->printToFile(((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), firstRound, currentFileName);
+                QString streamIpAdress = StreamId::calcName(hashKey);
+
+                printer->printToFile(((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), firstRound, currentFileName, streamIpAdress);
             }
         }
 

@@ -10,7 +10,7 @@ class RecordTxtPrinter
 {
 public:
     RecordTxtPrinter();
-    void printToFile(QString text, bool firstRound, QString currentFilename);
+    void printToFile(QString text, bool firstRound, QString currentFilename, QString streamIpAdress);
 
 protected:
 };

@@ -10,11 +10,17 @@ RecordTxtPrinter::RecordTxtPrinter()
 
 
 
-void RecordTxtPrinter::printToFile( QString text, bool firstRound, QString currentFilename){
+void RecordTxtPrinter::printToFile( QString text, bool firstRound, QString currentFileName, QString streamIpAdress){
 
-    QString filename = currentFilename;
-    filename.replace(".pcap", ".csv");
+   QString filename = currentFileName;
+
+    streamIpAdress.replace('.', '_');
+    filename.remove(".pcap");
+    filename.append("_" +streamIpAdress);
+    filename.append(".csv");
+
     QFile file(filename);
+
 
     if(firstRound){
         file.resize(0);
