@@ -38,7 +38,7 @@ void AnalyzerPcapMiddleware::run() {
 
 // Buffers packets
 void AnalyzerPcapMiddleware::bufferProducts() {
-    QElapsedTimer statusTimer;
+    QTime statusTimer;
     statusTimer.start();
     packetNumber = 0;
 
@@ -58,7 +58,10 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
     PcapProduct input;
 
+
     while (!stopping) {
+
+
         input = prevProvider->getProduct();
         if (input.type == PcapProduct::NORMAL && !hasLooped) {
             PacketParser parser((pcap_pkthdr*)input.header.data(), (const u_char*)input.data.data());
@@ -67,6 +70,7 @@ void AnalyzerPcapMiddleware::bufferProducts() {
             if (startTime == -1) {
                 startTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec * 1000; // convert to ms
                 startTime += ((pcap_pkthdr*)input.header.data())->ts.tv_usec/1000; // convert to ms
+                lastDuration = 0;
             }
             else {
                 endTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec*1000;
@@ -77,10 +81,10 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
                 // 1 second of trafic, calculate bitrate for that second
 
-                if (duration - lastDuration >= 200) {
+                if (duration - lastDuration >= emitFrequency) {
                     bitrate = (bytes - lastSecondBytes)*8*1000/(duration - lastDuration);
                     lastSecondBytes = bytes;
-                    lastDuration = duration;
+     //               lastDuration = duration;
                 }
             }
 
@@ -151,7 +155,7 @@ void AnalyzerPcapMiddleware::bufferProducts() {
             }
 
         }
-        else if (input.type == PcapProduct::LOOP) {
+        else if (input.type == PcapProduct::LOOP || input.type == PcapProduct::END) {
             hasLooped = true;
 
             buffer.push(input);
@@ -160,8 +164,28 @@ void AnalyzerPcapMiddleware::bufferProducts() {
         }
 
 
-        if (statusTimer.elapsed() >= 200) {
+
+
+
+        qInfo() << statusTimer.currentTime() << " OUTSIDE";
+
+        if (lastDuration > 10000000000){
+            lastDuration = 0;
+        }
+
+
+        if (duration - lastDuration >= emitFrequency) {
+
+            qInfo() << "STATUSTIMER.ELAPSED APM" << statusTimer.elapsed();
+
+
+
+            lastDuration = duration;
+
+
+
             for (auto &stream : streams) {
+
                 stream.avgBitrate =  ((double)stream.bytes*8*1000.0/stream.currentTime) /1000000.0;
                 stream.currentBitrate = (double)(stream.bytes - stream.lastSecondBytes)*8*1000/(duration - stream.lastDuration) / 1000000;
                 stream.lastSecondBytes = stream.bytes;
@@ -174,8 +198,10 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
             }
             qInfo() << "bitrate" << (double) bitrate /1000000;
-            emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams), false);
+
             statusTimer.restart();
+            qInfo() << statusTimer.currentTime() << "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK";
+            emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams), false);
         }
 
         if (input.type == PcapProduct::END || input.type == PcapProduct::STOP) {

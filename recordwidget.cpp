@@ -27,6 +27,7 @@ RecordWidget::RecordWidget(QWidget *parent) :
 
 
 
+
     // Advanced PCAP filter
     ui->recordPcapFilterContainer->hide();
     connect(ui->recordExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_recordExpandPCAPFilterButton_toggled(bool)));
@@ -87,7 +88,7 @@ void RecordWidget::saveSettings() {
     settings.beginGroup("record");
     settings.setValue("interface", MainWindow::interfaces.at(ui->recordInterfaceSelect->currentIndex()).getId());
     settings.setValue("host", ui->recordHost->text());
-    settings.setValue("port", ui->recordPort->text());
+    settings.setValue("port", ui->recordPort->text());https://stackoverflow.com/questions/32446189/qt-from-unsigned-long-long-to-qjsonobject
     settings.setValue("rtp-fec", ui->recordRtpFecCheckBox->isChecked());
     settings.setValue("unicast", ui->recordUnicastCheckBox->isChecked());
     settings.setValue("filename", currentFilename);
@@ -109,6 +110,8 @@ void RecordWidget::recordingStarted() {
     ui->recordInterfaceSelect->setEnabled(false);
     ui->graphDataBox->setEnabled(false);
     this->setupGraph();
+    graph.setCurrentFileName(currentFilename);
+
     didRun = true;
 
     if(ui->graphDataBox->currentText()== "Bitrate"){

@@ -15,6 +15,8 @@ RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
     this->setMouseTracking(true);
 
     this->setRubberBand(QChartView::RectangleRubberBand);
+    dataRefreshCounter = 0;
+
 
 }
 
@@ -38,6 +40,9 @@ QChart* RecordWidgetGraph::setupGraph(){
     lineSeries = new QLineSeries();
     avgSeries = new QLineSeries();
 
+   // lineSeries->setUseOpenGL(true);
+
+
     avgSeries->setName("Avg bitrate");
     lineSeries->setName("Bitrate");
 
@@ -59,6 +64,8 @@ QChart* RecordWidgetGraph::setupGraph(){
     this->setChart(chart);
 
     this->chartCounter = 0;
+    durations = 0;
+    dataRefreshCounter = 0;
     this->maxBitrate = 0;
     this->minBitrate = 5000;
     this->zoomInt = 0;
@@ -70,7 +77,6 @@ QChart* RecordWidgetGraph::setupGraph(){
     axisX->setTitleText("Time m:s");
     this->chart()->setAxisX(axisX, lineSeries);
     avgSeries->attachAxis(axisX);
-    //    this->axisX = axisX;
 
     return(chart);
 }
@@ -84,7 +90,6 @@ void RecordWidgetGraph::setYAxisTitle(QString title){
         lineSeries->setName("IAT dev");
         chart()->removeSeries(avgSeries);
     }
-
 }
 
 void RecordWidgetGraph::setAvgBitrate(double avgBitrate){
@@ -97,11 +102,13 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
     // Appends new values and updates graph
     if(bitrate > 1 && bitrate < 1000){
         this->durations = duration;
+
+
         lineSeries->append(duration, bitrate);
 
 
         if(avgBitrate != 0){
-            avgSeries->append(duration, avgBitrate);
+        avgSeries->append(duration, avgBitrate);
         }
         this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(duration - 20000), QDateTime::fromMSecsSinceEpoch(duration + 2000));
 
@@ -172,7 +179,7 @@ void RecordWidgetGraph::setNoOfStreams(quint8 noOfStreams){
 
 void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This should probably be made more generic, it's not optimal
 
-    if (firstRound){
+    if (streamList.count() < status.streams.count()){
         for(int i = 0; i < status.streams.count(); i++){
             quint64 hashKey = status.streams.keys().at(i);
 
@@ -185,10 +192,10 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This shou
                 avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
                 iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
 
-                firstRound = false;
+                //     printer->printToFile(((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), firstRound, currentFileName);
             }
         }
-
+        firstRound = false;
     } else {
         for(int i = 0; i < status.streams.count(); i++){
 
@@ -199,9 +206,42 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This shou
                 streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
                 avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
                 iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
+
+                printer->printToFile(((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), firstRound, currentFileName);
             }
         }
+
+        if(durations > 300000){
+            for(int i = 0; i < status.streams.count(); i++){
+
+                streamList[i]->remove(0);
+                avgStreamList[i]->remove(0);
+                iatDevList[i]->remove(0);
+            }
+            lineSeries->remove(0);
+            avgSeries->remove(0);
+        }
     }
+}
+
+
+void RecordWidgetGraph::refreshData(WorkerStatus status){
+
+    for(int i = 0; i < status.streams.count(); i++){
+
+        streamList[i]->remove(dataRefreshCounter);
+        avgStreamList[i]->remove(dataRefreshCounter);
+        iatDevList[i]->remove(dataRefreshCounter);
+
+    }
+    //lineSeries->replace(dataRefreshCounter);
+    avgSeries->remove(dataRefreshCounter);
+  //  dataRefreshCounter++;
+}
+
+
+void RecordWidgetGraph::setCurrentFileName(QString string){
+  currentFileName = string;
 }
 
 

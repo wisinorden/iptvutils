@@ -20,6 +20,9 @@ public:
     PcapMiddleware(WorkerConfiguration config) :
         QObject(), config(config) {}
 
+
+    quint16 emitFrequency = 100;
+
 signals:
     void started();
     void finished();

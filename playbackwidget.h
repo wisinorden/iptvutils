@@ -4,8 +4,7 @@
 #include "Configuration/workerconfiguration.h"
 #include "Player/pcapfilenetworkplayer.h"
 #include <QWidget>
-#include <recordwidget.h>
-#include <recordwidgetgraph.h>
+// #include <recordwidget.h>
 
 namespace Ui {
 class PlaybackWidget;
@@ -26,7 +25,7 @@ public:
 
 private:
     Ui::PlaybackWidget *ui;
-    RecordWidgetGraph graph;
+   // RecordWidgetGraph graph;
     bool started;
     bool validatePlaybackInputs();
     bool startPcapPlayback(WorkerConfiguration::WorkerMode mode = WorkerConfiguration::NORMAL_MODE);

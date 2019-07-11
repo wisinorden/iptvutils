@@ -53,7 +53,6 @@ void NetworkJitter::run(){
         bytes += parser.data_len;
         input = prevProvider->getProduct();
 
-
         {
 
             PacketParser parser((pcap_pkthdr*)input.header.data(), (const u_char*)input.data.data());
@@ -89,7 +88,7 @@ void NetworkJitter::run(){
 
             //Calculate average diff per second and IAT standard deviation per millisecond
 
-            if(statusTimer.elapsed() >= 199){
+            if(statusTimer.elapsed() >= emitFrequency){
                 // If no packages recieved, wait(?)
                 if(packetCounter != 0){
                 diffratePerSec = differencePerSec/packetCounter;

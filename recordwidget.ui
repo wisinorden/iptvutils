@@ -35,54 +35,53 @@
       <string>Settings</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="5" column="0" colspan="7">
-       <widget class="QWidget" name="recordPcapFilterContainer" native="true">
-        <layout class="QVBoxLayout" name="recordPcapFilterVLayout">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="recordFilterLbl">
-           <property name="text">
-            <string>PCAP filter</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="recordFilter">
-           <property name="minimumSize">
-            <size>
-             <width>3</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="11" column="0" colspan="7">
-       <widget class="QChartView" name="graphView">
-        <property name="minimumSize">
+      <item row="12" column="6" rowspan="2">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>0</width>
-          <height>700</height>
+          <width>20</width>
+          <height>40</height>
          </size>
         </property>
-        <property name="mouseTracking">
-         <bool>true</bool>
+       </spacer>
+      </item>
+      <item row="0" column="0">
+       <layout class="QVBoxLayout" name="recordInterfaceVLayout">
+        <property name="spacing">
+         <number>0</number>
         </property>
+        <item>
+         <widget class="QLabel" name="recordInterfaceLbl">
+          <property name="text">
+           <string>Network interface</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="recordInterfaceSelect"/>
+        </item>
+       </layout>
+      </item>
+      <item row="12" column="0">
+       <layout class="QVBoxLayout" name="recordFileFormatVLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="recordFileFormatHLayout"/>
+        </item>
+       </layout>
+      </item>
+      <item row="14" column="0">
+       <widget class="QPushButton" name="recordStartStopBtn">
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>Start recording</string>
         </property>
        </widget>
       </item>
@@ -121,56 +120,6 @@
            </widget>
           </item>
          </layout>
-        </item>
-       </layout>
-      </item>
-      <item row="12" column="6" rowspan="2">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="14" column="0">
-       <widget class="QPushButton" name="recordStartStopBtn">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="text">
-         <string>Start recording</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="0">
-       <layout class="QVBoxLayout" name="recordFileFormatVLayout">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <item>
-         <layout class="QHBoxLayout" name="recordFileFormatHLayout"/>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="0">
-       <layout class="QVBoxLayout" name="recordInterfaceVLayout">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="recordInterfaceLbl">
-          <property name="text">
-           <string>Network interface</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="recordInterfaceSelect"/>
         </item>
        </layout>
       </item>
@@ -240,6 +189,41 @@
         </item>
        </layout>
       </item>
+      <item row="5" column="0" colspan="7">
+       <widget class="QWidget" name="recordPcapFilterContainer" native="true">
+        <layout class="QVBoxLayout" name="recordPcapFilterVLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="recordFilterLbl">
+           <property name="text">
+            <string>PCAP filter</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="recordFilter">
+           <property name="minimumSize">
+            <size>
+             <width>3</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="3" column="0" colspan="5">
        <layout class="QHBoxLayout" name="janneLayout">
         <item>
@@ -289,6 +273,22 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="11" column="0" colspan="7">
+       <widget class="QChartView" name="graphView">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

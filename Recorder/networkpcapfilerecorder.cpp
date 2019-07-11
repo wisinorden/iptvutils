@@ -66,25 +66,20 @@ void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus status) {
         if (previousAnalyzerStream.streams.count(streamID) > 0) {
             previousAnalyzerStream.streams[streamID] = streamInfo;
         }
-
         // Make IAT work for any numer of streams
         if(iatVector.size() <= counter){
             previousAnalyzerStream.streams[streamID].iatDeviation = 0;
 
         } else {
             previousAnalyzerStream.streams[streamID].iatDeviation = (iatVector[counter].last() );
-            qDebug() << streamInfo.currentTime << "IAT dev timestamp + " << previousAnalyzerStream.streams[streamID].iatDeviation;
         }
 
         WorkerStatus completeSignal;
         completeSignal.setStreams(previousAnalyzerStream.streams);
         emit workerStatus(completeSignal);
-
-
+        qInfo() << "HUR OFTA TAR SIGNALEN EMOT I NPFR" << counter;
         counter++;
     }
-
-
 }
 
 void NetworkPcapFileRecorder::gotIatDev(WorkerStatus status){
@@ -93,10 +88,8 @@ void NetworkPcapFileRecorder::gotIatDev(WorkerStatus status){
 
     for(int i = 0; i < status.streams.count(); i++) {
         quint64 hashKey = status.streams.keys().at(i);
-        //  qInfo() << (status.streams[hashKey].iatDeviation)<< "IATVALUE BEING APPENDED";
 
         iatVector[i].append(status.streams[hashKey].iatDeviation);
-        //qInfo() << iatDevList.last() << "IATLIST VALUE AT INDEX 0";
     }
 }
 

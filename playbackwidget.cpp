@@ -20,14 +20,16 @@ StreamId selectedStreamId;
 PlaybackWidget::PlaybackWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PlaybackWidget),
-    started(false),
-    graph(this)
+    started(false)
+  //  graph(this)
 {
     ui->setupUi(this);
+
+    /*
     graph.setupGraph();
     ui->graphView->setChart(graph.chart());
     ui->graphView->setRenderHint(QPainter::Antialiasing);
-
+*/
     // Advanced PCAP filter
     ui->playbackPcapFilterContainer->hide();
     connect(ui->playbackExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_playbackExpandPCAPFilterButton_toggled(bool)));
@@ -110,7 +112,8 @@ void PlaybackWidget::playbackStarted() {
 
 }
 
-void PlaybackWidget::playbackStatusChanged(FinalStatus status) {
+void PlaybackWidget::playbackStatusChanged(FinalStatus status) { //Kolla in det här, troligen anledningen till att det ej markeras som finished längre.
+
     ui->playbackStatus->setText(status.toUiString());
 }
 

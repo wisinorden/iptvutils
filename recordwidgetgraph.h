@@ -5,6 +5,7 @@
 
 #include "mainwindow.h"
 #include "recordwidget.h"
+#include "recordtxtprinter.h"
 
 
 #include <QtCharts/QChartView>
@@ -25,6 +26,7 @@ public:
 
     RecordWidgetGraph(QWidget *parent);
     ~RecordWidgetGraph();
+    RecordTxtPrinter* printer;
     QChart GraphChart;
     qint16 chartCounter;
     quint8 noOfStreams;
@@ -34,6 +36,7 @@ public:
 //    QChart* changeStream(int i);
 
     void setAvgBitrate(double avgBitrate);
+    void setCurrentFileName(QString string);
     void changeStream(int i, bool isBitrateSignal);
     void recordMultipleStreams(WorkerStatus status);
     void setNoOfStreams(quint8 streams);
@@ -61,18 +64,26 @@ public slots:
 
 
 private:
+
+    QString currentFileName;
     bool firstRound = true;
     QDateTimeAxis *axisX;
+    QString filename="/home/marko.marinkovic/Documents/Data.txt";
+    QFile txtFile;
     quint32 zoomInt;
     double avgBitrate;
     qint64 durations;
     qint64 currentBitrate;
     qint64 bitrateTimestamp;
+    quint64 dataRefreshCounter;
     QLineSeries *lineSeries;
     QLineSeries *avgSeries;
     QPointF m_lastMousePos;
     bool m_isTouching;
     bool isScrolling = false;
+
+    void refreshData(WorkerStatus status);
+
 
 };
 #endif // RECORDWIDGETGRAPH_H
