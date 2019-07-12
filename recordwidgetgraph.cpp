@@ -27,20 +27,24 @@ RecordWidgetGraph::~RecordWidgetGraph()
     for (auto ls : this->streamList) {
         delete ls;
     }
+
+    delete printer;
 }
 
 
 QChart* RecordWidgetGraph::setupGraph(){
 
-    firstRound = true;
+    fileList.clear();
     streamList.clear();
     avgStreamList.clear();
     iatDevList.clear();
 
+
+    printer = new RecordTxtPrinter();
     lineSeries = new QLineSeries();
     avgSeries = new QLineSeries();
 
-   // lineSeries->setUseOpenGL(true);
+    // lineSeries->setUseOpenGL(true);
 
 
     avgSeries->setName("Avg bitrate");
@@ -108,7 +112,7 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
 
 
         if(avgBitrate != 0){
-        avgSeries->append(duration, avgBitrate);
+            avgSeries->append(duration, avgBitrate);
         }
         this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(duration - 20000), QDateTime::fromMSecsSinceEpoch(duration + 2000));
 
@@ -180,26 +184,16 @@ void RecordWidgetGraph::setNoOfStreams(quint8 noOfStreams){
 void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This should probably be made more generic, it's not optimal
 
     if (streamList.count() < status.streams.count()){
-        for(int i = 0; i < status.streams.count(); i++){
-            quint64 hashKey = status.streams.keys().at(i);
+
+        for(int i = streamList.count(); i < status.streams.count(); i++){
 
             this->streamList.append(new QLineSeries());
             this->avgStreamList.append(new QLineSeries());
             this->iatDevList.append(new QLineSeries());
-
-            if(status.streams[hashKey].currentBitrate != 0 && status.streams[hashKey].avgBitrate != 0 && status.streams[hashKey].iatDeviation ){
-                streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
-                avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
-                iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
-
-
-                QString streamIpAdress = StreamId::calcName(hashKey);
-
-                printer->printToFile(((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), firstRound, currentFileName, streamIpAdress);
-            }
+            this->fileList.append(new QFile());
         }
-        firstRound = false;
-    } else {
+    }
+
         for(int i = 0; i < status.streams.count(); i++){
 
             quint64 hashKey = status.streams.keys().at(i);
@@ -212,7 +206,7 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This shou
 
                 QString streamIpAdress = StreamId::calcName(hashKey);
 
-                printer->printToFile(((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), firstRound, currentFileName, streamIpAdress);
+                printer->printToFile(fileList[i], ((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), currentFileName, streamIpAdress, i);
             }
         }
 
@@ -227,7 +221,7 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This shou
             avgSeries->remove(0);
         }
     }
-}
+
 
 
 void RecordWidgetGraph::refreshData(WorkerStatus status){

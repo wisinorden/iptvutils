@@ -4,30 +4,30 @@
 
 RecordTxtPrinter::RecordTxtPrinter()
 {
-
+numberOfFiles = 0;
 
 }
 
 
 
-void RecordTxtPrinter::printToFile( QString text, bool firstRound, QString currentFileName, QString streamIpAdress){
-
-   QString filename = currentFileName;
-
-    streamIpAdress.replace('.', '_');
-    filename.remove(".pcap");
-    filename.append("_" +streamIpAdress);
-    filename.append(".csv");
-
-    QFile file(filename);
+void RecordTxtPrinter::printToFile(QFile *file, QString text, QString currentFileName, QString streamIpAdress, quint8 currentIterationIndex){
 
 
-    if(firstRound){
-        file.resize(0);
 
-        if ( file.open(QIODevice::Append) )
+      if(!containedIndexes.contains(currentIterationIndex)){
+
+        QString filename = currentFileName;
+
+         streamIpAdress.replace('.', '_');
+         filename.remove(".pcap");
+         filename.append("_" +streamIpAdress);
+         filename.append(".csv");
+
+        file->setFileName(filename);
+
+        if ( file->open(QIODevice::Truncate | QIODevice::Text | QIODevice::WriteOnly) )
         {
-            QTextStream stream( &file );
+            QTextStream stream( file );
 
             QString s1 = "Timestamp,";
             QString s2 = "Bitrate," ;
@@ -35,13 +35,18 @@ void RecordTxtPrinter::printToFile( QString text, bool firstRound, QString curre
 
             QString string = ( s1+ s2 + s3 );
             stream <<  string << endl;
+
+            numberOfFiles++;
+            containedIndexes.append(currentIterationIndex);
         }
+
+
 
     }
 
-    if ( file.open(QIODevice::Append) )
+//    if ( file.open(QIODevice::Append) )
     {
-        QTextStream stream( &file );
+        QTextStream stream( file );
         stream << text << endl;
     }
 }

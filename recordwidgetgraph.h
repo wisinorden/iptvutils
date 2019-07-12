@@ -26,7 +26,7 @@ public:
 
     RecordWidgetGraph(QWidget *parent);
     ~RecordWidgetGraph();
-    RecordTxtPrinter* printer;
+    RecordTxtPrinter *printer;
     QChart GraphChart;
     qint16 chartCounter;
     quint8 noOfStreams;
@@ -52,6 +52,7 @@ protected:
     QList <QLineSeries *> streamList;
     QList <QLineSeries *> avgStreamList;
     QList <QLineSeries *> iatDevList;
+    QList <QFile *> fileList;
 
 
 
@@ -66,7 +67,6 @@ public slots:
 private:
 
     QString currentFileName;
-    bool firstRound = true;
     QDateTimeAxis *axisX;
     QString filename="/home/marko.marinkovic/Documents/Data.txt";
     QFile txtFile;
