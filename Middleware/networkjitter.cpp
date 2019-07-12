@@ -103,7 +103,6 @@ void NetworkJitter::run(){
 
                 finalSum = diffSum/ distanceList.length();
 
-                qInfo() << "Std deviation: " << sqrt(finalSum);
 
 
                 quint64 streamId = StreamId::calcId(parser.ih->daddr, parser.dport);

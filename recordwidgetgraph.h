@@ -32,6 +32,8 @@ public:
     quint8 noOfStreams;
     double maxBitrate;
     double minBitrate;
+    double maxIatDev;
+    double minIatDev;
     QChart* setupGraph();
 //    QChart* changeStream(int i);
 
@@ -58,7 +60,7 @@ protected:
 
 
 public slots:
-    void setBitrate (double bitrate, qint64 duration);
+    void setBitrate (double bitrate, qint64 duration, bool isBitrateSignal);
     void setYAxisTitle(QString title);
 
 
@@ -83,6 +85,7 @@ private:
     bool isScrolling = false;
 
     void refreshData(WorkerStatus status);
+    void setAxisRange(bool isBitrateSignal, double bitrate);
 
 
 };

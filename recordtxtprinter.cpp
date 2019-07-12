@@ -4,7 +4,6 @@
 
 RecordTxtPrinter::RecordTxtPrinter()
 {
-numberOfFiles = 0;
 
 }
 
@@ -13,13 +12,13 @@ numberOfFiles = 0;
 void RecordTxtPrinter::printToFile(QFile *file, QString text, QString currentFileName, QString streamIpAdress, quint8 currentIterationIndex){
 
 
-
       if(!containedIndexes.contains(currentIterationIndex)){
 
         QString filename = currentFileName;
 
          streamIpAdress.replace('.', '_');
          filename.remove(".pcap");
+         filename.remove(".ts");
          filename.append("_" +streamIpAdress);
          filename.append(".csv");
 
@@ -36,7 +35,6 @@ void RecordTxtPrinter::printToFile(QFile *file, QString text, QString currentFil
             QString string = ( s1+ s2 + s3 );
             stream <<  string << endl;
 
-            numberOfFiles++;
             containedIndexes.append(currentIterationIndex);
         }
 

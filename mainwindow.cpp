@@ -101,12 +101,12 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-
-
 void MainWindow::on_actionExit_triggered()
 {
     close();
+    QApplication::quit();
 }
+
 
 
 void MainWindow::on_actionAbout_triggered()

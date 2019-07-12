@@ -167,22 +167,16 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
 
 
-        qInfo() << statusTimer.currentTime() << " OUTSIDE";
 
-        if (lastDuration > 10000000000){
+
+        if (lastDuration > 1000000000){
             lastDuration = 0;
         }
 
 
         if (duration - lastDuration >= emitFrequency) {
 
-            qInfo() << "STATUSTIMER.ELAPSED APM" << statusTimer.elapsed();
-
-
-
             lastDuration = duration;
-
-
 
             for (auto &stream : streams) {
 
@@ -197,10 +191,8 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                 emit bitrateStatus((double) bitrate /1000000,  duration );
 
             }
-            qInfo() << "bitrate" << (double) bitrate /1000000;
 
             statusTimer.restart();
-            qInfo() << statusTimer.currentTime() << "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK";
             emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams), false);
         }
 

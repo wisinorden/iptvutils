@@ -108,10 +108,8 @@ void TsNetworkFileRecorder::gotIatDev(WorkerStatus status, bool isDeviationSigna
 
     for(int i = 0; i < status.streams.count(); i++) {
         quint64 hashKey = status.streams.keys().at(i);
-        //  qInfo() << (status.streams[hashKey].iatDeviation)<< "IATVALUE BEING APPENDED";
 
         iatVector[i].append(status.streams[hashKey].iatDeviation);
-        //qInfo() << iatDevList.last() << "IATLIST VALUE AT INDEX 0";
     }
 }
 

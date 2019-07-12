@@ -77,7 +77,6 @@ void NetworkPcapFileRecorder::joinStreamInfo(WorkerStatus status) {
         WorkerStatus completeSignal;
         completeSignal.setStreams(previousAnalyzerStream.streams);
         emit workerStatus(completeSignal);
-        qInfo() << "HUR OFTA TAR SIGNALEN EMOT I NPFR" << counter;
         counter++;
     }
 }

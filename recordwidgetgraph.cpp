@@ -72,6 +72,8 @@ QChart* RecordWidgetGraph::setupGraph(){
     dataRefreshCounter = 0;
     this->maxBitrate = 0;
     this->minBitrate = 5000;
+    this->maxIatDev = 0;
+    this->minIatDev = 5000;
     this->zoomInt = 0;
     this->avgBitrate = 0;
 
@@ -101,12 +103,11 @@ void RecordWidgetGraph::setAvgBitrate(double avgBitrate){
 }
 
 
-void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
+void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration, bool isBitrateSignal){
 
     // Appends new values and updates graph
-    if(bitrate > 1 && bitrate < 1000){
+    if(bitrate > (double) 1 && bitrate < 1000){
         this->durations = duration;
-
 
         lineSeries->append(duration, bitrate);
 
@@ -115,6 +116,7 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
             avgSeries->append(duration, avgBitrate);
         }
         this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(duration - 20000), QDateTime::fromMSecsSinceEpoch(duration + 2000));
+
 
         if(bitrate < this->minBitrate){
             minBitrate = bitrate;
@@ -126,9 +128,40 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration){
             this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
         }
 
+        //   setAxisRange(isBitrateSignal, bitrate);
+
         chartCounter++;
     }
 }
+
+
+void RecordWidgetGraph::setAxisRange(bool isBitrateSignal, double bitrate){ // Work in progress....
+
+    if(isBitrateSignal){
+
+        if(bitrate < this->minBitrate){
+            minBitrate = bitrate;
+            this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
+        }
+
+        if (this->maxBitrate < bitrate) {
+            this->maxBitrate = bitrate;
+            this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
+        } } else {
+
+        if(bitrate < this->minIatDev){
+            minIatDev= bitrate;
+            this->chart()->axisY()->setRange(minIatDev - 0.5, this->maxIatDev + 0.5);
+        }
+
+        if (this->maxIatDev < bitrate) {
+            this->maxIatDev = bitrate;
+            this->chart()->axisY()->setRange(minIatDev - 0.5, this->maxIatDev + 0.5);
+
+        }
+    }
+}
+
 
 
 void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
@@ -168,12 +201,13 @@ void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
     if(isBitrateSignal){
         avgSeries->attachAxis(chart()->axisX());
         chart()->axisY()->setTitleText("Bitrate mbps");
+    //    this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
     } else {
         chart()->axisY()->setTitleText("Std IAT dev µs");
+ //       this->chart()->axisY()->setRange(minIatDev - 0.5, this->maxIatDev + 0.5);
     }
 
     this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(durations - 20000), QDateTime::fromMSecsSinceEpoch(durations + 2000));
-
     selectedStreamIndex = selectedStream;
 }
 
@@ -181,7 +215,7 @@ void RecordWidgetGraph::setNoOfStreams(quint8 noOfStreams){
     this->noOfStreams = noOfStreams;
 }
 
-void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This should probably be made more generic, it's not optimal
+void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This could probably be made more generic, it's not optimal. Records all streams coming in and prints them to CSV file.
 
     if (streamList.count() < status.streams.count()){
 
@@ -233,9 +267,7 @@ void RecordWidgetGraph::refreshData(WorkerStatus status){
         iatDevList[i]->remove(dataRefreshCounter);
 
     }
-    //lineSeries->replace(dataRefreshCounter);
     avgSeries->remove(dataRefreshCounter);
-  //  dataRefreshCounter++;
 }
 
 
@@ -256,24 +288,6 @@ void RecordWidgetGraph::mousePressEvent(QMouseEvent *event)
     QChartView::mousePressEvent(event);
 }
 
-void RecordWidgetGraph::mouseMoveEvent(QMouseEvent *event)
-{
-    if (m_isTouching)
-        return;
-    QChartView::mouseMoveEvent(event);
-}
-
-void RecordWidgetGraph::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (m_isTouching)
-        m_isTouching = false;
-
-    // Because we disabled animations when touch event was detected
-    // we must put them back on.
-    chart()->setAnimationOptions(QChart::SeriesAnimations);
-
-    QChartView::mouseReleaseEvent(event);
-}
 
 void RecordWidgetGraph::keyPressEvent(QKeyEvent *event)
 {
@@ -307,3 +321,22 @@ void RecordWidgetGraph::keyPressEvent(QKeyEvent *event)
     }
 }
 
+// The code below is not used, may be nice to implement mouse scroll in future.
+void RecordWidgetGraph::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_isTouching)
+        return;
+    QChartView::mouseMoveEvent(event);
+}
+
+void RecordWidgetGraph::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (m_isTouching)
+        m_isTouching = false;
+
+    // Because we disabled animations when touch event was detected
+    // we must put them back on.
+    chart()->setAnimationOptions(QChart::SeriesAnimations);
+
+    QChartView::mouseReleaseEvent(event);
+}

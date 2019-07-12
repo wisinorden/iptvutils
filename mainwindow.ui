@@ -118,6 +118,16 @@
     <string>&amp;About...</string>
    </property>
   </action>
+  <action name="actionHow_to_navigate_graph">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/pngicon</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>How to navigate graph</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

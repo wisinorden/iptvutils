@@ -128,10 +128,10 @@ void RecordWidget::recordStatusChanged(FinalStatus status) {
 void RecordWidget::recordWorkerGraphInfo(WorkerStatus status){
     quint64 hashKey = status.streams.keys().at(selectedStreamIndex);
     if(isBitrateSignal){
-        graph.setBitrate(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime);
+        graph.setBitrate(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime, isBitrateSignal);
     } else {
 
-        graph.setBitrate(status.streams[hashKey].iatDeviation, status.streams[hashKey].currentTime);
+        graph.setBitrate(status.streams[hashKey].iatDeviation, status.streams[hashKey].currentTime, isBitrateSignal);
 
     }
     if(ui->treeWidget->topLevelItemCount() > 0){
