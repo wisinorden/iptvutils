@@ -232,7 +232,7 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This coul
 
             quint64 hashKey = status.streams.keys().at(i);
 
-            if(status.streams[hashKey].currentBitrate != 0 && status.streams[hashKey].avgBitrate != 0 && status.streams[hashKey].iatDeviation){
+            if(status.streams[hashKey].currentBitrate > 0.1 && status.streams[hashKey].avgBitrate != 0 && status.streams[hashKey].iatDeviation){
 
                 streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
                 avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
