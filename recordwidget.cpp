@@ -88,7 +88,7 @@ void RecordWidget::saveSettings() {
     settings.beginGroup("record");
     settings.setValue("interface", MainWindow::interfaces.at(ui->recordInterfaceSelect->currentIndex()).getId());
     settings.setValue("host", ui->recordHost->text());
-    settings.setValue("port", ui->recordPort->text());https://stackoverflow.com/questions/32446189/qt-from-unsigned-long-long-to-qjsonobject
+    settings.setValue("port", ui->recordPort->text());
     settings.setValue("rtp-fec", ui->recordRtpFecCheckBox->isChecked());
     settings.setValue("unicast", ui->recordUnicastCheckBox->isChecked());
     settings.setValue("filename", currentFilename);
@@ -201,7 +201,6 @@ void RecordWidget::recordingFinished() {
     ui->recordPcapFilterContainer->setEnabled(true);
     ui->recordInterfaceSelect->setEnabled(true);
     ui->graphDataBox->setEnabled(true);
- //   selectedStreamIndex = 0;
     this->treeWidgetCounter = 0;
 
 
@@ -442,7 +441,7 @@ void RecordWidget::on_recordStartStopBtn_clicked()
     }
     else {
         if (networkPcapFileRecorder != Q_NULLPTR) {
-            ("atempting to stop pcapRecorder");
+            qInfo("atempting to stop pcapRecorder");
             ui->recordStartStopBtn->setEnabled(false);
             networkPcapFileRecorder->stop();
             recordingFinished();

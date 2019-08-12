@@ -1,5 +1,4 @@
 #include "recordwidgetgraph.h"
-#include "chart.h"
 
 #include <QtCharts/QAbstractAxis>
 #include <QtCharts/QChart>
@@ -16,6 +15,8 @@ RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
 
     this->setRubberBand(QChartView::RectangleRubberBand);
     dataRefreshCounter = 0;
+    printer = new RecordTxtPrinter();
+
 
 
 }
@@ -40,7 +41,6 @@ QChart* RecordWidgetGraph::setupGraph(){
     iatDevList.clear();
 
 
-    printer = new RecordTxtPrinter();
     lineSeries = new QLineSeries();
     avgSeries = new QLineSeries();
 
@@ -51,14 +51,14 @@ QChart* RecordWidgetGraph::setupGraph(){
     lineSeries->setName("Bitrate");
 
     // Create chart and add axis
-    Chart * chart = new Chart();
+    QChart * chart = new QChart();
 
     // chart->legend()->hide();
     chart->addSeries(lineSeries);
     chart->addSeries(avgSeries);
     chart->createDefaultAxes();
 
-    chart->axisY()->setTitleText("Bitrate mbps");
+    chart->axisY()->setTitleText("Bitrate Mbps");
 
     // Change the line color and weight
     QPen pen(QRgb(0x000000));
@@ -106,7 +106,7 @@ void RecordWidgetGraph::setAvgBitrate(double avgBitrate){
 void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration, bool isBitrateSignal){
 
     // Appends new values and updates graph
-    if(bitrate > (double) 1 && bitrate < 1000){
+    if(bitrate > (double) 0.1 && bitrate < 1000){
         this->durations = duration;
 
         lineSeries->append(duration, bitrate);
@@ -127,8 +127,6 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration, bool isBitr
             this->maxBitrate = bitrate;
             this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
         }
-
-        //   setAxisRange(isBitrateSignal, bitrate);
 
         chartCounter++;
     }

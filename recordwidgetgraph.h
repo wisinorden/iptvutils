@@ -35,7 +35,6 @@ public:
     double maxIatDev;
     double minIatDev;
     QChart* setupGraph();
-//    QChart* changeStream(int i);
 
     void setAvgBitrate(double avgBitrate);
     void setCurrentFileName(QString string);
