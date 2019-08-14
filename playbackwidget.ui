@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>730</width>
-    <height>389</height>
+    <height>396</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -176,7 +176,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="playbackLoopCombo" />
+         <widget class="QComboBox" name="playbackLoopCombo"/>
         </item>
        </layout>
       </item>
@@ -257,7 +257,4 @@ QTreeView::branch:open:has-children:has-siblings  {
  </widget>
  <resources/>
  <connections/>
- <buttongroups>
-  <buttongroup name="recordFileFormatGroup"/>
- </buttongroups>
 </ui>

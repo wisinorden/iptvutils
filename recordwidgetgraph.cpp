@@ -18,8 +18,6 @@ RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
     dataRefreshCounter = 0;
     printer = new RecordTxtPrinter();
 
-
-
 }
 
 RecordWidgetGraph::~RecordWidgetGraph()
@@ -47,7 +45,6 @@ QChart* RecordWidgetGraph::setupGraph(){
     lineSeries = new QLineSeries();
     avgSeries = new QLineSeries();
 
-    // lineSeries->setUseOpenGL(true);
 
 
     avgSeries->setName("Avg bitrate");
@@ -59,18 +56,9 @@ QChart* RecordWidgetGraph::setupGraph(){
 
 
 
-    // chart->legend()->hide();
     chart->addSeries(lineSeries);
     chart->addSeries(avgSeries);
     chart->createDefaultAxes();
-
-    /*
-    QValueAxis *axisY = new QValueAxis;
-    this->chart()->setAxisY(axisY);
-    lineSeries->attachAxis(axisY);
-    avgSeries->attachAxis(axisY);
-*/
-
     chart->axisY()->setTitleText("Bitrate Mbps");
 
     // Change the line color and weight
