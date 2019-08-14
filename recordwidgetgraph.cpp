@@ -3,6 +3,7 @@
 #include <QtCharts/QAbstractAxis>
 #include <QtCharts/QChart>
 #include <QtGui/QMouseEvent>
+#include <QValueAxis>
 
 
 
@@ -21,8 +22,6 @@ RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
 
 }
 
-
-
 RecordWidgetGraph::~RecordWidgetGraph()
 {
     for (auto ls : this->streamList) {
@@ -39,6 +38,10 @@ QChart* RecordWidgetGraph::setupGraph(){
     streamList.clear();
     avgStreamList.clear();
     iatDevList.clear();
+    maxBitrateList.clear();
+    minBitrateList.clear();
+    minIatList.clear();
+    maxIatList.clear();
 
 
     lineSeries = new QLineSeries();
@@ -53,10 +56,20 @@ QChart* RecordWidgetGraph::setupGraph(){
     // Create chart and add axis
     QChart * chart = new QChart();
 
+
+
+
     // chart->legend()->hide();
     chart->addSeries(lineSeries);
     chart->addSeries(avgSeries);
     chart->createDefaultAxes();
+
+    /*
+    QValueAxis *axisY = new QValueAxis;
+    this->chart()->setAxisY(axisY);
+    lineSeries->attachAxis(axisY);
+    avgSeries->attachAxis(axisY);
+*/
 
     chart->axisY()->setTitleText("Bitrate Mbps");
 
@@ -133,33 +146,6 @@ void RecordWidgetGraph::setBitrate (double bitrate, qint64 duration, bool isBitr
 }
 
 
-void RecordWidgetGraph::setAxisRange(bool isBitrateSignal, double bitrate){ // Work in progress....
-
-    if(isBitrateSignal){
-
-        if(bitrate < this->minBitrate){
-            minBitrate = bitrate;
-            this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
-        }
-
-        if (this->maxBitrate < bitrate) {
-            this->maxBitrate = bitrate;
-            this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
-        } } else {
-
-        if(bitrate < this->minIatDev){
-            minIatDev= bitrate;
-            this->chart()->axisY()->setRange(minIatDev - 0.5, this->maxIatDev + 0.5);
-        }
-
-        if (this->maxIatDev < bitrate) {
-            this->maxIatDev = bitrate;
-            this->chart()->axisY()->setRange(minIatDev - 0.5, this->maxIatDev + 0.5);
-
-        }
-    }
-}
-
 
 
 void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
@@ -170,6 +156,7 @@ void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
     if(isBitrateSignal){
         lineSeries =  streamList[selectedStream];
         avgSeries = avgStreamList[selectedStream];
+
 
         chart()->addSeries(lineSeries);
         chart()->addSeries(avgSeries);
@@ -199,10 +186,12 @@ void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
     if(isBitrateSignal){
         avgSeries->attachAxis(chart()->axisX());
         chart()->axisY()->setTitleText("Bitrate mbps");
-    //    this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
+        this->chart()->axisY()->setRange(minBitrateList[selectedStream] - 0.5 , maxBitrateList[selectedStream] + 0.5);
+
     } else {
+        isBitrateSignal = false;
         chart()->axisY()->setTitleText("Std IAT dev µs");
- //       this->chart()->axisY()->setRange(minIatDev - 0.5, this->maxIatDev + 0.5);
+        this->chart()->axisY()->setRange(minIatList[selectedStream] - 10, maxIatList[selectedStream] + 10);
     }
 
     this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch(durations - 20000), QDateTime::fromMSecsSinceEpoch(durations + 2000));
@@ -223,24 +212,55 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This coul
             this->avgStreamList.append(new QLineSeries());
             this->iatDevList.append(new QLineSeries());
             this->fileList.append(new QFile());
+
+            this->maxBitrateList.append(0);
+            this->minBitrateList.append(2000);
+
+            this->minIatList.append(3000);
+            this->maxIatList.append(0);
+
         }
     }
 
-        for(int i = 0; i < status.streams.count(); i++){
+    for(int i = 0; i < status.streams.count(); i++){
 
-            quint64 hashKey = status.streams.keys().at(i);
+        quint64 hashKey = status.streams.keys().at(i);
 
-            if(status.streams[hashKey].currentBitrate > 0.1 && status.streams[hashKey].avgBitrate != 0 && status.streams[hashKey].iatDeviation){
+        if(status.streams[hashKey].currentBitrate > 0.1 && status.streams[hashKey].avgBitrate != 0 && status.streams[hashKey].iatDeviation){
 
-                streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
-                avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
-                iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
+            double bitrate = status.streams[hashKey].currentBitrate;
+            quint16 iatDev = status.streams[hashKey].iatDeviation;
 
-                QString streamIpAdress = StreamId::calcName(hashKey);
+            streamList[i]->append( status.streams[hashKey].currentTime, status.streams[hashKey].currentBitrate);
+            avgStreamList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].avgBitrate);
+            iatDevList[i]->append(status.streams[hashKey].currentTime, status.streams[hashKey].iatDeviation);
 
-                printer->printToFile(fileList[i], ((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), currentFileName, streamIpAdress, i);
+            QString streamIpAdress = StreamId::calcName(hashKey);
+
+            printer->printToFile(fileList[i], ((QString::number(status.streams[hashKey].currentTime))) + "," + (QString::number(status.streams[hashKey].currentBitrate)) + "," + (QString::number(status.streams[hashKey].iatDeviation)), currentFileName, streamIpAdress, i);
+
+            if( bitrate < minBitrateList[i]){
+                minBitrateList[i] = bitrate;
+
             }
+            if (maxBitrateList[i] < bitrate) {
+                maxBitrateList[i] = bitrate;
+            }
+
+
+            if(iatDev < minIatList[i]){
+                minIatList[i] = iatDev;
+            }
+
+            if(maxIatList[i] < iatDev){
+
+                maxIatList[i] = iatDev;
+            }
+
+
+
         }
+    }
 
         if(durations > 300000){
             for(int i = 0; i < status.streams.count(); i++){

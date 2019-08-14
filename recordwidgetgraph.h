@@ -56,6 +56,15 @@ protected:
     QList <QFile *> fileList;
 
 
+    QList <double > maxBitrateList;
+    QList <double > minBitrateList;
+
+    QList <quint16 > maxIatList;
+    QList <quint16 > minIatList;
+
+
+
+
 
 
 public slots:
