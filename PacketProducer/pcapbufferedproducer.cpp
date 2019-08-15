@@ -291,6 +291,8 @@ int PcapBufferedProducer::bufferFromNetworkSetup() {
     statusLastTime = 0;
     elapsedTimer.start();
 
+    qInfo() << "TIME JITTER " << QTime::currentTime();
+
 
 #ifndef Q_OS_WIN
     // Setup no data timer

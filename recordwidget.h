@@ -5,6 +5,11 @@
 #include "Recorder/networkpcapfilerecorder.h"
 #include "Recorder/tsnetworkfilerecorder.h"
 #include <QWidget>
+#include "Status/streaminfo.h"
+#include "recordwidgetgraph.h"
+#include "recordtxtprinter.h"
+
+
 
 namespace Ui {
 class RecordWidget;
@@ -17,6 +22,8 @@ class RecordWidget : public QWidget
 public:
     explicit RecordWidget(QWidget *parent = 0);
     ~RecordWidget();
+    RecordWidgetGraph graph;
+
 
     void loadSettings();
     void saveSettings();
@@ -24,17 +31,35 @@ public:
     static NetworkPcapFileRecorder *networkPcapFileRecorder;
     static TsNetworkFileRecorder *tsNetworkFileRecorder;
 
+
 private:
+
+    void updateStreamIndex();
+
     Ui::RecordWidget *ui;
     bool started;
+    bool isBitrateSignal;
+    bool didRun;
+    QString currentTreeStream;
     QString currentDirectory;
     QString currentFilename;
+    quint8 treeWidgetCounter;
+    RecordTxtPrinter printer;
+    QTreeWidgetItem *currentStreamAdress;
+    quint8 selectedStreamIndex;
+
+  //  QString getTreeStream(QTreeWidget widget);
+ //   void getTreeData(QString string, QTreeWidget treeWidget);
+
 
 private slots:
     void recordingStarted();
     void recordingFinished();
     bool validateAdressInputs();
     bool validatePortInputs();
+    void changeStream();
+
+    void setupGraph();
 
 
 
@@ -55,6 +80,7 @@ private slots:
 public slots:
     void recordStatusChanged(FinalStatus status);
     void recordWorkerStatusChanged(WorkerStatus status);
+    void recordWorkerGraphInfo (WorkerStatus status);
 
 };
 

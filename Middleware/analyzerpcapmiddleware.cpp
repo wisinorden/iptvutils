@@ -14,6 +14,8 @@ void AnalyzerPcapMiddleware::init() {
     this->moveToThread(&runnerThread);
     connect(&runnerThread, &QThread::started, this, &AnalyzerPcapMiddleware::run);
     connect(this, &AnalyzerPcapMiddleware::finished, &runnerThread, &QThread::quit);
+
+
 }
 
 void AnalyzerPcapMiddleware::start() {
@@ -34,9 +36,10 @@ void AnalyzerPcapMiddleware::run() {
     this->thread()->quit();
 }
 
+
 // Buffers packets
 void AnalyzerPcapMiddleware::bufferProducts() {
-    QElapsedTimer statusTimer;
+    QTime statusTimer;
     statusTimer.start();
     packetNumber = 0;
 
@@ -56,7 +59,10 @@ void AnalyzerPcapMiddleware::bufferProducts() {
 
     PcapProduct input;
 
+
     while (!stopping) {
+
+
         input = prevProvider->getProduct();
         if (input.type == PcapProduct::NORMAL && !hasLooped) {
             PacketParser parser((pcap_pkthdr*)input.header.data(), (const u_char*)input.data.data());
@@ -65,6 +71,7 @@ void AnalyzerPcapMiddleware::bufferProducts() {
             if (startTime == -1) {
                 startTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec * 1000; // convert to ms
                 startTime += ((pcap_pkthdr*)input.header.data())->ts.tv_usec/1000; // convert to ms
+                lastDuration = 0;
             }
             else {
                 endTime = ((pcap_pkthdr*)input.header.data())->ts.tv_sec*1000;
@@ -72,20 +79,17 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                 duration = endTime - startTime;
                 if (lastDuration == 0)
                     lastDuration = duration;
-            }
 
-            // 1 second of trafic, calculate bitrate for that second
+                // 1 second of trafic, calculate bitrate for that second
 
-            if (duration - lastDuration >= 1000) {
-                bitrate = (bytes - lastSecondBytes)*8*1000/(duration - lastDuration);
-                lastSecondBytes = bytes;
-                lastDuration = duration;
-
+                if (duration - lastDuration >= emitFrequency) {
+                    bitrate = (bytes - lastSecondBytes)*8*1000/(duration - lastDuration);
+                    lastSecondBytes = bytes;
+                }
             }
 
             // sanity check, prevents analyzation of packets that do not contain ts-packets
             if (parser.data_len % 188 == 0 && parser.ih->proto == 17 && parser.data_len != 0) {
-
 
                 tsPerIp = parser.data_len/188;
 
@@ -112,13 +116,14 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                 else
                     stream.bitrateMode = StreamInfo::BitrateMode::VBR;
 
-                stream.id = StreamId(streamId);
-                stream.bytes += parser.data_len;
-                stream.tsPerIp = tsPerIp;
-                stream.currentTime = duration;
+                //if (duration - stream.lastDuration >= 200)
+                    stream.id = StreamId(streamId);
+                    stream.bytes += parser.data_len;
+                    stream.tsPerIp = tsPerIp;
+                    stream.currentTime = duration;
 
-                tsAnalyzer.setStream(&stream.tsErrors, &stream.pidMap);
-
+                    tsAnalyzer.setStream(&stream.tsErrors, &stream.pidMap);
+           //     }
                 // Analyze every TsPacket
                 for (quint8 i = 0; i < tsPerIp; i++) {
                     tsParser.parse((quint8*)(parser.data+i*188));
@@ -135,15 +140,12 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                     }
                     else {
 
-
                     }
                 }
 
                 // case 1: sanity check true
                 buffer.push(input);
                 packetNumber++;
-
-
             }
             else {
 
@@ -153,7 +155,7 @@ void AnalyzerPcapMiddleware::bufferProducts() {
             }
 
         }
-        else if (input.type == PcapProduct::LOOP) {
+        else if (input.type == PcapProduct::LOOP || input.type == PcapProduct::END) {
             hasLooped = true;
 
             buffer.push(input);
@@ -162,10 +164,36 @@ void AnalyzerPcapMiddleware::bufferProducts() {
         }
 
 
-        if (statusTimer.elapsed() >= 200) {
+
+
+
+
+
+        if (lastDuration > 1000000000){
+            lastDuration = 0;
+        }
+
+
+        if (duration - lastDuration >= emitFrequency) {
+
+            lastDuration = duration;
+
+            for (auto &stream : streams) {
+
+                stream.avgBitrate =  ((double)stream.bytes*8*1000.0/stream.currentTime) /1000000.0;
+                stream.currentBitrate = (double)(stream.bytes - stream.lastSecondBytes)*8*1000/(duration - stream.lastDuration) / 1000000;
+                stream.lastSecondBytes = stream.bytes;
+                stream.lastDuration = duration;
+            }
+
             emit status(AnalyzerStatus(Status::STATUS_PERIODIC, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
-            emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams));
+            if(bitrate / 1000000 < 100){
+                emit bitrateStatus((double) bitrate /1000000,  duration );
+
+            }
+
             statusTimer.restart();
+            emit workerStatus(WorkerStatus(WorkerStatus::STATUS_PERIODIC, streams), false);
         }
 
         if (input.type == PcapProduct::END || input.type == PcapProduct::STOP) {
@@ -175,12 +203,12 @@ void AnalyzerPcapMiddleware::bufferProducts() {
     qInfo("Analyzer done, processed %lli packets", packetNumber-1);
     emit status(AnalyzerStatus(Status::STATUS_FINISHED, bytes, duration, bitrate, duration, pidMap, tsErrors, proto, tsPerIp));
 
-    emit workerStatus(WorkerStatus(WorkerStatus::STATUS_FINISHED, streams));
+    emit workerStatus(WorkerStatus(WorkerStatus::STATUS_FINISHED, streams), false);
     if (input.type == PcapProduct::END &&
             (config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_LIVE ||
              config.getWorkerMode() == WorkerConfiguration::ANALYSIS_MODE_OFFLINE)) {
 
-        emit workerStatus(WorkerStatus(WorkerStatus::STATUS_ANALYZED_ENTIRE, streams));
+        emit workerStatus(WorkerStatus(WorkerStatus::STATUS_ANALYZED_ENTIRE, streams), false);
     }
 }
 

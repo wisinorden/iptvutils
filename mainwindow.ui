@@ -18,6 +18,12 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTabWidget" name="tabWidget">
+      <property name="mouseTracking">
+       <bool>true</bool>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
       <property name="autoFillBackground">
        <bool>true</bool>
       </property>
@@ -73,7 +79,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -110,6 +116,16 @@
    </property>
    <property name="text">
     <string>&amp;About...</string>
+   </property>
+  </action>
+  <action name="actionHow_to_navigate_graph">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/pngicon</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>How to navigate graph</string>
    </property>
   </action>
  </widget>

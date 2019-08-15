@@ -14,7 +14,6 @@ void TsFileConsumer::start(QThread *thread) {
     connect(this, &TsFileConsumer::finished, thread, &QThread::quit);
     //connect(this, &TsFileConsumer::finished, &QThread::deleteLater);
     //connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-
     thread->start();
 }
 

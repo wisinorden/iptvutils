@@ -26,9 +26,14 @@ public:
     quint64 bytes;
     quint64 currentTime;
     quint64 bitrate;
+    double avgBitrate;
+    double currentBitrate;
     NetworkProtocol protocol;
     BitrateMode bitrateMode;
     quint8 tsPerIp;
+    quint32 iatDeviation;
+    quint64 lastSecondBytes;
+    quint64 lastDuration;
     TsErrors tsErrors;
     QMap<int, PIDInfo> pidMap;
     QString protocolName() const {
@@ -62,18 +67,23 @@ public:
         protocol(NetworkProtocol::UNKNOWN),
         bitrateMode(BitrateMode::UNKNOWN),
         tsPerIp(0),
+        iatDeviation(0),
+        lastSecondBytes(0),
+        lastDuration(0),
         tsErrors() {}
     StreamInfo(StreamId id,
                quint64 bytes,
                quint64 bitrate,
                NetworkProtocol protocol,
                quint8 tsPerIp,
+               quint8 networkJitters,
                TsErrors tsErrors) :
         id(id),
         bytes(bytes),
         bitrate(bitrate),
         protocol(protocol),
         tsPerIp(tsPerIp),
+        iatDeviation(networkJitters),
         tsErrors(tsErrors) {}
 };
 

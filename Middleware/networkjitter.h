@@ -1,5 +1,6 @@
-#ifndef ANALYZERPCAPMIDDLEWARE_H
-#define ANALYZERPCAPMIDDLEWARE_H
+#ifndef NETWORKJITTER_H
+#define NETWORKJITTER_H
+
 
 #include "pcapmiddleware.h"
 #include "concurrentqueue.h"
@@ -12,38 +13,30 @@
 #include <QMap>
 #include <QHash>
 
-class AnalyzerPcapMiddleware : public PcapMiddleware
+class NetworkJitter : public PcapMiddleware
 {
     Q_OBJECT
 private:
-    double currentIatDev;
-    qint64 currentIatDevTimestamp;
     ConcurrentQueue<PcapProduct> buffer;
-    TsParser tsParser;
-    TsAnalyzer tsAnalyzer;
-    QMap<int, PIDInfo> pidMap;
-    TsErrors tsErrors;
     qint64 duration;
     qint64 packetNumber;
-    void bufferProducts();
     QHash<quint64, StreamInfo> streams;
+    bool signalType;
 
 public:
-    AnalyzerPcapMiddleware(WorkerConfiguration config) :
+    NetworkJitter(WorkerConfiguration config) :
         PcapMiddleware(config),
-        buffer(MIDDLEWARE_BUFFER_SIZE),
-        tsParser(),
-        tsAnalyzer(tsParser, duration, packetNumber)
+        buffer(MIDDLEWARE_BUFFER_SIZE)
     {
         init();
     }
-
     void init();
     PcapProduct getProduct();
 
 signals:
     void status(AnalyzerStatus status);
-    void bitrateStatus(double bitrate, qint64 duration);
+    void iatStatus(double iatDev, qint64 duration);
+
 
 protected slots:
     void run();
@@ -53,4 +46,4 @@ public slots:
     void stop();
 };
 
-#endif // ANALYZERPCAPMIDDLEWARE_H
+#endif // NETWORKJITTER_H

@@ -62,6 +62,7 @@ void PcapFileConsumer::saveToFile() {
     PacketParser parser;
 
     packet = prevProvider->getProduct();
+
     const u_char *pkt_data;
     struct pcap_pkthdr *header;
 

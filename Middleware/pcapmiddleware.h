@@ -20,17 +20,13 @@ public:
     PcapMiddleware(WorkerConfiguration config) :
         QObject(), config(config) {}
 
+
+    quint16 emitFrequency = 100;
+
 signals:
     void started();
     void finished();
-    void workerStatus(WorkerStatus status);
-
-protected slots:
-    virtual void run() = 0;
-
-public slots:
-    virtual void start() = 0;
-    virtual void stop() { stopping = true; }
+    void workerStatus(WorkerStatus status, bool signalType);
 };
 
 #endif // PCAPMIDDLEWARE_H

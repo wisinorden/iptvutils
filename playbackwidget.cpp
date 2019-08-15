@@ -31,9 +31,11 @@ PlaybackWidget::PlaybackWidget(QWidget *parent) :
     connect(ui->playbackHost, &QLineEdit::textChanged, this, &PlaybackWidget::playbackInputChanged);
     connect(ui->playbackPort, &QLineEdit::textChanged, this, &PlaybackWidget::playbackInputChanged);
 
+
     for (int i = 0; i < MainWindow::interfaces.length(); i++) {
         ui->playbackInterfaceSelect->addItem(MainWindow::interfaces.at(i).getName());
         ui->playbackInterfaceSelect->setItemData(i, MainWindow::interfaces.at(i).getName(), Qt::ToolTipRole);
+
     }
 
 
@@ -104,7 +106,8 @@ void PlaybackWidget::playbackStarted() {
 
 }
 
-void PlaybackWidget::playbackStatusChanged(FinalStatus status) {
+void PlaybackWidget::playbackStatusChanged(FinalStatus status) { //Kolla in det här, troligen anledningen till att det ej markeras som finished längre.
+
     ui->playbackStatus->setText(status.toUiString());
 }
 

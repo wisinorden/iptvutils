@@ -67,10 +67,12 @@ public:
         pidMap(other.pidMap),
         tsErrors(other.tsErrors),
         proto(other.proto),
-        tsPerIp(other.tsPerIp) {}
+        tsPerIp(other.tsPerIp)
+    {}
 
     void setTsPerIp(quint8 tsPerIp) { this->tsPerIp = tsPerIp; }
     void setProtocol(Protocol proto) { this->proto = proto; }
+
 
     qint64 getDuration() const { return duration; }
 

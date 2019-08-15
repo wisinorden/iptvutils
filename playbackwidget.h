@@ -4,6 +4,7 @@
 #include "Configuration/workerconfiguration.h"
 #include "Player/pcapfilenetworkplayer.h"
 #include <QWidget>
+// #include <recordwidget.h>
 
 namespace Ui {
 class PlaybackWidget;

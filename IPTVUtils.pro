@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui network
+QT       += core gui charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -61,7 +62,10 @@ SOURCES += \
     Analyzer/tsanalyzer.cpp \
     playbackwidget.cpp \
     recordwidget.cpp \
-    convertwidget.cpp
+    convertwidget.cpp \
+    Middleware/networkjitter.cpp \
+    recordwidgetgraph.cpp \
+    recordtxtprinter.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -110,7 +114,10 @@ HEADERS += \
     recordwidget.h \
     convertwidget.h \
     Status/streamid.h \
-    Status/workerstatus.h
+    Status/workerstatus.h \
+    Middleware/networkjitter.h \
+    recordwidgetgraph.h \
+    recordtxtprinter.h
 
 FORMS += \
         mainwindow.ui \

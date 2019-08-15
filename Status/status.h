@@ -47,7 +47,15 @@ public:
     qint64 getElapsed() { return elapsed; }
     qint64 getBitrate() { return bitrate; }
     QString getError() { return error; }
+    void setType(const StatusType &value);
+    void setBytes(const qint64 &value);
+    void setElapsed(const qint64 &value);
+    void setBitrate(const qint64 &value);
 };
+
+
+
+
 
 Q_DECLARE_METATYPE(Status)
 

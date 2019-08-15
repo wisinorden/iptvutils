@@ -3,11 +3,8 @@
 #include "mainwindow.h"
 #include "validator.h"
 #include "pcapfilter.h"
-
-#include <QFileDialog>
-#include <QSettings>
-#include <QStandardPaths>
-#include <QMessageBox>
+#include "recordwidgetgraph.cpp"
+#include <QtWidgets/QMainWindow>
 
 #include <iostream>
 #include <cstddef>
@@ -16,23 +13,32 @@ TsNetworkFileRecorder* RecordWidget::tsNetworkFileRecorder;
 
 RecordWidget::RecordWidget(QWidget *parent) :
     QWidget(parent),
+    graph(this),
     ui(new Ui::RecordWidget),
-    started(false)
+    started(false),
+    isBitrateSignal(true),
+    didRun(false)
 {
     ui->setupUi(this);
+    this->setupGraph();
+    this->setMouseTracking(true);
+    treeWidgetCounter = 0;
+    selectedStreamIndex = 0;
+
+
+
 
     // Advanced PCAP filter
     ui->recordPcapFilterContainer->hide();
     connect(ui->recordExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_recordExpandPCAPFilterButton_toggled(bool)));
 
-    // File format
-    // connect(ui->recordFileFormatPCAP, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatPCAP_toggled(bool)));
-    //  connect(ui-> recordFileFormatTS, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatTS_toggled(bool)));
-
     connect(ui->recordHost, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordPort, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordRtpFecCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordUnicastCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
+    connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &RecordWidget::changeStream);
+
+    connect(ui->graphDataBox, &QComboBox::currentTextChanged, this, &RecordWidget::changeStream);
 
     for (int i = 0; i < MainWindow::interfaces.length(); i++) {
         ui->recordInterfaceSelect->addItem(MainWindow::interfaces.at(i).getName());
@@ -95,21 +101,88 @@ void RecordWidget::recordingStarted() {
     ui->recordExpandPCAPFilterButton->setEnabled(false);
     ui->recordPcapFilterContainer->setEnabled(false);
     ui->recordInterfaceSelect->setEnabled(false);
+    ui->graphDataBox->setEnabled(false);
+    this->setupGraph();
+    graph.setCurrentFileName(currentFilename);
 
+    didRun = true;
 
-
-
+    if(ui->graphDataBox->currentText()== "Bitrate"){
+        this->graph.setYAxisTitle("Bitrate mbps");
+    } else{
+        this->graph.setYAxisTitle("Std IAT dev µs");
+    }
 }
 
 void RecordWidget::recordStatusChanged(FinalStatus status) {
     ui->recordStatus->setText(status.toUiString());
 }
 
+void RecordWidget::recordWorkerGraphInfo(WorkerStatus status){
+    quint64 hashKey = status.streams.keys().at(selectedStreamIndex);
+    if(isBitrateSignal){
+        graph.setBitrate(status.streams[hashKey].currentBitrate, status.streams[hashKey].currentTime, isBitrateSignal);
+    } else {
+
+        graph.setBitrate(status.streams[hashKey].iatDeviation, status.streams[hashKey].currentTime, isBitrateSignal);
+
+    }
+    if(ui->treeWidget->topLevelItemCount() > 0){
+        graph.recordMultipleStreams(status);
+
+        if(selectedStreamIndex != graph.selectedStreamIndex){
+            graph.changeStream(selectedStreamIndex, isBitrateSignal);
+        }
+    }
+}
+
 void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
-    status.insertIntoTree(ui->treeWidget);
+
+    if(ui->treeWidget->topLevelItemCount() != status.streams.count() && started){ // started prevents crash when pressing stop button
+
+        status.insertIntoTree(ui->treeWidget);
+
+    } else {
+        updateStreamIndex();
+        quint64 key = status.streams.keys().at(selectedStreamIndex);
+        if(isBitrateSignal){
+            this->graph.setAvgBitrate(status.streams[key].avgBitrate);
+        }
+        recordWorkerGraphInfo(status);
+        status.updateTree(ui->treeWidget);
+    }
+}
+
+void RecordWidget::changeStream(){
+
+    if(didRun){
+        updateStreamIndex();
+
+        if (ui->graphDataBox->currentText().contains("IAT")){
+            isBitrateSignal = false;
+        } else {
+            isBitrateSignal = true;
+        }
+
+        graph.changeStream(selectedStreamIndex, isBitrateSignal);
+        ui->graphView->setChart(graph.chart());
+
+    }
+}
+
+void RecordWidget::updateStreamIndex(){
+    QList<QTreeWidgetItem *> itemList;
+
+    itemList = this->ui->treeWidget->selectedItems();
+
+    foreach(QTreeWidgetItem *item, itemList) // Maybe pass data to graph here if there are multiple streams?
+    {
+        selectedStreamIndex = this->ui->treeWidget->indexOfTopLevelItem(item);
+    }
 }
 
 void RecordWidget::recordingFinished() {
+    started = false;
     ui->recordStartStopBtn->setText(tr("Start recording"));
     ui->recordStartStopBtn->setEnabled(true);
     ui->recordOpenFileDialog->setEnabled(true);
@@ -120,12 +193,12 @@ void RecordWidget::recordingFinished() {
     ui->recordExpandPCAPFilterButton->setEnabled(true);
     ui->recordPcapFilterContainer->setEnabled(true);
     ui->recordInterfaceSelect->setEnabled(true);
-
+    ui->graphDataBox->setEnabled(true);
+    this->treeWidgetCounter = 0;
 
 
     networkPcapFileRecorder = NULL;
     tsNetworkFileRecorder = NULL;
-    started = false;
 }
 
 
@@ -144,7 +217,7 @@ bool RecordWidget::validatePortInputs() {
 bool RecordWidget::validateAdressInputs() {
     bool valid = true;
 
-    // Performs validation on Address
+    // Performs validation on adress
     valid = Validator::validateIp(ui->recordHost) && valid;
 
     return valid;
@@ -188,7 +261,6 @@ void RecordWidget::recordFilterShouldUpdate() {
 }
 
 
-
 bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     if (networkPcapFileRecorder != NULL) {
         qWarning("Atempt to start PcapRecord while pointer not released");
@@ -205,7 +277,14 @@ bool RecordWidget::startPcapRecord(WorkerConfiguration::WorkerMode mode) {
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::status, this, &RecordWidget::recordStatusChanged);
-    connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
+
+    if(ui->graphDataBox->currentText()!= "Bitrate"){
+        isBitrateSignal = false;
+        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
+    } else {
+        isBitrateSignal = true;
+        connect(networkPcapFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
+    }
 
     ui->recordStartStopBtn->setEnabled(false);
 
@@ -231,7 +310,15 @@ bool RecordWidget::startTsRecord(WorkerConfiguration::WorkerMode mode) {
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::started, this, &RecordWidget::recordingStarted);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::finished, this, &RecordWidget::recordingFinished);
     connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::status, this, &RecordWidget::recordStatusChanged);
-    connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
+
+    if(ui->graphDataBox->currentText()!= "Bitrate"){
+        isBitrateSignal = false;
+        connect(tsNetworkFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
+    } else {
+        isBitrateSignal = true;
+        connect(tsNetworkFileRecorder, &NetworkPcapFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
+    }
+ //   connect(tsNetworkFileRecorder, &TsNetworkFileRecorder::workerStatus, this, &RecordWidget::recordWorkerStatusChanged);
 
     ui->recordStartStopBtn->setEnabled(false);
     tsNetworkFileRecorder->start();
@@ -248,6 +335,12 @@ void RecordWidget::on_recordExpandPCAPFilterButton_toggled(bool checked)
         ui->recordExpandPCAPFilterButton->setArrowType(Qt::ArrowType::RightArrow);
         ui->recordPcapFilterContainer->hide();
     }
+}
+
+void RecordWidget::setupGraph(){
+    graph.setupGraph();
+    ui->graphView->setChart(graph.chart());
+    ui->graphView->setRenderHint(QPainter::Antialiasing);
 }
 
 void RecordWidget::on_recordFileFormatPCAP_toggled(bool checked)
@@ -344,6 +437,7 @@ void RecordWidget::on_recordStartStopBtn_clicked()
             qInfo("atempting to stop pcapRecorder");
             ui->recordStartStopBtn->setEnabled(false);
             networkPcapFileRecorder->stop();
+            recordingFinished();
         }
         if (tsNetworkFileRecorder != NULL) {
             qInfo("atempting to stop tsRecorder");
@@ -352,6 +446,11 @@ void RecordWidget::on_recordStartStopBtn_clicked()
         }
     }
 }
+
+
+
+
+
 
 void RecordWidget::on_treeWidget_activated(const QModelIndex &index)
 {
