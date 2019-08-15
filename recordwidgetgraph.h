@@ -32,8 +32,6 @@ public:
     quint8 noOfStreams;
     double maxBitrate;
     double minBitrate;
-    double maxIatDev;
-    double minIatDev;
     QChart* setupGraph();
 
     void setAvgBitrate(double avgBitrate);
@@ -91,6 +89,7 @@ private:
     QPointF m_lastMousePos;
     bool m_isTouching;
     bool isScrolling = false;
+    bool bitrateSelected;
 
     void refreshData(WorkerStatus status);
     void setAxisRange(bool isBitrateSignal, double bitrate);

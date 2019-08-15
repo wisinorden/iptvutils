@@ -25,7 +25,6 @@ public:
 
 private:
     Ui::PlaybackWidget *ui;
-   // RecordWidgetGraph graph;
     bool started;
     bool validatePlaybackInputs();
     bool startPcapPlayback(WorkerConfiguration::WorkerMode mode = WorkerConfiguration::NORMAL_MODE);

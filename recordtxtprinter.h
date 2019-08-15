@@ -9,8 +9,6 @@
 class RecordTxtPrinter
 {
 public:
-
-   // QFile file;
     RecordTxtPrinter();
     void printToFile(QFile *file, QString text, QString currentFilename, QString streamIpAdress,quint8 currentIterationIndex);
     QList <quint8> containedIndexes;

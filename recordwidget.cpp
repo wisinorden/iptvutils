@@ -32,11 +32,6 @@ RecordWidget::RecordWidget(QWidget *parent) :
     ui->recordPcapFilterContainer->hide();
     connect(ui->recordExpandPCAPFilterButton, SIGNAL(toggled(bool)), this, SLOT(on_recordExpandPCAPFilterButton_toggled(bool)));
 
-
-    // File format
-    // connect(ui->recordFileFormatPCAP, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatPCAP_toggled(bool)));
-    //  connect(ui-> recordFileFormatTS, SIGNAL(toggled(bool)), this, SLOT(on_recordFileFormatTS_toggled(bool)));
-
     connect(ui->recordHost, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordPort, &QLineEdit::textChanged, this, &RecordWidget::recordFilterShouldUpdate);
     connect(ui->recordRtpFecCheckBox, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate);
@@ -44,8 +39,6 @@ RecordWidget::RecordWidget(QWidget *parent) :
     connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &RecordWidget::changeStream);
 
     connect(ui->graphDataBox, &QComboBox::currentTextChanged, this, &RecordWidget::changeStream);
-
- //   connect(ui->graphView, &QCheckBox::stateChanged, this, &RecordWidget::recordFilterShouldUpdate );
 
     for (int i = 0; i < MainWindow::interfaces.length(); i++) {
         ui->recordInterfaceSelect->addItem(MainWindow::interfaces.at(i).getName());
@@ -149,7 +142,7 @@ void RecordWidget::recordWorkerStatusChanged(WorkerStatus status) {
 
         status.insertIntoTree(ui->treeWidget);
 
-    } else { //if(this->treeWidgetCounter > 0 && started){
+    } else {
         updateStreamIndex();
         quint64 key = status.streams.keys().at(selectedStreamIndex);
         if(isBitrateSignal){

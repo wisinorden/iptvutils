@@ -17,6 +17,7 @@ RecordWidgetGraph::RecordWidgetGraph( QWidget *parent):
     this->setRubberBand(QChartView::RectangleRubberBand);
     dataRefreshCounter = 0;
     printer = new RecordTxtPrinter();
+    bitrateSelected = true;
 
 }
 
@@ -73,8 +74,6 @@ QChart* RecordWidgetGraph::setupGraph(){
     dataRefreshCounter = 0;
     this->maxBitrate = 0;
     this->minBitrate = 5000;
-    this->maxIatDev = 0;
-    this->minIatDev = 5000;
     this->zoomInt = 0;
     this->avgBitrate = 0;
 
@@ -93,9 +92,10 @@ QChart* RecordWidgetGraph::setupGraph(){
 void RecordWidgetGraph::setYAxisTitle(QString title){
     chart()->axisY()->setTitleText(title);
 
-    if(title.contains("Std")){
+    if(title == "Std IAT dev µs"){
         lineSeries->setName("IAT dev");
         chart()->removeSeries(avgSeries);
+        bitrateSelected = false;
     }
 }
 
@@ -175,9 +175,9 @@ void RecordWidgetGraph::changeStream(int selectedStream, bool isBitrateSignal){
         avgSeries->attachAxis(chart()->axisX());
         chart()->axisY()->setTitleText("Bitrate mbps");
         this->chart()->axisY()->setRange(minBitrateList[selectedStream] - 0.5 , maxBitrateList[selectedStream] + 0.5);
-
+        bitrateSelected = true;
     } else {
-        isBitrateSignal = false;
+        bitrateSelected = false;
         chart()->axisY()->setTitleText("Std IAT dev µs");
         this->chart()->axisY()->setRange(minIatList[selectedStream] - 10, maxIatList[selectedStream] + 10);
     }
@@ -244,9 +244,6 @@ void RecordWidgetGraph::recordMultipleStreams(WorkerStatus status){ // This coul
 
                 maxIatList[i] = iatDev;
             }
-
-
-
         }
     }
 
@@ -304,7 +301,11 @@ void RecordWidgetGraph::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Minus:
         this->zoomInt += 10000;
         this->chart()->axisX()->setRange(QDateTime::fromMSecsSinceEpoch((durations - 20000) - zoomInt), QDateTime::fromMSecsSinceEpoch(durations + 2000));
-        this->chart()->axisY()->setRange(minBitrate - 0.5, this->maxBitrate + 0.5);
+       if(bitrateSelected){
+        this->chart()->axisY()->setRange(minBitrateList[selectedStreamIndex] - 0.5, maxBitrateList[selectedStreamIndex] + 0.5);
+       } else {
+        this->chart()->axisY()->setRange(minIatList[selectedStreamIndex] - 10, maxIatList[selectedStreamIndex] + 10);
+       }
         break;
 
     case Qt::Key_Left:

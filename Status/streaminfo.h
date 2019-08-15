@@ -31,7 +31,7 @@ public:
     NetworkProtocol protocol;
     BitrateMode bitrateMode;
     quint8 tsPerIp;
-    quint16 iatDeviation;
+    quint32 iatDeviation;
     quint64 lastSecondBytes;
     quint64 lastDuration;
     TsErrors tsErrors;

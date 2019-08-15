@@ -15,6 +15,7 @@ void AnalyzerPcapMiddleware::init() {
     connect(&runnerThread, &QThread::started, this, &AnalyzerPcapMiddleware::run);
     connect(this, &AnalyzerPcapMiddleware::finished, &runnerThread, &QThread::quit);
 
+
 }
 
 void AnalyzerPcapMiddleware::start() {
@@ -84,7 +85,6 @@ void AnalyzerPcapMiddleware::bufferProducts() {
                 if (duration - lastDuration >= emitFrequency) {
                     bitrate = (bytes - lastSecondBytes)*8*1000/(duration - lastDuration);
                     lastSecondBytes = bytes;
-     //               lastDuration = duration;
                 }
             }
 
